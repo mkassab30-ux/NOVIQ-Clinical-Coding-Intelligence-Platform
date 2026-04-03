@@ -1,0 +1,176 @@
+{
+  "_meta": {
+    "title": "NOVIQ Engine — Keyword Dictionary Extension: AR-DRG V11.0 New ADRGs",
+    "version": "1.0.0",
+    "ar_drg_version": "V11.0",
+    "source": "AR-DRG V11.0 Final Report, IHACPA, January 2023 — Appendix A",
+    "description": "ACHI trigger and modifier codes for the three new ADRGs introduced in AR-DRG V11.0. Merge into the master keyword_dictionary.json under the 'procedures' key.",
+    "created": "2026-04-02",
+    "phase": "Phase 1 — Deliverable 1.1"
+  },
+
+  "new_adrg_trigger_codes": {
+
+    "B08": {
+      "adrg_code": "B08",
+      "adrg_description": "Endovascular Clot Retrieval",
+      "mdc": "01",
+      "mdc_description": "Diseases and Disorders of the Nervous System",
+      "partition": "intervention",
+      "hierarchy_position": 2,
+      "split_profile": "A_B",
+      "drg_end_classes": ["B08A", "B08B"],
+      "eccs_threshold_A": 3,
+      "source_section": "Section 3.1 — Appendix A Table A1",
+      "clinical_context": "Endovascular clot retrieval (ECR), also known as mechanical thrombectomy. Delivery of clot retrieval device via catheter into cerebral arteries to remove obstructing clot. Used in acute ischaemic stroke within recommended timeframe from onset.",
+      "trigger_codes": [
+        {
+          "achi_code": "35414-00",
+          "achi_block": "702",
+          "description": "Embolectomy or thrombectomy of intracranial artery",
+          "role": "trigger",
+          "code_type": "primary_trigger",
+          "notes": "Sole trigger code for B08. Any episode with this ACHI code and a compatible PDX in MDC 01 routes to B08 at hierarchy position 2, unless B02 criteria are also met (B02 ranks higher at position 1)."
+        }
+      ],
+      "modifier_codes": [],
+      "exclusion_notes": "Episodes meeting both B02 (Cranial Interventions) and B08 criteria group to B02 — B02 ranks above B08 at position 1 in MDC 01 intervention hierarchy.",
+      "previous_grouping": "ADRG B02 Cranial Interventions (AR-DRG V10.0)",
+      "rationale_for_new_adrg": "ECR episodes are less expensive than non-ECR episodes in B02, especially in high-complexity DRGs B02A and B02B. Volume increased from 417 (2015-16) to 1,710 (2018-19). Separation prevents dilution of B02 average costs."
+    },
+
+    "F25": {
+      "adrg_code": "F25",
+      "adrg_description": "Percutaneous Heart Valve Replacement with Bioprosthesis",
+      "mdc": "05",
+      "mdc_description": "Diseases and Disorders of the Circulatory System",
+      "partition": "intervention",
+      "hierarchy_position": 13,
+      "split_profile": "A_B",
+      "drg_end_classes": ["F25A", "F25B"],
+      "eccs_threshold_A": null,
+      "source_section": "Section 3.2 — Appendix A Table A2",
+      "clinical_context": "Transcatheter aortic valve implantation (TAVI) and other percutaneous cardiac valve replacement (PCVR) interventions using a bioprosthesis. Lower-risk alternative to open chest surgery for patients with severe aortic stenosis meeting treatment criteria.",
+      "trigger_codes": [
+        {
+          "achi_code": "38488-08",
+          "achi_block": "623",
+          "description": "Percutaneous replacement of aortic valve with bioprosthesis",
+          "role": "trigger",
+          "code_type": "primary_trigger",
+          "notes": "TAVI — most common procedure in this ADRG."
+        },
+        {
+          "achi_code": "38488-09",
+          "achi_block": "628",
+          "description": "Percutaneous replacement of mitral valve with bioprosthesis",
+          "role": "trigger",
+          "code_type": "primary_trigger",
+          "notes": null
+        },
+        {
+          "achi_code": "38488-10",
+          "achi_block": "634",
+          "description": "Percutaneous replacement of tricuspid valve with bioprosthesis",
+          "role": "trigger",
+          "code_type": "primary_trigger",
+          "notes": null
+        },
+        {
+          "achi_code": "38488-11",
+          "achi_block": "637",
+          "description": "Percutaneous replacement of pulmonary valve with bioprosthesis",
+          "role": "trigger",
+          "code_type": "primary_trigger",
+          "notes": null
+        }
+      ],
+      "modifier_codes": [],
+      "removed_from_v10_adrgs": {
+        "description": "The following ACHI codes were removed from F05 and F06 in V10.0 and are NOT trigger codes for F25. They remain in MDC 05 but route differently.",
+        "codes_removed": [
+          {
+            "achi_code": "38270-01",
+            "achi_block": "622",
+            "description": "Percutaneous balloon aortic valvuloplasty",
+            "removed_from": ["F05", "F06"]
+          },
+          {
+            "achi_code": "38270-02",
+            "achi_block": "626",
+            "description": "Percutaneous balloon mitral valvuloplasty",
+            "removed_from": ["F05", "F06"]
+          },
+          {
+            "achi_code": "38270-03",
+            "achi_block": "637",
+            "description": "Percutaneous balloon pulmonary valvuloplasty",
+            "removed_from": ["F05", "F06"]
+          },
+          {
+            "achi_code": "96222-00",
+            "achi_block": "626",
+            "description": "Percutaneous mitral valvuloplasty using closure device",
+            "removed_from": ["F05", "F06"]
+          }
+        ]
+      },
+      "exclusion_notes": "Only bioprosthesis replacements (38488-xx series) trigger F25. Valvuloplasty codes (38270-xx) do NOT trigger F25 — they were removed from F05/F06 but route elsewhere in MDC 05.",
+      "previous_grouping": "F03 or F04 Cardiac Valve Interventions with CPB pump (AR-DRG V10.0)",
+      "rationale_for_new_adrg": "Percutaneous approach is clinically distinct from open chest surgery. Volume exceeded 200 episodes/year from 2015-16 to 2018-19, warranting a dedicated ADRG."
+    },
+
+    "G13": {
+      "adrg_code": "G13",
+      "adrg_description": "Peritonectomy for Gastrointestinal Disorders",
+      "mdc": "06",
+      "mdc_description": "Diseases and Disorders of the Digestive System",
+      "partition": "intervention",
+      "hierarchy_position": 1,
+      "split_profile": "Z",
+      "drg_end_classes": ["G13Z"],
+      "eccs_threshold_A": null,
+      "source_section": "Section 3.3 — Appendix A Table A3",
+      "clinical_context": "Complete removal of tumour from peritoneal cavity including removal of part of bowel, and potentially gallbladder, spleen, stomach, kidney, and female reproductive organs. Followed by hyperthermic intraperitoneal chemotherapy (HIPEC). Indicated for pseudomyxoma peritonei, appendix cancer, colorectal cancer, peritoneal mesothelioma.",
+      "trigger_codes": [
+        {
+          "achi_code": "96211-00",
+          "achi_block": "989",
+          "description": "Peritonectomy",
+          "role": "trigger",
+          "code_type": "primary_trigger",
+          "notes": "Primary trigger for G13. Episode must also be in MDC 06 — peritonectomy episodes in MDC 13 (Female Reproductive System) do NOT route to G13."
+        }
+      ],
+      "modifier_codes": [
+        {
+          "achi_code": "96201-00",
+          "achi_block": "1920",
+          "description": "Intracavitary administration of pharmacological agent, antineoplastic agent",
+          "role": "modifier",
+          "code_type": "complexity_indicator",
+          "notes": "HIPEC administration. Presence of this code with peritonectomy confirms the higher-complexity MDC 06 cohort (vs MDC 13 cohort which typically lacks HIPEC). Flag for clinical complexity review."
+        },
+        {
+          "achi_code": "92178-00",
+          "achi_block": "1880",
+          "description": "Heat therapy",
+          "role": "modifier",
+          "code_type": "complexity_indicator",
+          "notes": "HIPEC heat component. Co-coded with 96201-00 in HIPEC procedures."
+        }
+      ],
+      "exclusion_notes": "G13 is MDC 06 specific. Peritonectomy in MDC 13 (Diseases and Disorders of the Female Reproductive System) remains in MDC 13 — typically without HIPEC and clinically distinct. G13 is not split (Z suffix only) due to insufficient episode volume to support ECCS-based splitting.",
+      "no_split_rationale": "Episode volume in MDC 06 met the 200/year threshold for ADRG creation but was insufficient for ECCS-based splitting. Manual stability split not applied.",
+      "previous_grouping": "Various ADRGs within MDC 06 and MDC 13 (AR-DRG V10.0)",
+      "rationale_for_new_adrg": "Peritonectomy + HIPEC episodes in MDC 06 are significantly more expensive than MDC 13 episodes. Volume in MDC 06 grew from 114 (2016-17) to 379 (2018-19). MDC 06 and MDC 13 cohorts are clinically distinct — HIPEC differentiates them."
+    }
+  },
+
+  "integration_instructions": {
+    "target_file": "keyword_dictionary.json",
+    "merge_strategy": "Add each entry from new_adrg_trigger_codes into the top-level 'procedures' object, keyed by ADRG code (B08, F25, G13).",
+    "grouper_lookup": "The grouper Step 4 (ADRG assignment) scans ACHI codes against trigger_codes[].achi_code for each ADRG in MDC intervention hierarchy order. First match wins.",
+    "validation_hook": "After ADRG assignment, pass modifier_codes presence to the complexity flagging layer — G13 HIPEC modifiers should surface in the physician review output."
+  }
+}
