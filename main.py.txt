@@ -1,0 +1,21 @@
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+import json
+
+app = FastAPI()
+
+# ربط ملفات الواجهة (index.html)
+app.mount("/static", StaticFiles(directory="."), name="static")
+
+@app.get("/", response_class=HTMLResponse)
+async def home():
+    # هذا يفتح الـ Dashboard الذي صممه Claude
+    with open("index.html", "r", encoding="utf-8") as f:
+        return f.read()
+
+@app.get("/api/logic")
+async def get_logic():
+    # هذا يقرأ الـ 79 إجراء جراحي
+    with open("knowledge_base/keyword_dictionary_medical_logic_v1.json", "r", encoding="utf-8") as f:
+        return json.load(f)
