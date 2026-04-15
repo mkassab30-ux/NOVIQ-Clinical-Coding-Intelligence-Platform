@@ -1,0 +1,1876 @@
+{
+  "_meta": {
+    "title": "NOVIQ Engine — Medical Logic Knowledge Base",
+    "version": "1.0.0",
+    "specialties": [
+      "General Surgery",
+      "Hand Surgery"
+    ],
+    "total_procedures": 79,
+    "source_documents": [
+      "Book1.xlsx (General Sheet — Arabic)",
+      "Book1.xlsx (G Sheet — English)",
+      "Hand_surgery_Excel.xlsx",
+      "NOVIQ_Health_Hand_surgery.docx"
+    ],
+    "built_at": "2026-04-09",
+    "note": "Phase 5 Intelligence Layer input — keyword expansion and medical logic rules for Intent Agent and Medical Logic Agent"
+  },
+  "procedures": {
+    "general_surgery": [
+      {
+        "id": "GS_001",
+        "specialty": "General Surgery",
+        "specialty_ar": "الغدة الدرقية",
+        "procedure": "Total Thyroidectomy + LN",
+        "classification": "special_character",
+        "los": "2 - 4 أيام",
+        "complications": [
+          "1. Lymph leak"
+        ],
+        "medical_coding_logic": "LN Integrity: يجب مطابقة عدد العقد في تقرير العمليات مع تقرير الباثولوجي.",
+        "ai_triggers": "Safety Gate: إصدار تنبيه فوراً إذا لم تذكر كلمة \"RLN\" أو \"Parathyroid\".",
+        "keywords": [
+          "RLN ID",
+          "Level II-VI",
+          "Pyramidal lobe",
+          "Nodes"
+        ],
+        "source": "Book1_General_Sheet"
+      },
+      {
+        "id": "GS_002",
+        "specialty": "General Surgery",
+        "specialty_ar": "الزائدة",
+        "procedure": "Appendectomy (Pediatric)",
+        "classification": "emergency",
+        "los": "1 - 2 أيام",
+        "complications": [
+          "1. Septicemia"
+        ],
+        "medical_coding_logic": "The 12-Hr Rule: للأطفال (10-14 سنة) الجراحة ضرورية في < 12 ساعة لمنع الانفجار.",
+        "ai_triggers": "Age-Risk Clock: تنبيه تأخير الجراحة للأطفال. كشف الـ Upcoding في المنظار (Cross-check Staplers).",
+        "keywords": [
+          "McBurney",
+          "Pus",
+          "Lavage",
+          "10-14 yrs",
+          "Stridor"
+        ],
+        "source": "Book1_General_Sheet"
+      },
+      {
+        "id": "GS_003",
+        "specialty": "General Surgery",
+        "specialty_ar": "الزائدة",
+        "procedure": "Right Hemicolectomy",
+        "classification": "complex",
+        "los": "5 - 7 أيام",
+        "complications": [
+          "1. Anastomotic leak"
+        ],
+        "medical_coding_logic": "تستخدم عند التواء الزائدة (Kinked) وامتداد العدوى للقولون الصاعد والـ Jejunum.",
+        "ai_triggers": "Extension Logic: السماح بالتكويد المعقد فقط عند ثبوت الـ Perforation الممتد في الباثولوجي.",
+        "keywords": [
+          "Kinked",
+          "Gangrene",
+          "Ascending colon",
+          "Anastomosis"
+        ],
+        "source": "Book1_General_Sheet"
+      },
+      {
+        "id": "GS_004",
+        "specialty": "General Surgery",
+        "specialty_ar": "المرارة",
+        "procedure": "Cholecystectomy Lap",
+        "classification": "advanced",
+        "los": "1 يوم",
+        "complications": [
+          "1. CBD injury"
+        ],
+        "medical_coding_logic": "Small Stone Paradox: الحصوات الصغيرة (Microlithiasis) أخطر من الكبيرة لتسببها في انسداد الـ CBD.",
+        "ai_triggers": "Adhesiolysis Guard: رفض كود الالتصاقات إلا في حالة وجود جراحات سابقة (Past history like CS).",
+        "keywords": [
+          "CVOS",
+          "Cystic duct",
+          "Impacted stone",
+          "Adhesions"
+        ],
+        "source": "Book1_General_Sheet"
+      },
+      {
+        "id": "GS_005",
+        "specialty": "General Surgery",
+        "specialty_ar": "الفتق",
+        "procedure": "Inguinal Hernia (Young Pt)",
+        "classification": "congenital",
+        "los": "Same day",
+        "complications": [
+          "1. Recurrence"
+        ],
+        "medical_coding_logic": "Congenital Shield: يرفض التأمين الفتق الإربي للشباب إلا إذا وثقت كحالة طارئة (Strangulated).",
+        "ai_triggers": "Emergency Loophole: المحرك يبحث عن \"Cord Obstruction\" أو \"Tear\" لتمرير المطالبة تأمينياً.",
+        "keywords": [
+          "Strangulated",
+          "Mesh",
+          "Proline",
+          "Cord structures"
+        ],
+        "source": "Book1_General_Sheet"
+      },
+      {
+        "id": "GS_006",
+        "specialty": "General Surgery",
+        "specialty_ar": "جدار البطن",
+        "procedure": "Complex Wall Recon.",
+        "classification": "advanced",
+        "los": "4 - 6 أيام",
+        "complications": [
+          "1. Recurrence"
+        ],
+        "medical_coding_logic": "Defect Logic: الشبكة (Mesh 15x15) ضرورية وظيفياً للـ Defect الكبير ولا تعتبر تجميلاً.",
+        "ai_triggers": "Cosmetic Filter: عزل الـ Abdominoplasty كإجراء تجميلي غير مغطى (90% Rejection).",
+        "keywords": [
+          "Mesh",
+          "TAR",
+          "Rectus repair",
+          "Defect size"
+        ],
+        "source": "Book1_General_Sheet"
+      },
+      {
+        "id": "GS_007",
+        "specialty": "General Surgery",
+        "specialty_ar": "البواسير",
+        "procedure": "Hemorrhoidectomy (Stapler)",
+        "classification": "major",
+        "los": "Same day",
+        "complications": [
+          "1. Profuse Bleeding"
+        ],
+        "medical_coding_logic": "Grade Gate: تغطية الدرجة 3 و4 فقط. الـ Harmonic غير مبرر طبياً للبواسير.",
+        "ai_triggers": "Technology Guard: رفض كود الـ Laser في 70% من البوالص وتنبيه الـ Upcoding للـ Harmonic.",
+        "keywords": [
+          "Stapler PPH",
+          "Grade 4",
+          "Strangulated",
+          "Bleeding"
+        ],
+        "source": "Book1_General_Sheet"
+      },
+      {
+        "id": "GS_008",
+        "specialty": "General Surgery",
+        "specialty_ar": "الشرج",
+        "procedure": "High Fistula (Staged)",
+        "classification": "complex",
+        "los": "Same day",
+        "complications": [
+          "1. Incontinence"
+        ],
+        "medical_coding_logic": "Sphincter Gate: الحالات الـ High تخترق الـ Internal sphincter وتتطلب 2-3 جلسات.",
+        "ai_triggers": "Complexity Trigger: وجود خيط الـ \"Seton\" يرفع تصنيف الحالة تلقائياً ويبرر تعدد العمليات.",
+        "keywords": [
+          "Seton",
+          "Trans-sphincteric",
+          "EUA",
+          "MRI perianal"
+        ],
+        "source": "Book1_General_Sheet"
+      },
+      {
+        "id": "GS_009",
+        "specialty": "General Surgery",
+        "specialty_ar": "القولون",
+        "procedure": "Colectomy (Malignancy)",
+        "classification": "special_character",
+        "los": "5 - 10 أيام",
+        "complications": [
+          "1. Anastomotic leak"
+        ],
+        "medical_coding_logic": "Stoma Protocol: في الحالات الصعبة يتم عمل \"فتحة جانبية\" (Stoma) ثم غلقها لاحقاً (كودين منفصلين).",
+        "ai_triggers": "Integrity Gate: منع المطالبة المالية بدون تقرير باثولوجي يثبت الـ Tumor والـ Safety margins.",
+        "keywords": [
+          "Resection",
+          "Stoma",
+          "Safety margins",
+          "Colon Cancer"
+        ],
+        "source": "Book1_General_Sheet"
+      },
+      {
+        "id": "GS_010",
+        "specialty": "General Surgery",
+        "specialty_ar": "البنكرياس",
+        "procedure": "Whipple Procedure",
+        "classification": "ultra_complex",
+        "los": "14 - 21 يوم",
+        "complications": [
+          "1. Pancreatic Fistula"
+        ],
+        "medical_coding_logic": "أعلى فئة تكويد (Special Char). مخصصة لحالات سرطان رأس البنكرياس.",
+        "ai_triggers": "Max Tier Trigger: كلمات مثل \"Duodenojejunostomy\" تفعل أعلى تعويض مالي للمطالبة.",
+        "keywords": [
+          "Whipple",
+          "DJ",
+          "Pancreas head",
+          "Sarcoma"
+        ],
+        "source": "Book1_General_Sheet"
+      },
+      {
+        "id": "GS_011",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Skin Lesion Excision",
+        "classification": "minor",
+        "los": "Same day",
+        "complications": [
+          "Infection",
+          "Bleeding",
+          "Scar"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "skin",
+          "lesion",
+          "excision",
+          "biopsy"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_012",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Skin Lesion Excision by Laser",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Burn",
+          "Infection",
+          "Scar"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "skin",
+          "lesion",
+          "laser",
+          "excision"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_013",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Wide Local Excision",
+        "classification": "intermediate",
+        "los": "1 days",
+        "complications": [
+          "Wound infection",
+          "Bleeding",
+          "Scar"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "skin",
+          "lesion",
+          "excision",
+          "wide margin"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_014",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Wide Excision with Safety Margin",
+        "classification": "major",
+        "los": "0–1 days",
+        "complications": [
+          "Wound infection",
+          "Bleeding",
+          "Scar"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "skin",
+          "lesion",
+          "excision",
+          "safety margin"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_015",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Wide Excision + Flap Reconstruction",
+        "classification": "advanced",
+        "los": "1–2 days",
+        "complications": [
+          "Flap necrosis",
+          "Infection",
+          "Hematoma"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "skin",
+          "lesion",
+          "flap",
+          "reconstruction"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_016",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Needle Biopsy Thyroid",
+        "classification": "minor",
+        "los": "Same day",
+        "complications": [
+          "Hematoma",
+          "Pain",
+          "Infection"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "thyroid",
+          "biopsy",
+          "needle",
+          "fine-needle"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_017",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Core Biopsy Thyroid",
+        "classification": "minor",
+        "los": "Same day",
+        "complications": [
+          "Hematoma",
+          "Pain",
+          "Infection"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "thyroid",
+          "biopsy",
+          "core",
+          "needle"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_018",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Excisional Biopsy Thyroid",
+        "classification": "intermediate",
+        "los": "1 days",
+        "complications": [
+          "Hematoma",
+          "Infection",
+          "Scar"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "thyroid",
+          "biopsy",
+          "excision",
+          "lesion"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_019",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Thyroid Lobectomy",
+        "classification": "major",
+        "los": "0–1 days",
+        "complications": [
+          "Hypocalcemia",
+          "Recurrent laryngeal nerve injury",
+          "Bleeding"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "thyroid",
+          "lobectomy",
+          "open",
+          "surgery"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_020",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Total Thyroidectomy",
+        "classification": "advanced",
+        "los": "1–2 days",
+        "complications": [
+          "Hypocalcemia",
+          "Nerve injury",
+          "Bleeding"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "thyroid",
+          "total thyroidectomy",
+          "surgery"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_021",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Total Thyroidectomy + LN Dissection",
+        "classification": "special_character",
+        "los": "2–3 days",
+        "complications": [
+          "Hypocalcemia",
+          "Lymph leak",
+          "Nerve injury"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "thyroid",
+          "total thyroidectomy",
+          "LN dissection"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_022",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Appendectomy Open",
+        "classification": "intermediate",
+        "los": "2 days",
+        "complications": [
+          "Wound infection",
+          "Ileus",
+          "Bleeding"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "appendicitis",
+          "open surgery",
+          "abdomen",
+          "emergency"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_023",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Appendectomy Laparoscopic",
+        "classification": "major",
+        "los": "1 days",
+        "complications": [
+          "Bleeding",
+          "Infection",
+          "Intra-abdominal abscess"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "appendicitis",
+          "laparoscopy",
+          "abdomen",
+          "emergency"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_024",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Appendectomy Robotic",
+        "classification": "advanced",
+        "los": "1 days",
+        "complications": [
+          "Bleeding",
+          "Infection",
+          "Intra-abdominal abscess"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "appendicitis",
+          "robotic",
+          "laparoscopy",
+          "abdomen"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_025",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Cholecystectomy Open",
+        "classification": "major",
+        "los": "2–4 days",
+        "complications": [
+          "Wound infection",
+          "Bleeding",
+          "Bile leak"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "gallbladder",
+          "open surgery",
+          "cholelithiasis"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_026",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Cholecystectomy Laparoscopic",
+        "classification": "advanced",
+        "los": "1 days",
+        "complications": [
+          "Bile leak",
+          "Bleeding",
+          "CBD injury"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "gallbladder",
+          "laparoscopy",
+          "cholelithiasis"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_027",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Cholecystectomy Robotic",
+        "classification": "special_character",
+        "los": "1 days",
+        "complications": [
+          "Bile leak",
+          "Bleeding",
+          "CBD injury"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "gallbladder",
+          "robotic",
+          "laparoscopy"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_028",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Inguinal Hernia Repair Open",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Seroma",
+          "Recurrence",
+          "Pain"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "hernia",
+          "inguinal",
+          "open surgery",
+          "mesh"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_029",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Inguinal Hernia Repair Laparoscopic",
+        "classification": "major",
+        "los": "1 days",
+        "complications": [
+          "Seroma",
+          "Recurrence",
+          "Urinary retention"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "hernia",
+          "inguinal",
+          "laparoscopy",
+          "mesh"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_030",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Inguinal Hernia Repair Robotic",
+        "classification": "advanced",
+        "los": "1 days",
+        "complications": [
+          "Seroma",
+          "Recurrence",
+          "Urinary retention"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "hernia",
+          "inguinal",
+          "robotic",
+          "laparoscopy"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_031",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Ventral Hernia Repair with Mesh",
+        "classification": "major",
+        "los": "1–2 days",
+        "complications": [
+          "Seroma",
+          "Infection",
+          "Recurrence"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "hernia",
+          "ventral",
+          "mesh",
+          "abdominal wall"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_032",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Complex Abdominal Wall Reconstruction",
+        "classification": "advanced",
+        "los": "3–5 days",
+        "complications": [
+          "Seroma",
+          "Infection",
+          "Recurrence"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "hernia",
+          "complex",
+          "abdominal wall",
+          "reconstruction"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_033",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Diastasis Recti Repair",
+        "classification": "major",
+        "los": "0–1 days",
+        "complications": [
+          "Seroma",
+          "Hematoma",
+          "Recurrence"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "diastasis",
+          "rectus abdominis",
+          "abdominal wall",
+          "repair"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_034",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Diastasis Recti + Mesh",
+        "classification": "advanced",
+        "los": "1–2 days",
+        "complications": [
+          "Seroma",
+          "Hematoma",
+          "Infection"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "diastasis",
+          "rectus abdominis",
+          "mesh",
+          "repair"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_035",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Diastasis Recti + Abdominoplasty",
+        "classification": "special_character",
+        "los": "3 days",
+        "complications": [
+          "Seroma",
+          "Hematoma",
+          "Infection"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "diastasis",
+          "rectus abdominis",
+          "abdominoplasty",
+          "cosmetic"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_036",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Hemorrhoidectomy Open",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Pain",
+          "Bleeding",
+          "Urinary retention"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "hemorrhoids",
+          "open",
+          "excision",
+          "rectum"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_037",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Hemorrhoidectomy Laser",
+        "classification": "major",
+        "los": "Same day",
+        "complications": [
+          "Pain",
+          "Bleeding",
+          "Urinary retention"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "hemorrhoids",
+          "laser",
+          "rectum",
+          "proctology"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_038",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Hemorrhoidectomy Stapler",
+        "classification": "major",
+        "los": "1 days",
+        "complications": [
+          "Pain",
+          "Bleeding",
+          "Infection"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "hemorrhoids",
+          "stapler",
+          "excision",
+          "rectum"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_039",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Hemorrhoidectomy Doppler Guided",
+        "classification": "advanced",
+        "los": "1 days",
+        "complications": [
+          "Pain",
+          "Bleeding",
+          "Infection"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "hemorrhoids",
+          "doppler",
+          "guided",
+          "rectum"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_040",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Colectomy Open",
+        "classification": "advanced",
+        "los": "4–6 days",
+        "complications": [
+          "Bleeding",
+          "Anastomotic leak",
+          "Infection"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "colon",
+          "colectomy",
+          "open",
+          "surgery"
+        ],
+        "source": "Book1_G_Sheet"
+      },
+      {
+        "id": "GS_041",
+        "specialty": "General Surgery",
+        "specialty_ar": "",
+        "procedure": "Colectomy Laparoscopic",
+        "classification": "special_character",
+        "los": "2–4 days",
+        "complications": [
+          "Bleeding",
+          "Anastomotic leak",
+          "Infection"
+        ],
+        "medical_coding_logic": "",
+        "ai_triggers": "",
+        "keywords": [
+          "colon",
+          "colectomy",
+          "laparoscopy"
+        ],
+        "source": "Book1_G_Sheet"
+      }
+    ],
+    "hand_surgery": [
+      {
+        "id": "HS_001",
+        "specialty": "Hand Surgery",
+        "procedure": "Skin Lesion Excision Hand",
+        "classification": "minor",
+        "los": "Same day",
+        "complications": [
+          "Infection",
+          "Bleeding",
+          "Scar"
+        ],
+        "clinical_logic": {},
+        "keywords": [
+          "hand",
+          "skin",
+          "lesion",
+          "excision"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_002",
+        "specialty": "Hand Surgery",
+        "procedure": "Skin Lesion Excision Hand + Flap",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Flap necrosis",
+          "Infection",
+          "Hematoma"
+        ],
+        "clinical_logic": {},
+        "keywords": [
+          "hand",
+          "lesion",
+          "flap",
+          "reconstruction"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_003",
+        "specialty": "Hand Surgery",
+        "procedure": "Ganglion Cyst Excision Wrist",
+        "classification": "minor",
+        "los": "Same day",
+        "complications": [
+          "Recurrence",
+          "Stiffness",
+          "Infection"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Ganglion Cyst: Must document Pain, Inflammation, or Tendon Friction especially near joints. Not cosmetic removal.",
+          "documentation_rule": "6S Rule mandatory: Size, Site, Shape, Surface, Surroundings, Symptoms.",
+          "imaging_note": "Most cases clinically diagnosed; radiology not mandatory.",
+          "insurance_risk": "Rejection if documented as cosmetic or asymptomatic."
+        },
+        "keywords": [
+          "hand",
+          "wrist",
+          "ganglion",
+          "excision"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_004",
+        "specialty": "Hand Surgery",
+        "procedure": "Ganglion Excision Arthroscopic",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Recurrence",
+          "Stiffness",
+          "Infection"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Ganglion Cyst: Must document Pain, Inflammation, or Tendon Friction especially near joints. Not cosmetic removal.",
+          "documentation_rule": "6S Rule mandatory: Size, Site, Shape, Surface, Surroundings, Symptoms.",
+          "imaging_note": "Most cases clinically diagnosed; radiology not mandatory.",
+          "insurance_risk": "Rejection if documented as cosmetic or asymptomatic."
+        },
+        "keywords": [
+          "hand",
+          "wrist",
+          "arthroscopy",
+          "ganglion"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_005",
+        "specialty": "Hand Surgery",
+        "procedure": "Carpal Tunnel Release Open",
+        "classification": "minor",
+        "los": "Same day",
+        "complications": [
+          "Pain",
+          "Nerve irritation",
+          "Infection"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Surgery NOT approved without positive NCV/EMG Test showing Median/Ulnar nerve compression.",
+          "documentation_rule": "NCV Test is the gold standard — must be attached to claim. Can be 1st line if NCV confirms severe compression.",
+          "insurance_risk": "Flag for rejection risk if NCV report absent.",
+          "ai_trigger": "NCV Matcher: CTS Surgery without NCV Report → Flag for Rejection."
+        },
+        "keywords": [
+          "carpal tunnel",
+          "hand",
+          "median nerve",
+          "open"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_006",
+        "specialty": "Hand Surgery",
+        "procedure": "Carpal Tunnel Release Endoscopic",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Nerve injury",
+          "Pain",
+          "Hematoma"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Surgery NOT approved without positive NCV/EMG Test showing Median/Ulnar nerve compression.",
+          "documentation_rule": "NCV Test is the gold standard — must be attached to claim. Can be 1st line if NCV confirms severe compression.",
+          "insurance_risk": "Flag for rejection risk if NCV report absent.",
+          "ai_trigger": "NCV Matcher: CTS Surgery without NCV Report → Flag for Rejection."
+        },
+        "keywords": [
+          "carpal tunnel",
+          "endoscopic",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_007",
+        "specialty": "Hand Surgery",
+        "procedure": "Trigger Finger Release",
+        "classification": "minor",
+        "los": "Same day",
+        "complications": [
+          "Stiffness",
+          "Infection",
+          "Pain"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Must affect hand function — grip and object handling impaired.",
+          "documentation_rule": "Must verify patient occupation — potential Workman's Compensation if caused by repetitive motion at work.",
+          "insurance_risk": "Occupational Alert: Trigger Finger + Manual Labor job → Flag for Work-related Injury investigation.",
+          "ai_trigger": "Occupational Alert: cross-check occupation for insurance policy exclusions."
+        },
+        "keywords": [
+          "trigger finger",
+          "hand",
+          "release"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_008",
+        "specialty": "Hand Surgery",
+        "procedure": "Trigger Finger Release Percutaneous",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Tendon injury",
+          "Pain",
+          "Infection"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Must affect hand function — grip and object handling impaired.",
+          "documentation_rule": "Must verify patient occupation — potential Workman's Compensation if caused by repetitive motion at work.",
+          "insurance_risk": "Occupational Alert: Trigger Finger + Manual Labor job → Flag for Work-related Injury investigation.",
+          "ai_trigger": "Occupational Alert: cross-check occupation for insurance policy exclusions."
+        },
+        "keywords": [
+          "trigger finger",
+          "percutaneous",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_009",
+        "specialty": "Hand Surgery",
+        "procedure": "Tendon Repair Primary",
+        "classification": "skilled",
+        "los": "Same day",
+        "complications": [
+          "Adhesions",
+          "Rupture",
+          "Stiffness"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Mode of Injury must be confirmed from First Medical Report. Exclusion check: Fighting, Self-inflicted, Hazardous sports.",
+          "documentation_rule": "Primary repair for partial/complete tears. Tendon Grafting justified if tissue loss present.",
+          "timing_rule": "Repairs >24 hours post-injury risk infection — may require Delayed Repair coding tier.",
+          "ai_trigger": "Exclusion Hunter: Keywords \"Fight\", \"Self-harm\", \"Adrenaline sports\" → Auto-reject claim."
+        },
+        "keywords": [
+          "tendon",
+          "repair",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_010",
+        "specialty": "Hand Surgery",
+        "procedure": "Tendon Repair Microsurgical",
+        "classification": "advanced",
+        "los": "1 days",
+        "complications": [
+          "Adhesions",
+          "Rupture",
+          "Stiffness"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Mode of Injury must be confirmed from First Medical Report. Exclusion check: Fighting, Self-inflicted, Hazardous sports.",
+          "documentation_rule": "Primary repair for partial/complete tears. Tendon Grafting justified if tissue loss present.",
+          "timing_rule": "Repairs >24 hours post-injury risk infection — may require Delayed Repair coding tier.",
+          "ai_trigger": "Exclusion Hunter: Keywords \"Fight\", \"Self-harm\", \"Adrenaline sports\" → Auto-reject claim."
+        },
+        "keywords": [
+          "tendon",
+          "microsurgery",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_011",
+        "specialty": "Hand Surgery",
+        "procedure": "Tendon Grafting",
+        "classification": "advanced",
+        "los": "1–2",
+        "complications": [
+          "Adhesions",
+          "Failure",
+          "Infection"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Mode of Injury must be confirmed from First Medical Report. Exclusion check: Fighting, Self-inflicted, Hazardous sports.",
+          "documentation_rule": "Primary repair for partial/complete tears. Tendon Grafting justified if tissue loss present.",
+          "timing_rule": "Repairs >24 hours post-injury risk infection — may require Delayed Repair coding tier.",
+          "ai_trigger": "Exclusion Hunter: Keywords \"Fight\", \"Self-harm\", \"Adrenaline sports\" → Auto-reject claim."
+        },
+        "keywords": [
+          "tendon",
+          "graft",
+          "reconstruction"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_012",
+        "specialty": "Hand Surgery",
+        "procedure": "Tendon Transfer",
+        "classification": "advanced",
+        "los": "1 days",
+        "complications": [
+          "Failure",
+          "Weakness",
+          "Stiffness"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Mode of Injury must be confirmed from First Medical Report. Exclusion check: Fighting, Self-inflicted, Hazardous sports.",
+          "documentation_rule": "Primary repair for partial/complete tears. Tendon Grafting justified if tissue loss present.",
+          "timing_rule": "Repairs >24 hours post-injury risk infection — may require Delayed Repair coding tier.",
+          "ai_trigger": "Exclusion Hunter: Keywords \"Fight\", \"Self-harm\", \"Adrenaline sports\" → Auto-reject claim."
+        },
+        "keywords": [
+          "tendon transfer",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_013",
+        "specialty": "Hand Surgery",
+        "procedure": "Nerve Repair Primary",
+        "classification": "skilled",
+        "los": "Same day",
+        "complications": [
+          "Neuroma",
+          "Failure",
+          "Paresthesia"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Mode of Injury exclusion check mandatory.",
+          "documentation_rule": "Post-op Rehabilitation Plan for sensory/motor recovery must be documented.",
+          "ai_trigger": "Exclusion Hunter active. Rehab plan absence → Flag for incomplete documentation."
+        },
+        "keywords": [
+          "nerve repair",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_014",
+        "specialty": "Hand Surgery",
+        "procedure": "Nerve Repair Microsurgical",
+        "classification": "advanced",
+        "los": "1 days",
+        "complications": [
+          "Neuroma",
+          "Failure",
+          "Paresthesia"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Mode of Injury exclusion check mandatory.",
+          "documentation_rule": "Post-op Rehabilitation Plan for sensory/motor recovery must be documented.",
+          "ai_trigger": "Exclusion Hunter active. Rehab plan absence → Flag for incomplete documentation."
+        },
+        "keywords": [
+          "nerve",
+          "microsurgery",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_015",
+        "specialty": "Hand Surgery",
+        "procedure": "Nerve Grafting",
+        "classification": "advanced",
+        "los": "1–2",
+        "complications": [
+          "Failure",
+          "Neuroma",
+          "Sensory deficit"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Mode of Injury exclusion check mandatory.",
+          "documentation_rule": "Post-op Rehabilitation Plan for sensory/motor recovery must be documented.",
+          "ai_trigger": "Exclusion Hunter active. Rehab plan absence → Flag for incomplete documentation."
+        },
+        "keywords": [
+          "nerve graft",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_016",
+        "specialty": "Hand Surgery",
+        "procedure": "Digital Nerve Repair",
+        "classification": "skilled",
+        "los": "Same day",
+        "complications": [
+          "Neuroma",
+          "Sensory loss",
+          "Infection"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Mode of Injury exclusion check mandatory.",
+          "documentation_rule": "Post-op Rehabilitation Plan for sensory/motor recovery must be documented.",
+          "ai_trigger": "Exclusion Hunter active. Rehab plan absence → Flag for incomplete documentation."
+        },
+        "keywords": [
+          "digital nerve",
+          "repair"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_017",
+        "specialty": "Hand Surgery",
+        "procedure": "Flexor Tendon Repair",
+        "classification": "skilled",
+        "los": "1 days",
+        "complications": [
+          "Adhesions",
+          "Rupture",
+          "Stiffness"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Mode of Injury must be confirmed from First Medical Report. Exclusion check: Fighting, Self-inflicted, Hazardous sports.",
+          "documentation_rule": "Primary repair for partial/complete tears. Tendon Grafting justified if tissue loss present.",
+          "timing_rule": "Repairs >24 hours post-injury risk infection — may require Delayed Repair coding tier.",
+          "ai_trigger": "Exclusion Hunter: Keywords \"Fight\", \"Self-harm\", \"Adrenaline sports\" → Auto-reject claim."
+        },
+        "keywords": [
+          "flexor tendon",
+          "repair"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_018",
+        "specialty": "Hand Surgery",
+        "procedure": "Extensor Tendon Repair",
+        "classification": "skilled",
+        "los": "Same day",
+        "complications": [
+          "Stiffness",
+          "Rupture",
+          "Adhesions"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Mode of Injury must be confirmed from First Medical Report. Exclusion check: Fighting, Self-inflicted, Hazardous sports.",
+          "documentation_rule": "Primary repair for partial/complete tears. Tendon Grafting justified if tissue loss present.",
+          "timing_rule": "Repairs >24 hours post-injury risk infection — may require Delayed Repair coding tier.",
+          "ai_trigger": "Exclusion Hunter: Keywords \"Fight\", \"Self-harm\", \"Adrenaline sports\" → Auto-reject claim."
+        },
+        "keywords": [
+          "extensor tendon",
+          "repair"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_019",
+        "specialty": "Hand Surgery",
+        "procedure": "Finger Amputation",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Bleeding",
+          "Infection",
+          "Neuroma"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Most common cause: Ischemia turned to Gangrene. Surgery at Line of Demarcation (Dead vs Viable tissue).",
+          "documentation_rule": "Must document line of demarcation in operative notes.",
+          "insurance_risk": "Trauma amputations: Mode of Injury exclusion check — hazardous sports, self-injury, fighting."
+        },
+        "keywords": [
+          "finger",
+          "amputation"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_020",
+        "specialty": "Hand Surgery",
+        "procedure": "Finger Amputation Revision",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Neuroma",
+          "Pain",
+          "Infection"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Most common cause: Ischemia turned to Gangrene. Surgery at Line of Demarcation (Dead vs Viable tissue).",
+          "documentation_rule": "Must document line of demarcation in operative notes.",
+          "insurance_risk": "Trauma amputations: Mode of Injury exclusion check — hazardous sports, self-injury, fighting."
+        },
+        "keywords": [
+          "finger",
+          "revision amputation"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_021",
+        "specialty": "Hand Surgery",
+        "procedure": "Finger Replantation",
+        "classification": "advanced",
+        "los": "5–7",
+        "complications": [
+          "Thrombosis",
+          "Failure",
+          "Infection"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Most common cause: Ischemia turned to Gangrene. Surgery at Line of Demarcation (Dead vs Viable tissue).",
+          "documentation_rule": "Must document line of demarcation in operative notes.",
+          "insurance_risk": "Trauma amputations: Mode of Injury exclusion check — hazardous sports, self-injury, fighting."
+        },
+        "keywords": [
+          "finger",
+          "replantation",
+          "microsurgery"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_022",
+        "specialty": "Hand Surgery",
+        "procedure": "Thumb Replantation",
+        "classification": "special_character",
+        "los": "7–10",
+        "complications": [
+          "Thrombosis",
+          "Failure",
+          "Infection"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Most common cause: Ischemia turned to Gangrene. Surgery at Line of Demarcation (Dead vs Viable tissue).",
+          "documentation_rule": "Must document line of demarcation in operative notes.",
+          "insurance_risk": "Trauma amputations: Mode of Injury exclusion check — hazardous sports, self-injury, fighting."
+        },
+        "keywords": [
+          "thumb",
+          "replantation"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_023",
+        "specialty": "Hand Surgery",
+        "procedure": "Free Flap Hand Reconstruction",
+        "classification": "special_character",
+        "los": "7–10",
+        "complications": [
+          "Flap failure",
+          "Infection",
+          "Thrombosis"
+        ],
+        "clinical_logic": {},
+        "keywords": [
+          "free flap",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_024",
+        "specialty": "Hand Surgery",
+        "procedure": "Local Flap Hand",
+        "classification": "advanced",
+        "los": "1–2",
+        "complications": [
+          "Flap necrosis",
+          "Infection",
+          "Hematoma"
+        ],
+        "clinical_logic": {},
+        "keywords": [
+          "local flap",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_025",
+        "specialty": "Hand Surgery",
+        "procedure": "Skin Graft Hand",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Graft loss",
+          "Infection",
+          "Scar"
+        ],
+        "clinical_logic": {},
+        "keywords": [
+          "skin graft",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_026",
+        "specialty": "Hand Surgery",
+        "procedure": "Wrist Arthroscopy",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Stiffness",
+          "Infection",
+          "Pain"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Primarily indicated for Scaphoid Fractures where ORIF is technically difficult.",
+          "documentation_rule": "Scaphoid fracture confirmation required. Complex small bones — standard ORIF may not be feasible.",
+          "imaging_gate": "X-ray in 3 views: AP, Lateral, Oblique mandatory."
+        },
+        "keywords": [
+          "wrist",
+          "arthroscopy"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_027",
+        "specialty": "Hand Surgery",
+        "procedure": "Wrist Arthroscopy + TFCC Repair",
+        "classification": "advanced",
+        "los": "1 days",
+        "complications": [
+          "Stiffness",
+          "Failure",
+          "Infection"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Primarily indicated for Scaphoid Fractures where ORIF is technically difficult.",
+          "documentation_rule": "Scaphoid fracture confirmation required. Complex small bones — standard ORIF may not be feasible.",
+          "imaging_gate": "X-ray in 3 views: AP, Lateral, Oblique mandatory."
+        },
+        "keywords": [
+          "wrist",
+          "TFCC",
+          "repair"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_028",
+        "specialty": "Hand Surgery",
+        "procedure": "Dupuytren Contracture Release",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Recurrence",
+          "Nerve injury",
+          "Stiffness"
+        ],
+        "clinical_logic": {},
+        "keywords": [
+          "dupuytren",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_029",
+        "specialty": "Hand Surgery",
+        "procedure": "Dupuytren Fasciectomy Extensive",
+        "classification": "advanced",
+        "los": "1–2",
+        "complications": [
+          "Recurrence",
+          "Stiffness",
+          "Infection"
+        ],
+        "clinical_logic": {},
+        "keywords": [
+          "dupuytren",
+          "fasciectomy"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_030",
+        "specialty": "Hand Surgery",
+        "procedure": "Hand Fracture ORIF",
+        "classification": "intermediate",
+        "los": "1 days",
+        "complications": [
+          "Infection",
+          "Nonunion",
+          "Stiffness"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Confirmed with X-ray in 3 views: AP, Lateral, Oblique.",
+          "documentation_rule": "K-Wire is standard. Plates & Screws only for Comminuted/Complex fractures.",
+          "ai_trigger": "Hardware Auditor: Plate & Screws for simple fracture → Flag as non-medically necessary.",
+          "insurance_risk": "Mode of Injury must be confirmed — avoid policy exclusions."
+        },
+        "keywords": [
+          "hand fracture",
+          "ORIF"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_031",
+        "specialty": "Hand Surgery",
+        "procedure": "Metacarpal ORIF",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Nonunion",
+          "Infection",
+          "Stiffness"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Surgery NOT approved without positive NCV/EMG Test showing Median/Ulnar nerve compression.",
+          "documentation_rule": "NCV Test is the gold standard — must be attached to claim. Can be 1st line if NCV confirms severe compression.",
+          "insurance_risk": "Flag for rejection risk if NCV report absent.",
+          "ai_trigger": "NCV Matcher: CTS Surgery without NCV Report → Flag for Rejection."
+        },
+        "keywords": [
+          "metacarpal",
+          "fracture"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_032",
+        "specialty": "Hand Surgery",
+        "procedure": "Phalangeal ORIF",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Stiffness",
+          "Nonunion",
+          "Infection"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Confirmed with X-ray in 3 views: AP, Lateral, Oblique.",
+          "documentation_rule": "K-Wire is standard. Plates & Screws only for Comminuted/Complex fractures.",
+          "ai_trigger": "Hardware Auditor: Plate & Screws for simple fracture → Flag as non-medically necessary.",
+          "insurance_risk": "Mode of Injury must be confirmed — avoid policy exclusions."
+        },
+        "keywords": [
+          "phalanx",
+          "fracture"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_033",
+        "specialty": "Hand Surgery",
+        "procedure": "K-wire Fixation Hand",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Pin infection",
+          "Migration",
+          "Stiffness"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Confirmed with X-ray in 3 views: AP, Lateral, Oblique.",
+          "documentation_rule": "K-Wire is standard. Plates & Screws only for Comminuted/Complex fractures.",
+          "ai_trigger": "Hardware Auditor: Plate & Screws for simple fracture → Flag as non-medically necessary.",
+          "insurance_risk": "Mode of Injury must be confirmed — avoid policy exclusions."
+        },
+        "keywords": [
+          "k wire",
+          "fixation"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_034",
+        "specialty": "Hand Surgery",
+        "procedure": "Hand External Fixator",
+        "classification": "advanced",
+        "los": "1–2",
+        "complications": [
+          "Pin infection",
+          "Stiffness",
+          "Malunion"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Confirmed with X-ray in 3 views: AP, Lateral, Oblique.",
+          "documentation_rule": "K-Wire is standard. Plates & Screws only for Comminuted/Complex fractures.",
+          "ai_trigger": "Hardware Auditor: Plate & Screws for simple fracture → Flag as non-medically necessary.",
+          "insurance_risk": "Mode of Injury must be confirmed — avoid policy exclusions."
+        },
+        "keywords": [
+          "external fixator",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_035",
+        "specialty": "Hand Surgery",
+        "procedure": "Compartment Release Hand",
+        "classification": "advanced",
+        "los": "1 days",
+        "complications": [
+          "Infection",
+          "Stiffness",
+          "Bleeding"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Emergency: Localized swelling + Vascular obstruction = Compartment Syndrome.",
+          "documentation_rule": "Documentation of \"Tense compartment\" or \"Absent pulses\" mandatory.",
+          "coding_note": "Fasciotomy = life/limb-saving emergency procedure — highest urgency classification.",
+          "ai_trigger": "Emergency Gate: auto-flag for immediate authorization."
+        },
+        "keywords": [
+          "compartment syndrome",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_036",
+        "specialty": "Hand Surgery",
+        "procedure": "Fasciotomy Hand",
+        "classification": "advanced",
+        "los": "1–2",
+        "complications": [
+          "Infection",
+          "Stiffness",
+          "Bleeding"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Emergency: Localized swelling + Vascular obstruction = Compartment Syndrome.",
+          "documentation_rule": "Documentation of \"Tense compartment\" or \"Absent pulses\" mandatory.",
+          "coding_note": "Fasciotomy = life/limb-saving emergency procedure — highest urgency classification.",
+          "ai_trigger": "Emergency Gate: auto-flag for immediate authorization."
+        },
+        "keywords": [
+          "fasciotomy",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_037",
+        "specialty": "Hand Surgery",
+        "procedure": "Foreign Body Removal Hand",
+        "classification": "minor",
+        "los": "Same day",
+        "complications": [
+          "Infection",
+          "Bleeding",
+          "Scar"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Superficial: simple removal. Deep (below fascia): requires OR + C-Arm for localization.",
+          "documentation_rule": "\"Radio-opaque\" or \"Deep to Fascia\" documentation mandatory for deep FB.",
+          "ai_trigger": "C-Arm Matcher: Deep FB Removal → ensure C-Arm/Imaging charges included in bill.",
+          "insurance_risk": "Mode of Injury check for deep FB — potential exclusions."
+        },
+        "keywords": [
+          "foreign body",
+          "hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      },
+      {
+        "id": "HS_038",
+        "specialty": "Hand Surgery",
+        "procedure": "Foreign Body Removal Deep Hand",
+        "classification": "intermediate",
+        "los": "Same day",
+        "complications": [
+          "Infection",
+          "Bleeding",
+          "Nerve injury"
+        ],
+        "clinical_logic": {
+          "clinical_gate": "Superficial: simple removal. Deep (below fascia): requires OR + C-Arm for localization.",
+          "documentation_rule": "\"Radio-opaque\" or \"Deep to Fascia\" documentation mandatory for deep FB.",
+          "ai_trigger": "C-Arm Matcher: Deep FB Removal → ensure C-Arm/Imaging charges included in bill.",
+          "insurance_risk": "Mode of Injury check for deep FB — potential exclusions."
+        },
+        "keywords": [
+          "foreign body",
+          "deep hand"
+        ],
+        "source": "Hand_surgery_Excel + NOVIQ_Health_Hand_surgery.docx"
+      }
+    ]
+  },
+  "intelligence_triggers": {
+    "exclusion_hunter": {
+      "description": "Auto-reject claim if these keywords found in ER or admission notes",
+      "keywords": [
+        "fight",
+        "fighting",
+        "self-inflicted",
+        "self-harm",
+        "hazardous sport",
+        "adrenaline sport",
+        "self injury",
+        "combat",
+        "assault (perpetrator)"
+      ],
+      "action": "AUTO_REJECT",
+      "affected_specialties": [
+        "Hand Surgery",
+        "General Surgery"
+      ]
+    },
+    "ncv_matcher": {
+      "description": "CTS surgery requires positive NCV/EMG report",
+      "trigger_procedures": [
+        "Carpal Tunnel Release Open",
+        "Carpal Tunnel Release Endoscopic"
+      ],
+      "required_evidence": "Positive NCV/EMG Test — Median/Ulnar nerve compression",
+      "action": "FLAG_REJECTION_RISK if NCV absent"
+    },
+    "occupational_alert": {
+      "description": "Trigger Finger in manual labor worker — potential Workers Compensation",
+      "trigger_procedures": [
+        "Trigger Finger Release",
+        "Trigger Finger Release Percutaneous"
+      ],
+      "check": "Patient occupation — if repetitive hand motion at work → flag workman compensation",
+      "action": "FLAG_OCCUPATIONAL_INJURY"
+    },
+    "hardware_auditor": {
+      "description": "Plates and screws only justified for comminuted/complex fractures",
+      "trigger_procedures": [
+        "Hand Fracture ORIF",
+        "Metacarpal ORIF",
+        "Phalangeal ORIF"
+      ],
+      "rule": "K-Wire = standard. Plate+Screws only if fracture documented as Comminuted or Complex",
+      "action": "FLAG_NON_MEDICALLY_NECESSARY if simple fracture with plate+screws"
+    },
+    "carm_matcher": {
+      "description": "Deep FB removal must include C-Arm imaging charges",
+      "trigger_procedures": [
+        "Foreign Body Removal Deep Hand"
+      ],
+      "required_documentation": "Radio-opaque or Deep to Fascia",
+      "action": "ENSURE_CARM_CHARGES_BILLED"
+    },
+    "timing_checker": {
+      "description": "Tendon repair >24h post-injury requires different coding tier",
+      "trigger_procedures": [
+        "Tendon Repair Primary",
+        "Flexor Tendon Repair",
+        "Extensor Tendon Repair"
+      ],
+      "rule": "Time of Injury in ER notes. >24h = Delayed Repair coding tier (higher infection risk)",
+      "action": "UPGRADE_CODING_TIER"
+    },
+    "cosmetic_filter": {
+      "description": "Reject cosmetic procedures or flag abdominoplasty",
+      "trigger_procedures": [
+        "Diastasis Recti + Abdominoplasty"
+      ],
+      "rule": "90% rejection rate for pure cosmetic. Must have functional diastasis with symptoms",
+      "action": "FLAG_COSMETIC_EXCLUSION"
+    }
+  },
+  "clinical_rules": {
+    "six_s_rule": {
+      "description": "Mandatory cyst description rule",
+      "applies_to": [
+        "Ganglion Cyst Excision Wrist",
+        "Ganglion Excision Arthroscopic"
+      ],
+      "criteria": [
+        "Size",
+        "Site",
+        "Shape",
+        "Surface",
+        "Surroundings",
+        "Symptoms"
+      ]
+    },
+    "imaging_gates": {
+      "hand_fracture": "AP + Lateral + Oblique X-ray mandatory",
+      "foreign_body_deep": "C-Arm intraoperative localization mandatory",
+      "carpal_tunnel": "NCV/EMG mandatory — no surgery without it",
+      "scaphoid": "X-ray 3 views + CT/MRI may be needed for scaphoid"
+    },
+    "los_benchmarks": {
+      "same_day": [
+        "minor procedures",
+        "carpal tunnel",
+        "trigger finger",
+        "ganglion",
+        "finger amputation"
+      ],
+      "1_day": [
+        "tendon repair",
+        "nerve repair",
+        "wrist arthroscopy",
+        "hand fracture ORIF"
+      ],
+      "1_to_2_days": [
+        "tendon graft",
+        "nerve graft",
+        "fasciotomy",
+        "external fixator"
+      ],
+      "5_to_7_days": [
+        "finger replantation"
+      ],
+      "7_to_10_days": [
+        "thumb replantation",
+        "free flap"
+      ]
+    }
+  }
+}
