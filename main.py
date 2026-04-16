@@ -73,7 +73,7 @@ EPISODE_STORE: dict[str, dict] = {}
 
 # ── Load Medical Logic KB ─────────────────────────────────────────────────
 MEDICAL_LOGIC_KB: dict = {}
-_kb_path = KB_DIR / "keyword_dictionary_medical_logic_v1.json"
+_kb_path = KB_DIR / "keyword_dictionary_medical_logic_v2.json"
 if _kb_path.exists():
     with open(_kb_path, encoding="utf-8") as f:
         MEDICAL_LOGIC_KB = json.load(f)
