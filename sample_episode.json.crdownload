@@ -1,0 +1,53 @@
+{
+  "_comment": "NOVIQ Engine — Sample EHR Episode JSON\nUpload this file to the dashboard to test the full pipeline.\nThis represents a Peritonectomy (G13Z) episode with ACS scores pre-set.",
+
+  "episode_id":       "EP-2026-SAMPLE-001",
+  "patient_age":      58,
+  "patient_sex":      "Female",
+  "admission_weight": null,
+  "same_day":         false,
+  "separation_mode":  "discharge_home",
+  "los_days":         12,
+  "care_type":        "01",
+  "hours_mech_vent":  null,
+
+  "pdx":        "C48.1",
+  "adx":        ["E11.9", "I10", "E61.1"],
+  "achi_codes": ["96211-00"],
+
+  "acs_pdx_score": 6,
+  "acs_adx_scores": [
+    {
+      "code": "E11.9",
+      "score": 5,
+      "is_principal": false,
+      "action": "code",
+      "justification": "Type 2 DM — therapeutic treatment altered (insulin sliding scale). ACS 0002 score 5/8.",
+      "score_breakdown": {"therapeutic_treatment": 3, "diagnostic_procedure": 2}
+    },
+    {
+      "code": "I10",
+      "score": 3,
+      "is_principal": false,
+      "action": "review",
+      "justification": "Hypertension — antihypertensive continued in-hospital. Score 3/8 = physician review.",
+      "score_breakdown": {"therapeutic_treatment": 3}
+    },
+    {
+      "code": "E61.1",
+      "score": 1,
+      "is_principal": false,
+      "action": "do_not_code",
+      "justification": "Iron deficiency — background state, no active treatment. Score 1/8 = do not code as additional diagnosis.",
+      "score_breakdown": {}
+    }
+  ],
+
+  "ehr_documents": [
+    "Initial Medical Report",
+    "Admission Report",
+    "Progress Notes",
+    "Operation Notes",
+    "Discharge Summary"
+  ]
+}

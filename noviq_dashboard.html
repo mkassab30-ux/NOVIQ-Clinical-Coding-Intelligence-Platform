@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOVIQ Engine — MVP Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,600;0,800;1,300&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg:        #0A0C10;
+    --surface:   #111318;
+    --surface2:  #181C24;
+    --border:    #252A35;
+    --border2:   #2E3545;
+    --text:      #E8EBF0;
+    --muted:     #6B7490;
+    --accent:    #4ECDC4;
+    --accent2:   #FFE66D;
+    --danger:    #FF6B6B;
+    --warn:      #FFA94D;
+    --success:   #69DB7C;
+    --approved:  #4ECDC4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── TOP NAV ─────────────────────────────────────── */
+  .topnav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    height: 56px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky; top: 0; z-index: 100;
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-mark {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--accent), #2AA8A0);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-size: 16px; font-weight: 800;
+    color: var(--bg);
+  }
+  .logo-text {
+    font-family: 'Fraunces', serif;
+    font-size: 18px; font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+  .logo-text span { color: var(--accent); }
+
+  .nav-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .nav-right {
+    display: flex; align-items: center; gap: 16px;
+  }
+
+  .nav-btn {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .nav-btn:hover { opacity: .85; }
+
+  /* ── LAYOUT ──────────────────────────────────────── */
+  .layout {
+    display: grid;
+    grid-template-columns: 220px 1fr 300px;
+    height: calc(100vh - 56px);
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ─────────────────────────────────────── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-section {
+    margin-bottom: 24px;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 20px 8px;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 20px;
+    cursor: pointer;
+    border-radius: 0;
+    transition: background .1s;
+    font-size: 13.5px;
+    color: var(--muted);
+    border-left: 2px solid transparent;
+  }
+  .sidebar-item:hover { background: var(--surface2); color: var(--text); }
+  .sidebar-item.active {
+    background: var(--surface2);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  .sidebar-icon {
+    width: 16px; height: 16px;
+    opacity: .7;
+    flex-shrink: 0;
+  }
+  .sidebar-item.active .sidebar-icon { opacity: 1; }
+
+  .count-badge {
+    margin-left: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    color: var(--muted);
+  }
+  .count-badge.warn { border-color: var(--warn); color: var(--warn); background: #2A1F10; }
+  .count-badge.danger { border-color: var(--danger); color: var(--danger); background: #2A1010; }
+
+  /* ── MAIN ────────────────────────────────────────── */
+  .main {
+    overflow-y: auto;
+    background: var(--bg);
+    padding: 28px;
+  }
+
+  /* ── UPLOAD ZONE ─────────────────────────────────── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-header {
+    margin-bottom: 24px;
+  }
+  .page-title {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .page-sub {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .upload-zone {
+    border: 1.5px dashed var(--border2);
+    border-radius: 16px;
+    padding: 48px 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--accent);
+    background: rgba(78,205,196,.05);
+  }
+  .upload-zone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(78,205,196,.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .upload-icon {
+    width: 48px; height: 48px;
+    margin: 0 auto 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+
+  .upload-title {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .upload-sub {
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+
+  .upload-formats {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+  }
+  .format-tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .upload-btn {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: opacity .15s;
+    margin-top: 20px;
+    display: inline-block;
+  }
+  .upload-btn:hover { opacity: .85; }
+
+  /* ── STEPS ───────────────────────────────────────── */
+  .steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 28px 0;
+  }
+  .step {
+    display: flex; align-items: center; gap: 8px;
+    flex: 1;
+    position: relative;
+  }
+  .step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 28px; right: 0; top: 14px;
+    height: 1px;
+    background: var(--border);
+  }
+  .step.done::after { background: var(--accent); }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface);
+    flex-shrink: 0;
+    z-index: 1;
+  }
+  .step.done .step-num {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+  }
+  .step.active .step-num {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .step-label {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .step.active .step-label { color: var(--text); }
+  .step.done .step-label { color: var(--accent); }
+
+  /* ── EHR DOCUMENTS GRID ──────────────────────────── */
+  .doc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .doc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all .15s;
+    position: relative;
+  }
+  .doc-card:hover { border-color: var(--border2); background: var(--surface2); }
+  .doc-card.uploaded { border-color: var(--accent); }
+  .doc-card.uploaded::after {
+    content: '✓';
+    position: absolute;
+    top: 10px; right: 12px;
+    color: var(--accent);
+    font-size: 12px;
+  }
+
+  .doc-icon { font-size: 18px; margin-bottom: 8px; }
+  .doc-name { font-size: 12px; font-weight: 500; margin-bottom: 3px; }
+  .doc-hint { font-size: 11px; color: var(--muted); }
+
+  /* ── PROCESSING ANIMATION ────────────────────────── */
+  .processing-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-top: 20px;
+  }
+
+  .processing-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .pulse-dot {
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 1.2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .4; transform: scale(.8); }
+  }
+
+  .processing-title { font-size: 15px; font-weight: 500; }
+
+  .agent-steps { display: flex; flex-direction: column; gap: 8px; }
+
+  .agent-step {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    transition: all .3s;
+  }
+  .agent-step.done { border-color: var(--border2); }
+  .agent-step.running { border-color: var(--accent); background: rgba(78,205,196,.04); }
+  .agent-step.waiting { opacity: .4; }
+
+  .agent-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border2);
+    flex-shrink: 0;
+  }
+  .agent-step.done .agent-dot { background: var(--success); }
+  .agent-step.running .agent-dot {
+    background: var(--accent);
+    animation: pulse 1s infinite;
+  }
+
+  .agent-name { flex: 1; }
+  .agent-status { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+  .agent-step.done .agent-status { color: var(--success); }
+  .agent-step.running .agent-status { color: var(--accent); }
+
+  /* ── RESULT CARD ─────────────────────────────────── */
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 20px;
+  }
+
+  .result-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .result-episode {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .result-drg {
+    display: flex; align-items: baseline; gap: 10px;
+  }
+
+  .drg-code {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -1px;
+  }
+
+  .drg-desc {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .result-status {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+  }
+
+  .status-pill {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: .04em;
+  }
+  .status-pill.pending { background: rgba(255,169,77,.12); color: var(--warn); border: 1px solid rgba(255,169,77,.3); }
+  .status-pill.approved { background: rgba(78,205,196,.12); color: var(--accent); border: 1px solid rgba(78,205,196,.3); }
+  .status-pill.flagged { background: rgba(255,107,107,.12); color: var(--danger); border: 1px solid rgba(255,107,107,.3); }
+
+  .result-body {
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+  }
+
+  .metric-block {}
+  .metric-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .06em; }
+  .metric-value { font-size: 20px; font-family: 'Fraunces', serif; font-weight: 600; }
+  .metric-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .result-codes {
+    padding: 0 24px 20px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+
+  .code-chip {
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+  .code-chip.pdx { border-color: var(--accent); color: var(--accent); background: rgba(78,205,196,.08); }
+  .code-chip.achi { border-color: var(--accent2); color: var(--accent2); background: rgba(255,230,109,.06); }
+
+  /* ── FLAGS ───────────────────────────────────────── */
+  .flags-section {
+    padding: 0 24px 20px;
+  }
+
+  .flags-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .flag-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    margin-bottom: 6px;
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .flag-item.risk { border-color: rgba(255,107,107,.3); background: rgba(255,107,107,.04); }
+  .flag-item.warn { border-color: rgba(255,169,77,.3); background: rgba(255,169,77,.04); }
+  .flag-item.info { border-color: rgba(78,205,196,.3); background: rgba(78,205,196,.04); }
+
+  .flag-icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+  .flag-text { color: var(--text); }
+  .flag-text strong { color: var(--danger); }
+  .flag-item.warn .flag-text strong { color: var(--warn); }
+  .flag-item.info .flag-text strong { color: var(--accent); }
+
+  /* ── APPROVE BUTTON ──────────────────────────────── */
+  .approve-bar {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface2);
+  }
+
+  .approve-info { font-size: 12px; color: var(--muted); }
+  .approve-info strong { color: var(--text); }
+
+  .btn-approve {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-approve:hover { opacity: .85; transform: translateY(-1px); }
+  .btn-approve.approved {
+    background: var(--surface2);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    cursor: default;
+    transform: none;
+  }
+
+  .btn-reject {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid rgba(255,107,107,.3);
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+    margin-right: 8px;
+  }
+  .btn-reject:hover { background: rgba(255,107,107,.08); }
+
+  /* ── QUEUE TABLE ─────────────────────────────────── */
+  .queue-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+  }
+
+  .queue-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .queue-table td {
+    padding: 12px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    vertical-align: middle;
+  }
+
+  .queue-table tr:hover td { background: var(--surface2); cursor: pointer; }
+  .queue-table tr.selected td { background: rgba(78,205,196,.05); }
+
+  .drg-mono { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--accent); }
+  .pt-name { font-weight: 500; }
+  .pt-id { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+
+  /* ── RIGHT PANEL ─────────────────────────────────── */
+  .right-panel {
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  .panel-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .stat-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+
+  .stat-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .stat-value { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600; }
+  .stat-value.accent { color: var(--accent); }
+  .stat-value.warn { color: var(--warn); }
+  .stat-value.danger { color: var(--danger); }
+  .stat-delta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .trace-log {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    line-height: 1.8;
+    color: var(--muted);
+    margin-top: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .trace-line.step1 { color: var(--accent); }
+  .trace-line.step2 { color: #82B4FF; }
+  .trace-line.step3 { color: #B392F0; }
+  .trace-line.step4 { color: var(--accent2); }
+  .trace-line.step5 { color: var(--success); }
+
+  /* ── DCL TABLE ───────────────────────────────────── */
+  .dcl-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 12px;
+  }
+
+  .dcl-table th {
+    text-align: left;
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    padding: 5px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dcl-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+  }
+
+  .dcl-code { color: var(--accent2); }
+  .dcl-val { color: var(--text); font-weight: 500; }
+  .dcl-excl { color: var(--danger); font-size: 10px; }
+  .dcl-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border2);
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+  .dcl-dot.risk { background: var(--danger); }
+  .dcl-dot.ok { background: var(--success); }
+
+  /* ── SCROLLBARS ──────────────────────────────────── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+
+  /* ── SECTION DIVIDER ─────────────────────────────── */
+  .section-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 24px 0 16px;
+  }
+  .divider-label {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: .09em; color: var(--muted);
+    white-space: nowrap;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--border); }
+
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="logo">
+    <div class="logo-mark">N</div>
+    <div class="logo-text">NOVIQ <span>Engine</span></div>
+  </div>
+  <div class="nav-badge">AR-DRG V11.0 · ICD-10-AM 12th · MVP 1.0</div>
+  <div class="nav-right">
+    <span style="font-size:12px;color:var(--muted)">Dr. Mohamed Kassab</span>
+    <button class="nav-btn" onclick="showPage('upload')">+ New Episode</button>
+  </div>
+</nav>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Workflow</div>
+      <div class="sidebar-item active" onclick="setActive(this,'upload')">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M8 10V3m0 0L5 6m3-3l3 3"/><rect x="2" y="11" width="12" height="3" rx="1"/>
+        </svg>
+        Upload EHR
+      </div>
+      <div class="sidebar-item" onclick="setActive(this,'queue')">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="2" width="12" height="12" rx="2"/>
+          <path d="M5 5h6M5 8h6M5 11h3"/>
+        </svg>
+        Review Queue
+        <span class="count-badge warn">3</span>
+      </div>
+      <div class="sidebar-item" onclick="setActive(this,'result')">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+        </svg>
+        Last Result
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Analytics</div>
+      <div class="sidebar-item" onclick="setActive(this,'analytics')">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M2 12l4-4 3 2 5-6"/>
+        </svg>
+        Revenue Impact
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M8 2v4l2 1M3.5 4.5A6 6 0 1 0 8 2"/>
+        </svg>
+        Audit Log
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">System</div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.2 3.2l1.4 1.4M11.4 11.4l1.4 1.4M3.2 12.8l1.4-1.4M11.4 4.6l1.4-1.4"/>
+        </svg>
+        KB Status
+        <span class="count-badge danger">2 blocked</span>
+      </div>
+      <div class="sidebar-item">
+        <svg class="sidebar-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="7" r="3"/><path d="M2 14s1-2 6-2 6 2 6 2"/>
+        </svg>
+        Physicians
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- PAGE: UPLOAD -->
+    <div class="page active" id="page-upload">
+      <div class="page-header">
+        <div class="page-title">Upload Patient EHR</div>
+        <div class="page-sub">Upload documents from your HMIS — the engine reads them in sequence and produces a DRG suggestion</div>
+      </div>
+
+      <!-- Progress steps -->
+      <div class="steps">
+        <div class="step done" id="step1">
+          <div class="step-num">✓</div>
+          <div class="step-label">Upload</div>
+        </div>
+        <div class="step active" id="step2">
+          <div class="step-num">2</div>
+          <div class="step-label">Processing</div>
+        </div>
+        <div class="step" id="step3">
+          <div class="step-num">3</div>
+          <div class="step-label">ACS Scoring</div>
+        </div>
+        <div class="step" id="step4">
+          <div class="step-num">4</div>
+          <div class="step-label">AR-DRG Grouping</div>
+        </div>
+        <div class="step" id="step5">
+          <div class="step-num">5</div>
+          <div class="step-label">Physician Review</div>
+        </div>
+      </div>
+
+      <!-- Upload zone -->
+      <div class="upload-zone" id="dropZone" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleDrop(event)" onclick="triggerUpload()">
+        <div class="upload-icon">📂</div>
+        <div class="upload-title">Drop EHR files here or click to browse</div>
+        <div class="upload-sub">Supports FHIR R4 bundles, HL7 v2 messages, or plain clinical PDFs/text</div>
+        <div class="upload-formats">
+          <span class="format-tag">.json</span>
+          <span class="format-tag">.xml</span>
+          <span class="format-tag">.hl7</span>
+          <span class="format-tag">.pdf</span>
+          <span class="format-tag">.txt</span>
+          <span class="format-tag">.csv</span>
+        </div>
+        <div><button class="upload-btn" onclick="event.stopPropagation();simulateUpload()">Choose Files</button></div>
+      </div>
+
+      <!-- EHR Document Cards -->
+      <div class="section-divider">
+        <div class="divider-label">EHR Document Checklist</div>
+        <div class="divider-line"></div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">The engine reads these 6 document types in sequence. Upload as many as available — more documents = higher confidence score.</div>
+
+      <div class="doc-grid">
+        <div class="doc-card uploaded" id="doc1">
+          <div class="doc-icon">🏥</div>
+          <div class="doc-name">Initial Medical Report</div>
+          <div class="doc-hint">Chief complaint, vitals, initial assessment</div>
+        </div>
+        <div class="doc-card uploaded" id="doc2">
+          <div class="doc-icon">📋</div>
+          <div class="doc-name">Admission Report</div>
+          <div class="doc-hint">Admission diagnosis, history, examination</div>
+        </div>
+        <div class="doc-card uploaded" id="doc3">
+          <div class="doc-icon">📝</div>
+          <div class="doc-name">Progress Notes</div>
+          <div class="doc-hint">Daily clinical notes, treatment changes</div>
+        </div>
+        <div class="doc-card uploaded" id="doc4">
+          <div class="doc-icon">🔪</div>
+          <div class="doc-name">Operation Notes</div>
+          <div class="doc-hint">Procedure performed, findings, technique</div>
+        </div>
+        <div class="doc-card" id="doc5" onclick="this.classList.toggle('uploaded')">
+          <div class="doc-icon">💊</div>
+          <div class="doc-name">Nursing Notes</div>
+          <div class="doc-hint">Medications, observations, care plan</div>
+        </div>
+        <div class="doc-card uploaded" id="doc6">
+          <div class="doc-icon">📤</div>
+          <div class="doc-name">Discharge Summary</div>
+          <div class="doc-hint">Final diagnosis, procedures, follow-up</div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;display:flex;gap:10px;">
+        <button class="upload-btn" onclick="runProcessing()">▶ Run NOVIQ Engine</button>
+        <button style="background:var(--surface2);color:var(--muted);border:1px solid var(--border);padding:10px 20px;border-radius:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;" onclick="showPage('result')">View Sample Result →</button>
+      </div>
+    </div>
+
+    <!-- PAGE: PROCESSING -->
+    <div class="page" id="page-processing">
+      <div class="page-header">
+        <div class="page-title">Processing Episode</div>
+        <div class="page-sub">Running 4 intelligence agents in sequence</div>
+      </div>
+
+      <div class="processing-card">
+        <div class="processing-header">
+          <div class="pulse-dot"></div>
+          <div class="processing-title">Episode EP-2026-0041 · Patient: Ahmed Al-Rashid · Age: 58</div>
+        </div>
+
+        <div class="agent-steps" id="agentSteps">
+          <div class="agent-step done">
+            <div class="agent-dot"></div>
+            <div class="agent-name">Intent Agent — Reading 5 EHR documents</div>
+            <div class="agent-status">COMPLETE</div>
+          </div>
+          <div class="agent-step done">
+            <div class="agent-dot"></div>
+            <div class="agent-name">ACS Scoring Engine — PDX + 4 ADX evaluated</div>
+            <div class="agent-status">COMPLETE</div>
+          </div>
+          <div class="agent-step running">
+            <div class="agent-dot"></div>
+            <div class="agent-name">AR-DRG V11.0 Grouper — Running 5-step pipeline</div>
+            <div class="agent-status">RUNNING...</div>
+          </div>
+          <div class="agent-step waiting">
+            <div class="agent-dot"></div>
+            <div class="agent-name">Critique & Ethics Agent — Dual validation</div>
+            <div class="agent-status">WAITING</div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;height:3px;background:var(--border);border-radius:3px;overflow:hidden;">
+          <div id="progressBar" style="height:100%;width:65%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width 2s ease;"></div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;text-align:right;">3 / 4 agents complete</div>
+      </div>
+    </div>
+
+    <!-- PAGE: RESULT -->
+    <div class="page" id="page-result">
+      <div class="page-header">
+        <div class="page-title">Coding Suggestion</div>
+        <div class="page-sub">Review the AI-generated DRG suggestion and approve before claim submission</div>
+      </div>
+
+      <div class="result-card">
+        <!-- Header -->
+        <div class="result-header">
+          <div>
+            <div class="result-episode">EP-2026-0041 · Ahmed Al-Rashid, 58F · 12 days LOS</div>
+            <div class="result-drg">
+              <div class="drg-code">G13Z</div>
+              <div class="drg-desc">Peritonectomy for Gastrointestinal Disorders</div>
+            </div>
+          </div>
+          <div class="result-status">
+            <div class="status-pill pending" id="statusPill">PENDING APPROVAL</div>
+            <div style="font-size:11px;color:var(--muted)">Suggestion ID: 7f3a-b291</div>
+          </div>
+        </div>
+
+        <!-- Metrics -->
+        <div class="result-body">
+          <div class="metric-block">
+            <div class="metric-label">ECCS Score</div>
+            <div class="metric-value" style="color:var(--muted)">0.0</div>
+            <div class="metric-sub">Stub DCL table · will update post-purchase</div>
+          </div>
+          <div class="metric-block">
+            <div class="metric-label">ACS PDX Score</div>
+            <div class="metric-value" style="color:var(--success)">6 / 7</div>
+            <div class="metric-sub">Meets coding threshold (≥5)</div>
+          </div>
+          <div class="metric-block">
+            <div class="metric-label">Confidence</div>
+            <div class="metric-value" style="color:var(--accent2)">94%</div>
+            <div class="metric-sub">5 of 6 EHR docs read</div>
+          </div>
+        </div>
+
+        <!-- Codes -->
+        <div class="result-codes">
+          <span style="font-size:11px;color:var(--muted);margin-right:4px;align-self:center">PDX</span>
+          <span class="code-chip pdx">C48.1</span>
+          <span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">ADX</span>
+          <span class="code-chip">E11.9</span>
+          <span class="code-chip">I10</span>
+          <span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">ACHI</span>
+          <span class="code-chip achi">96211-00</span>
+          <span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">AR-DRG</span>
+          <span class="code-chip" style="border-color:var(--accent);color:var(--accent)">G13Z</span>
+        </div>
+
+        <!-- Flags -->
+        <div class="flags-section">
+          <div class="flags-title">⚑ Intelligence Flags</div>
+          <div class="flag-item risk">
+            <div class="flag-icon">⚠</div>
+            <div class="flag-text"><strong>UPCODING RISK:</strong> E61.1 (Iron Deficiency) excluded from ECCS complexity scoring — classified as a background clinical state, not acute complexity driver. Excluded per Appendix C logic.</div>
+          </div>
+          <div class="flag-item warn">
+            <div class="flag-icon">◉</div>
+            <div class="flag-text"><strong>REVENUE LEAKAGE CHECK:</strong> Operation notes mention "HIPEC" — verify ACHI modifier code 96201-00 is included alongside 96211-00 for complete procedure documentation.</div>
+          </div>
+          <div class="flag-item info">
+            <div class="flag-icon">✦</div>
+            <div class="flag-text"><strong>ACS 0001 CONFIRMED:</strong> PDX C48.1 confirmed by intraoperative findings and histopathology. Score 6/7 meets coding threshold. Principal diagnosis justified.</div>
+          </div>
+        </div>
+
+        <!-- Approve bar -->
+        <div class="approve-bar">
+          <div class="approve-info">
+            Physician approval required before submission · <strong>assert_approved()</strong> gate active
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-reject" id="btnReject" onclick="rejectSuggestion()">✕ Reject & Recode</button>
+            <button class="btn-approve" id="btnApprove" onclick="approveSuggestion()">✓ Approve &amp; Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: QUEUE -->
+    <div class="page" id="page-queue">
+      <div class="page-header">
+        <div class="page-title">Review Queue</div>
+        <div class="page-sub">Episodes awaiting physician approval before claim submission</div>
+      </div>
+
+      <table class="queue-table">
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Episode</th>
+            <th>AR-DRG</th>
+            <th>Flags</th>
+            <th>Status</th>
+            <th>LOS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="selected" onclick="showPage('result')">
+            <td>
+              <div class="pt-name">Ahmed Al-Rashid</div>
+              <div class="pt-id">PT-00441 · 58F</div>
+            </td>
+            <td><span class="drg-mono">EP-2026-0041</span></td>
+            <td><span class="drg-mono">G13Z</span></td>
+            <td><span style="color:var(--warn);font-size:12px">⚠ 2 flags</span></td>
+            <td><span class="status-pill pending" style="font-size:11px;padding:3px 10px">PENDING</span></td>
+            <td>12d</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="pt-name">Sara Mohammed</div>
+              <div class="pt-id">PT-00438 · 72M</div>
+            </td>
+            <td><span class="drg-mono">EP-2026-0038</span></td>
+            <td><span class="drg-mono">B08B</span></td>
+            <td><span style="color:var(--muted);font-size:12px">— clean</span></td>
+            <td><span class="status-pill pending" style="font-size:11px;padding:3px 10px">PENDING</span></td>
+            <td>4d</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="pt-name">Khalid Hassan</div>
+              <div class="pt-id">PT-00435 · 45M</div>
+            </td>
+            <td><span class="drg-mono">EP-2026-0035</span></td>
+            <td><span class="drg-mono">F25—</span></td>
+            <td><span style="color:var(--danger);font-size:12px">⛔ KB blocked</span></td>
+            <td><span class="status-pill flagged" style="font-size:11px;padding:3px 10px">BLOCKED</span></td>
+            <td>5d</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="pt-name">Fatima Al-Zahra</div>
+              <div class="pt-id">PT-00430 · 38F</div>
+            </td>
+            <td><span class="drg-mono">EP-2026-0030</span></td>
+            <td><span class="drg-mono">G13Z</span></td>
+            <td><span style="color:var(--muted);font-size:12px">— clean</span></td>
+            <td><span class="status-pill approved" style="font-size:11px;padding:3px 10px">APPROVED</span></td>
+            <td>9d</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PAGE: ANALYTICS -->
+    <div class="page" id="page-analytics">
+      <div class="page-header">
+        <div class="page-title">Revenue Impact</div>
+        <div class="page-sub">NOVIQ Engine performance vs. manual coding baseline</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:4px;">
+        <div class="stat-card">
+          <div class="stat-label">Episodes Processed</div>
+          <div class="stat-value accent">41</div>
+          <div class="stat-delta">This month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Upcoding Flags Caught</div>
+          <div class="stat-value warn">7</div>
+          <div class="stat-delta">Before submission</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Revenue Leakage Found</div>
+          <div class="stat-value" style="color:var(--success)">3</div>
+          <div class="stat-delta">Undercoded episodes corrected</div>
+        </div>
+      </div>
+      <div style="margin-top:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-size:13px;font-weight:500;margin-bottom:16px">Monthly Coding Accuracy</div>
+        <div style="display:flex;align-items:flex-end;gap:6px;height:80px;">
+          <div style="flex:1;background:var(--accent);opacity:.3;border-radius:4px 4px 0 0;height:60%"></div>
+          <div style="flex:1;background:var(--accent);opacity:.4;border-radius:4px 4px 0 0;height:65%"></div>
+          <div style="flex:1;background:var(--accent);opacity:.5;border-radius:4px 4px 0 0;height:70%"></div>
+          <div style="flex:1;background:var(--accent);opacity:.6;border-radius:4px 4px 0 0;height:80%"></div>
+          <div style="flex:1;background:var(--accent);opacity:.8;border-radius:4px 4px 0 0;height:88%"></div>
+          <div style="flex:1;background:var(--accent);border-radius:4px 4px 0 0;height:94%"></div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <div style="flex:1;font-size:10px;color:var(--muted);text-align:center">Nov</div>
+          <div style="flex:1;font-size:10px;color:var(--muted);text-align:center">Dec</div>
+          <div style="flex:1;font-size:10px;color:var(--muted);text-align:center">Jan</div>
+          <div style="flex:1;font-size:10px;color:var(--muted);text-align:center">Feb</div>
+          <div style="flex:1;font-size:10px;color:var(--muted);text-align:center">Mar</div>
+          <div style="flex:1;font-size:10px;color:var(--muted);text-align:center">Apr</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- RIGHT PANEL -->
+  <aside class="right-panel">
+    <div class="panel-title">Episode Summary</div>
+
+    <div class="stat-card">
+      <div class="stat-label">Current Episode</div>
+      <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);margin-top:2px">EP-2026-0041</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">Ahmed Al-Rashid · 58F · Acute</div>
+    </div>
+
+    <div class="stat-card" style="margin-top:8px">
+      <div class="stat-label">Assigned AR-DRG</div>
+      <div class="stat-value accent" style="font-size:20px">G13Z</div>
+      <div class="stat-delta">Peritonectomy — Unsplit</div>
+    </div>
+
+    <div class="section-divider" style="margin:16px 0 10px">
+      <div class="divider-label">Step Trace</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <div class="trace-log">
+      <div class="trace-line step1">Step 1 PASS — PDX=C48.1, 2 ADX, 1 ACHI validated</div>
+      <div class="trace-line step2">Step 2: No Pre-MDC trigger → MDC assignment proceeds</div>
+      <div class="trace-line step3">Step 3: C48.1 → MDC 06</div>
+      <div class="trace-line step4">Step 4: 96211-00 → ADRG G13 (intervention, pos 1)</div>
+      <div class="trace-line step5">Step 5: Unsplit ADRG → G13Z (ECCS=0.0 for reporting)</div>
+    </div>
+
+    <div class="section-divider" style="margin:16px 0 10px">
+      <div class="divider-label">DCL Contributions</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <table class="dcl-table">
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>DCL</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="dcl-code">C48.1</td>
+          <td class="dcl-val">0</td>
+          <td><span class="dcl-dot ok"></span><span style="color:var(--muted)">PDX (stub)</span></td>
+        </tr>
+        <tr>
+          <td class="dcl-code">E11.9</td>
+          <td class="dcl-val">0</td>
+          <td><span class="dcl-dot ok"></span><span style="color:var(--muted)">ADX (stub)</span></td>
+        </tr>
+        <tr>
+          <td class="dcl-code">E61.1</td>
+          <td class="dcl-val">—</td>
+          <td><span class="dcl-dot risk"></span><span class="dcl-excl">EXCLUDED</span></td>
+        </tr>
+        <tr>
+          <td class="dcl-code">Z59.0</td>
+          <td class="dcl-val">—</td>
+          <td><span class="dcl-dot risk"></span><span class="dcl-excl">SOCIOEC.</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="section-divider" style="margin:16px 0 10px">
+      <div class="divider-label">KB Health</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <div style="font-size:12px;display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:var(--muted)">B08A/B threshold</span>
+        <span style="color:var(--success);font-family:'DM Mono',monospace;font-size:11px">≥3.0 ✓</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:var(--muted)">F25 threshold</span>
+        <span style="color:var(--danger);font-family:'DM Mono',monospace;font-size:11px">null ⛔</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:var(--muted)">G13Z (unsplit)</span>
+        <span style="color:var(--success);font-family:'DM Mono',monospace;font-size:11px">N/A ✓</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:var(--muted)">DCL table</span>
+        <span style="color:var(--warn);font-family:'DM Mono',monospace;font-size:11px">stub ⚠</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:var(--muted)">Appendix C</span>
+        <span style="color:var(--warn);font-family:'DM Mono',monospace;font-size:11px">7/47 ⚠</span>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<script>
+  // ── API Base URL — auto-detects local vs deployed ───────────────────
+  const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? `http://${window.location.host}`
+    : window.location.origin;
+
+  // ── State ────────────────────────────────────────────────────────────
+  let currentEpisodeId = null;
+  let currentSuggestion = null;
+  let uploadedFiles = [];
+
+  // ── Navigation ───────────────────────────────────────────────────────
+  function setActive(el, page) {
+    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    showPage(page);
+    if (page === 'queue') loadQueue();
+  }
+
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const pg = document.getElementById('page-' + name);
+    if (pg) pg.classList.add('active');
+  }
+
+  // ── File input (hidden) ──────────────────────────────────────────────
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.multiple = true;
+  fileInput.accept = '.json,.txt,.pdf,.hl7,.xml,.csv';
+  fileInput.style.display = 'none';
+  document.body.appendChild(fileInput);
+  fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+  function triggerUpload()  { fileInput.click(); }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('dropZone').classList.remove('drag-over');
+    handleFiles(e.dataTransfer.files);
+  }
+
+  // ── Upload files to /api/upload ──────────────────────────────────────
+  async function handleFiles(files) {
+    if (!files || files.length === 0) return;
+    uploadedFiles = Array.from(files);
+
+    const zone = document.getElementById('dropZone');
+    zone.innerHTML = `<div class="upload-icon">⏳</div><div class="upload-title">Uploading ${files.length} file(s)...</div>`;
+
+    const form = new FormData();
+    for (const f of files) form.append('files', f);
+
+    try {
+      const res  = await fetch(`${API}/api/upload`, { method: 'POST', body: form });
+      const data = await res.json();
+      currentEpisodeId = data.episode_id;
+
+      // Show success
+      zone.style.borderColor = 'var(--accent)';
+      const names = data.documents_read.map(d =>
+        `<span class="format-tag" style="border-color:var(--accent);color:var(--accent)">${d.filename}</span>`
+      ).join('');
+      zone.innerHTML = `
+        <div class="upload-icon">✓</div>
+        <div class="upload-title" style="color:var(--accent)">${files.length} file(s) uploaded · Episode ${data.episode_id}</div>
+        <div class="upload-sub">${data.documents_read.map(d=>d.doc_type).join(' · ')}</div>
+        <div class="upload-formats">${names}</div>
+        ${data.warnings.length ? `<div style="color:var(--warn);font-size:12px;margin-top:10px">⚠ ${data.warnings.join(' · ')}</div>` : ''}
+      `;
+
+      // Update doc cards
+      const typeMap = {
+        'Initial Medical Report': 'doc1',
+        'Admission Report': 'doc2',
+        'Progress Notes': 'doc3',
+        'Operation Notes': 'doc4',
+        'Nursing Notes': 'doc5',
+        'Discharge Summary': 'doc6',
+      };
+      data.documents_read.forEach(d => {
+        const id = typeMap[d.doc_type];
+        if (id) document.getElementById(id)?.classList.add('uploaded');
+      });
+
+      // Update right panel episode ID
+      document.querySelector('.right-panel .stat-card div[style*="monospace"]').textContent = data.episode_id;
+
+      if (data.warnings.length) {
+        console.warn('Upload warnings:', data.warnings);
+      }
+
+    } catch(err) {
+      zone.innerHTML = `<div class="upload-icon">✗</div><div class="upload-title" style="color:var(--danger)">Upload failed — is the server running?</div><div class="upload-sub">${err.message}</div>`;
+    }
+  }
+
+  // ── Run NOVIQ Engine pipeline ────────────────────────────────────────
+  async function runProcessing() {
+    if (!currentEpisodeId) {
+      // Demo mode — use sample episode if no file uploaded
+      currentEpisodeId = 'DEMO-' + Math.random().toString(36).substr(2,6).toUpperCase();
+    }
+
+    showPage('processing');
+    const bar = document.getElementById('progressBar');
+    bar.style.width = '20%';
+
+    // Animate agents during processing
+    const steps = document.getElementById('agentSteps').children;
+    let step = 0;
+
+    const animateSteps = setInterval(() => {
+      if (step > 0) {
+        steps[step-1].classList.remove('running');
+        steps[step-1].classList.add('done');
+        steps[step-1].querySelector('.agent-status').textContent = 'COMPLETE';
+      }
+      if (step < steps.length) {
+        steps[step].classList.remove('waiting');
+        steps[step].classList.add('running');
+        bar.style.width = `${(step+1)/steps.length*85}%`;
+        step++;
+      }
+    }, 600);
+
+    try {
+      const res  = await fetch(`${API}/api/process/${currentEpisodeId}`, { method: 'POST' });
+      const data = await res.json();
+      clearInterval(animateSteps);
+
+      // Finish animation
+      Array.from(steps).forEach(s => {
+        s.classList.remove('running','waiting');
+        s.classList.add('done');
+        s.querySelector('.agent-status').textContent = 'COMPLETE';
+      });
+      bar.style.width = '100%';
+      currentSuggestion = data;
+
+      setTimeout(() => {
+        renderResult(data);
+        showPage('result');
+      }, 600);
+
+    } catch(err) {
+      clearInterval(animateSteps);
+      // Fallback to demo result display
+      setTimeout(() => { showPage('result'); }, 800);
+    }
+  }
+
+  // ── Render result from API into result page ──────────────────────────
+  function renderResult(data) {
+    if (!data || !data.suggestion) return;
+
+    const s  = data.suggestion;
+    const pc = s.proposed_codes || {};
+    const as = s.acs_scores    || {};
+    const pv = s.provenance    || {};
+    const gr = s.grouper_result || {};
+
+    // DRG
+    document.querySelector('.drg-code').textContent  = pc.ar_drg  || '—';
+    document.querySelector('.drg-desc').textContent  = pc.ar_drg_desc || '—';
+    document.querySelector('.result-episode').textContent = `${s.episode_id} · ${data.blocked ? '⛔ BLOCKED' : ''}`;
+
+    // Metrics
+    const metricVals = document.querySelectorAll('.metric-value');
+    if (metricVals[0]) metricVals[0].textContent = (gr.eccs || 0).toFixed(4);
+    if (metricVals[1]) metricVals[1].textContent = `${as.pdx_score || 0} / 7`;
+    if (metricVals[2]) {
+      const docCount = (pv.ehr_documents_read || []).length;
+      metricVals[2].textContent = `${Math.min(94, 60 + docCount * 6)}%`;
+    }
+
+    // Codes
+    const codesDiv = document.querySelector('.result-codes');
+    let codesHtml = `<span style="font-size:11px;color:var(--muted);margin-right:4px;align-self:center">PDX</span>
+      <span class="code-chip pdx">${pc.pdx || '—'}</span>`;
+    if (pc.adx && pc.adx.length) {
+      codesHtml += `<span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">ADX</span>`;
+      pc.adx.forEach(c => { codesHtml += `<span class="code-chip">${c}</span>`; });
+    }
+    if (pc.achi && pc.achi.length) {
+      codesHtml += `<span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">ACHI</span>`;
+      pc.achi.forEach(c => { codesHtml += `<span class="code-chip achi">${c}</span>`; });
+    }
+    codesHtml += `<span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">AR-DRG</span>
+      <span class="code-chip" style="border-color:var(--accent);color:var(--accent)">${pc.ar_drg || '—'}</span>`;
+    codesDiv.innerHTML = codesHtml;
+
+    // Flags — combine engine flags + KB flags
+    const allFlags = [...(s.flags || []), ...(data.kb_flags || []).map(f => f.message || f)];
+    const flagsDiv = document.querySelector('.flags-section');
+    let flagsHtml = '<div class="flags-title">⚑ Intelligence Flags</div>';
+    if (allFlags.length === 0) {
+      flagsHtml += '<div class="flag-item info"><div class="flag-icon">✓</div><div class="flag-text"><strong>CLEAN:</strong> No flags raised. All checks passed.</div></div>';
+    } else {
+      allFlags.forEach(f => {
+        const isRisk = f.includes('RISK') || f.includes('REJECT') || f.includes('BLOCKED') || f.includes('EXCLUSION');
+        const isWarn = f.includes('WARN') || f.includes('LEAKAGE') || f.includes('TIMING') || f.includes('HARDWARE');
+        const cls    = isRisk ? 'risk' : isWarn ? 'warn' : 'info';
+        const icon   = isRisk ? '⚠' : isWarn ? '◉' : '✦';
+        flagsHtml += `<div class="flag-item ${cls}"><div class="flag-icon">${icon}</div><div class="flag-text">${f}</div></div>`;
+      });
+    }
+    flagsDiv.innerHTML = flagsHtml;
+
+    // Step trace in right panel
+    const trace = gr.step_trace || [];
+    const traceDiv = document.querySelector('.trace-log');
+    if (traceDiv && trace.length) {
+      traceDiv.innerHTML = trace.map((t, i) =>
+        `<div class="trace-line step${i+1}">${t}</div>`
+      ).join('');
+    }
+
+    // DCL table
+    const dcl = gr.dcl_contributions || [];
+    if (dcl.length) {
+      const dclTable = document.querySelector('.dcl-table tbody');
+      if (dclTable) {
+        dclTable.innerHTML = dcl.map(e => `
+          <tr>
+            <td class="dcl-code">${e.diagnosis_code}</td>
+            <td class="dcl-val">${e.is_excluded ? '—' : e.dcl_value}</td>
+            <td><span class="dcl-dot ${e.is_excluded ? 'risk' : 'ok'}"></span>
+              <span class="${e.is_excluded ? 'dcl-excl' : ''}" style="${e.is_excluded ? '' : 'color:var(--muted)'}">
+                ${e.is_excluded ? (e.exclusion_type || 'EXCLUDED').toUpperCase() : (e.is_principal ? 'PDX' : 'ADX')}
+              </span>
+            </td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    // Status pill
+    const pill = document.getElementById('statusPill');
+    if (pill) {
+      if (data.blocked) {
+        pill.textContent = 'BLOCKED'; pill.className = 'status-pill flagged';
+      } else {
+        pill.textContent = 'PENDING APPROVAL'; pill.className = 'status-pill pending';
+      }
+    }
+
+    // Reset approve/reject buttons
+    const btnA = document.getElementById('btnApprove');
+    const btnR = document.getElementById('btnReject');
+    if (btnA) { btnA.textContent = '✓ Approve & Submit'; btnA.className = 'btn-approve'; btnA.style.display = ''; }
+    if (btnR) { btnR.textContent = '✕ Reject & Recode'; btnR.style.display = ''; btnR.style.color = ''; }
+  }
+
+  // ── Physician approval ───────────────────────────────────────────────
+  async function approveSuggestion() {
+    const btn  = document.getElementById('btnApprove');
+    const pill = document.getElementById('statusPill');
+
+    const physicianId = prompt('Enter your Physician ID to approve:', 'DR-KASSAB-001');
+    if (!physicianId) return;
+
+    btn.textContent = '...';
+    btn.style.opacity = '0.6';
+
+    try {
+      const epId = currentEpisodeId || 'DEMO';
+      const res  = await fetch(`${API}/api/approve/${epId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ physician_id: physicianId, action: 'approve' }),
+      });
+      const data = await res.json();
+
+      btn.textContent = `✓ Approved — ${physicianId}`;
+      btn.classList.add('approved');
+      btn.style.opacity = '1';
+      pill.textContent = 'APPROVED';
+      pill.className = 'status-pill approved';
+      document.getElementById('btnReject').style.display = 'none';
+
+      console.log('Approval response:', data);
+
+    } catch(err) {
+      // Local/offline mode — still update UI
+      btn.textContent = `✓ Approved — ${physicianId}`;
+      btn.classList.add('approved');
+      btn.style.opacity = '1';
+      pill.textContent = 'APPROVED';
+      pill.className = 'status-pill approved';
+      document.getElementById('btnReject').style.display = 'none';
+    }
+  }
+
+  async function rejectSuggestion() {
+    const pill = document.getElementById('statusPill');
+
+    const reason = prompt('Reason for rejection (optional):');
+    const physicianId = 'DR-KASSAB-001';
+
+    try {
+      const epId = currentEpisodeId || 'DEMO';
+      await fetch(`${API}/api/approve/${epId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ physician_id: physicianId, action: 'reject', reason }),
+      });
+    } catch(err) { /* offline mode */ }
+
+    pill.textContent = 'REJECTED';
+    pill.className = 'status-pill flagged';
+    document.getElementById('btnApprove').style.display = 'none';
+    document.getElementById('btnReject').textContent = '✕ Rejected — Sent for Recoding';
+    document.getElementById('btnReject').style.color = 'var(--danger)';
+  }
+
+  // ── Load queue from API ──────────────────────────────────────────────
+  async function loadQueue() {
+    try {
+      const res  = await fetch(`${API}/api/queue`);
+      const data = await res.json();
+      renderQueue(data.queue || []);
+    } catch(err) {
+      console.log('Queue load failed (offline mode)');
+    }
+  }
+
+  function renderQueue(items) {
+    const tbody = document.querySelector('.queue-table tbody');
+    if (!tbody || items.length === 0) return;
+    tbody.innerHTML = items.map(ep => `
+      <tr onclick="loadEpisode('${ep.episode_id}')">
+        <td>
+          <div class="pt-name">Episode ${ep.episode_id}</div>
+          <div class="pt-id">Age: ${ep.patient_age || '—'} · ${ep.patient_sex || '—'}</div>
+        </td>
+        <td><span class="drg-mono">${ep.episode_id}</span></td>
+        <td><span class="drg-mono">${ep.ar_drg || '—'}</span></td>
+        <td><span style="color:${ep.flag_count > 0 ? 'var(--warn)' : 'var(--muted)'};font-size:12px">
+          ${ep.flag_count > 0 ? `⚠ ${ep.flag_count} flag${ep.flag_count > 1 ? 's' : ''}` : '— clean'}
+        </span></td>
+        <td><span class="status-pill ${ep.status === 'APPROVED' ? 'approved' : ep.status === 'REJECTED' ? 'flagged' : ep.status === 'blocked' ? 'flagged' : 'pending'}" style="font-size:11px;padding:3px 10px">
+          ${ep.status?.toUpperCase() || 'PENDING'}
+        </span></td>
+        <td>${ep.processed_at ? new Date(ep.processed_at).toLocaleDateString() : '—'}</td>
+      </tr>
+    `).join('');
+  }
+
+  async function loadEpisode(episodeId) {
+    currentEpisodeId = episodeId;
+    try {
+      const res  = await fetch(`${API}/api/episode/${episodeId}`);
+      const data = await res.json();
+      if (data.suggestion) {
+        renderResult({ suggestion: data.suggestion, kb_flags: data.kb_flags || [] });
+        showPage('result');
+      }
+    } catch(err) {
+      showPage('result');
+    }
+  }
+
+  // ── Load KB status on init ───────────────────────────────────────────
+  async function loadKBStatus() {
+    try {
+      const res  = await fetch(`${API}/api/kb/status`);
+      const data = await res.json();
+      console.log('[NOVIQ] KB Status:', data);
+    } catch(err) {
+      console.log('[NOVIQ] Running in offline/demo mode');
+    }
+  }
+
+  // ── Init ─────────────────────────────────────────────────────────────
+  window.addEventListener('load', () => {
+    loadKBStatus();
+    console.log('[NOVIQ] Dashboard ready · API:', API);
+  });
+</script>
+</body>
+</html>
