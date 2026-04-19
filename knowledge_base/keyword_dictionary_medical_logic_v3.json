@@ -5302,3 +5302,183 @@
     }
   }
 }
+ },
+
+  "procedures": {
+
+    "General Surgery": [
+      {
+        "procedure": "Appendectomy Laparoscopic",
+        "category": "Emergency",
+        "approach": "Laparoscopic",
+        "urgency": "Emergency",
+        "body_region": "Abdomen",
+        "keywords": ["appendix", "appendicitis", "RLQ pain"],
+        "indications": ["acute appendicitis"],
+        "icd10": ["K35.80"],
+        "cpt": ["44970"],
+        "match_score_weight": 0.95
+      },
+      {
+        "procedure": "Cholecystectomy Laparoscopic",
+        "category": "Hepatobiliary",
+        "approach": "Laparoscopic",
+        "urgency": "Elective/Emergency",
+        "body_region": "Abdomen",
+        "keywords": ["gallstones", "RUQ pain", "cholecystitis"],
+        "indications": ["acute cholecystitis"],
+        "icd10": ["K80.20"],
+        "cpt": ["47562"],
+        "match_score_weight": 0.95
+      },
+      {
+        "procedure": "Exploratory Laparotomy",
+        "category": "Emergency",
+        "approach": "Open",
+        "urgency": "Emergency",
+        "body_region": "Abdomen",
+        "keywords": ["acute abdomen", "peritonitis", "trauma"],
+        "indications": ["internal bleeding"],
+        "icd10": ["K65"],
+        "cpt": ["49000"],
+        "match_score_weight": 0.9
+      }
+    ],
+
+    "Hand Surgery": [
+      {
+        "procedure": "Carpal Tunnel Release",
+        "category": "Nerve",
+        "approach": "Open",
+        "urgency": "Elective",
+        "body_region": "Hand",
+        "keywords": ["carpal tunnel", "median nerve"],
+        "indications": ["nerve compression"],
+        "icd10": ["G56.0"],
+        "cpt": ["64721"],
+        "match_score_weight": 0.9
+      },
+      {
+        "procedure": "Tendon Repair Hand",
+        "category": "Soft Tissue",
+        "approach": "Open",
+        "urgency": "Emergency",
+        "body_region": "Hand",
+        "keywords": ["tendon injury", "laceration"],
+        "indications": ["ruptured tendon"],
+        "icd10": ["S66"],
+        "cpt": ["26350"],
+        "match_score_weight": 0.92
+      }
+    ],
+
+    "Plastic & Reconstructive": [
+      {
+        "procedure": "Skin Graft Split Thickness",
+        "category": "Reconstruction",
+        "approach": "Open",
+        "urgency": "Elective",
+        "body_region": "Skin",
+        "keywords": ["skin defect", "burn"],
+        "indications": ["wound coverage"],
+        "icd10": ["T31"],
+        "cpt": ["15100"],
+        "match_score_weight": 0.9
+      },
+      {
+        "procedure": "Abdominoplasty",
+        "category": "Cosmetic",
+        "approach": "Open",
+        "urgency": "Elective",
+        "body_region": "Abdomen",
+        "keywords": ["tummy tuck", "loose skin"],
+        "indications": ["cosmetic contour"],
+        "icd10": ["Z41.1"],
+        "cpt": ["15847"],
+        "match_score_weight": 0.85
+      }
+    ],
+
+    "Bariatric & Advanced Laparoscopy": [
+      {
+        "procedure": "Laparoscopic Sleeve Gastrectomy",
+        "category": "Bariatric",
+        "approach": "Laparoscopic",
+        "urgency": "Elective",
+        "body_region": "Stomach",
+        "keywords": ["obesity", "BMI", "sleeve"],
+        "indications": ["BMI > 40"],
+        "icd10": ["E66.9"],
+        "cpt": ["43775"],
+        "match_score_weight": 0.95
+      },
+      {
+        "procedure": "Roux-en-Y Gastric Bypass",
+        "category": "Bariatric Complex",
+        "approach": "Laparoscopic",
+        "urgency": "Elective",
+        "body_region": "Stomach",
+        "keywords": ["bypass", "GERD", "obesity"],
+        "indications": ["morbid obesity"],
+        "icd10": ["E66.01"],
+        "cpt": ["43644"],
+        "match_score_weight": 0.97
+      }
+    ],
+
+    "Breast Surgery": [
+      {
+        "procedure": "Lumpectomy",
+        "category": "Oncology",
+        "approach": "Open",
+        "urgency": "Elective",
+        "body_region": "Breast",
+        "keywords": ["breast lump", "tumor"],
+        "indications": ["early breast cancer"],
+        "icd10": ["C50"],
+        "cpt": ["19301"],
+        "match_score_weight": 0.9
+      },
+      {
+        "procedure": "Modified Radical Mastectomy",
+        "category": "Oncology",
+        "approach": "Open",
+        "urgency": "Elective",
+        "body_region": "Breast",
+        "keywords": ["breast cancer", "axillary nodes"],
+        "indications": ["advanced breast cancer"],
+        "icd10": ["C50.9"],
+        "cpt": ["19307"],
+        "match_score_weight": 0.97
+      }
+    ],
+
+    "Orthopedic Surgery": [
+      {
+        "procedure": "Open Reduction Internal Fixation",
+        "category": "Trauma",
+        "approach": "Open",
+        "urgency": "Emergency",
+        "body_region": "Bone",
+        "keywords": ["fracture", "ORIF"],
+        "indications": ["displaced fracture"],
+        "icd10": ["S72"],
+        "cpt": ["27236"],
+        "match_score_weight": 0.95
+      },
+      {
+        "procedure": "Total Knee Replacement",
+        "category": "Joint Replacement",
+        "approach": "Open",
+        "urgency": "Elective",
+        "body_region": "Knee",
+        "keywords": ["knee arthritis", "prosthesis"],
+        "indications": ["severe OA"],
+        "icd10": ["M17"],
+        "cpt": ["27447"],
+        "match_score_weight": 0.96
+      }
+    ]
+
+  }
+}
