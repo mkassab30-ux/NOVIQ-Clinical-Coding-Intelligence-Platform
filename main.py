@@ -205,6 +205,14 @@ async def upload_ehr(files: list[UploadFile] = File(...)):
 
 @app.post("/api/process/{episode_id}")
 async def process_episode(episode_id: str, request: Request):
+    kb_flags.extend(_apply_intelligence_triggers(episode_dict, result))
+    # ── Procedure Matching Layer ─────────────────────────────
+procedure_matches = _match_procedures_from_kb(episode_dict)
+
+    # inject into suggestion (soft assist)
+    result.setdefault("ai_assist", {})
+    result["ai_assist"]["suggested_procedure"] = top_proc["procedure"]
+    result["ai_assist"]["confidence"] = top_proc["score"]
     """
     Run the full NOVIQ Engine pipeline on a previously uploaded episode.
     Alternatively, POST a fresh episode_dict in the request body.
@@ -228,6 +236,8 @@ async def process_episode(episode_id: str, request: Request):
 
     if body.get("episode_dict"):
         episode_dict = body["episode_dict"]
+    if procedure_matches:
+        top_proc = procedure_matches[0]
     elif episode_id in EPISODE_STORE:
         episode_dict = EPISODE_STORE[episode_id]["episode_dict"]
     else:
@@ -272,14 +282,16 @@ async def process_episode(episode_id: str, request: Request):
         "processed_at": _now(),
     })
 
-    return {
-        "episode_id":  episode_id,
-        "suggestion":  result,
-        "kb_flags":    kb_flags,
-        "blocked":     blocked,
-        "processed_at": _now(),
-    }
+   return {
+    "episode_id":  episode_id,
+    "suggestion":  result,
+    "kb_flags":    kb_flags,
+    "procedure_matches": procedure_matches,  # 🔥 NEW
+    "blocked":     blocked,
+    "processed_at": _now(),
+}
 
+episode.get("ehr_documents")
 
 # ══════════════════════════════════════════════════════════════════════════
 # ENDPOINT 3 — Physician approval gate
@@ -509,7 +521,10 @@ def _extract_from_text(episode: dict, text: str, doc_type: str) -> None:
     age_m = re.search(r'(\d{1,3})\s*(?:year[s]?\s*old|y/?o|yo)', text, re.I)
     if age_m and episode["patient_age"] == 0:
         episode["patient_age"] = int(age_m.group(1))
+    if "clinical_text" not in episode:
+        episode["clinical_text"] = ""
 
+episode["clinical_text"] += " " + text.lower()
     # Sex
     if episode["patient_sex"] == "Unknown":
         if re.search(r'\b(female|woman|girl|she|her)\b', text, re.I):
@@ -646,6 +661,59 @@ def _apply_intelligence_triggers(episode: dict, suggestion: dict) -> list[dict]:
         })
 
     return flags
+
+
+def _match_procedures_from_kb(episode: dict) -> list[dict]:
+    """
+    Match procedures from Medical Logic KB using keywords + indications.
+    Returns top matched procedures.
+    """
+    results = []
+
+    ttext = episode.get("clinical_text", "").lower().join([
+        episode.get("pdx", ""),
+        " ".join(episode.get("adx", [])),
+        " ".join(episode.get("ehr_documents", []))
+    ]).lower()
+
+    for specialty, procedures in MEDICAL_LOGIC_KB.get("procedures", {}).items():
+        for proc in procedures:
+            score = 0
+
+            for kw in proc.get("keywords", []):
+                if kw.lower() in text:
+                    score += 1
+
+            for ind in proc.get("indications", []):
+                if ind.lower() in text:
+                    score += 2
+
+            score *= proc.get("match_score_weight", 1)
+
+            if score > 0:
+                results.append({
+                    "procedure": proc["procedure"],
+                    "specialty": specialty,
+                    "score": round(score, 2),
+                    "approach": proc.get("approach"),
+                    "urgency": proc.get("urgency"),
+                    "icd10": proc.get("icd10"),
+                    "cpt": proc.get("cpt")
+                })
+@app.post("/api/procedure-match")
+async def procedure_match(request: Request):
+    body = await request.json()
+    text = body.get("text", "")
+
+    episode = {"clinical_text": text}
+    matches = _match_procedures_from_kb(episode)
+
+    return {
+        "input": text,
+        "matches": matches
+    }
+    results.sort(key=lambda x: x["score"], reverse=True)
+    return results[:5]
 
 
 def _demo_result(episode_id: str, episode_dict: dict) -> dict:
