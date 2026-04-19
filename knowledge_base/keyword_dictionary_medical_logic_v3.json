@@ -1,0 +1,5304 @@
+{
+  "_meta": {
+    "title": "NOVIQ Engine — Complete Medical Logic Knowledge Base v3",
+    "version": "3.0.0",
+    "built_at": "2026-04-19",
+    "source_documents": [
+      "Book1.xlsx (General Surgery — Arabic logic + English keywords)",
+      "Hand_surgery_Excel.xlsx",
+      "Plastic_and_Breast.xlsx (Bariatric + Breast + Plastic sheets)",
+      "Ortho.xlsx",
+      "NOVIQ_Health.docx (General Surgery clinical logic)",
+      "NOVIQ_Health_Hand_surgery.docx (Hand Surgery clinical logic)",
+      "Briatric_plastic_breast.docx (Bariatric + Breast + Plastic logic)",
+      "Ortho.docx (Orthopaedic clinical logic)"
+    ],
+    "specialties": [
+      "General Surgery",
+      "Hand Surgery",
+      "Bariatric & Advanced Laparoscopy",
+      "Breast Surgery",
+      "Plastic & Reconstructive Surgery",
+      "Orthopaedic Surgery"
+    ],
+    "procedure_counts": {
+      "general_surgery": 41,
+      "hand_surgery": 38,
+      "bariatric": 22,
+      "breast": 15,
+      "plastic": 14,
+      "orthopaedic": 22,
+      "total": 152
+    },
+    "logic_rule_sections": 6,
+    "intelligence_triggers": 17,
+    "clinical_rule_sections": 2
+  },
+  "procedures": {
+    "general_surgery": [
+      {
+        "procedure": "Total Thyroidectomy + LN",
+        "specialty": "General Surgery",
+        "classification": "special_character",
+        "complexity_score": 0,
+        "los": "2 - 4 أيام",
+        "complications": [
+          "1. Lymph leak"
+        ],
+        "keywords": [
+          "RLN ID",
+          "Level II-VI",
+          "Pyramidal lobe",
+          "Nodes"
+        ],
+        "coding_hint": "LN Integrity: يجب مطابقة عدد العقد في تقرير العمليات مع تقرير الباثولوجي.",
+        "ai_triggers": "Safety Gate: إصدار تنبيه فوراً إذا لم تذكر كلمة \"RLN\" أو \"Parathyroid\".",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_General_AR"
+      },
+      {
+        "procedure": "Appendectomy (Pediatric)",
+        "specialty": "General Surgery",
+        "classification": "emergency",
+        "complexity_score": 0,
+        "los": "1 - 2 أيام",
+        "complications": [
+          "1. Septicemia"
+        ],
+        "keywords": [
+          "McBurney",
+          "Pus",
+          "Lavage",
+          "10-14 yrs",
+          "Stridor"
+        ],
+        "coding_hint": "The 12-Hr Rule: للأطفال (10-14 سنة) الجراحة ضرورية في < 12 ساعة لمنع الانفجار.",
+        "ai_triggers": "Age-Risk Clock: تنبيه تأخير الجراحة للأطفال. كشف الـ Upcoding في المنظار (Cross-check Staplers).",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_General_AR"
+      },
+      {
+        "procedure": "Right Hemicolectomy",
+        "specialty": "General Surgery",
+        "classification": "complex",
+        "complexity_score": 0,
+        "los": "5 - 7 أيام",
+        "complications": [
+          "1. Anastomotic leak"
+        ],
+        "keywords": [
+          "Kinked",
+          "Gangrene",
+          "Ascending colon",
+          "Anastomosis"
+        ],
+        "coding_hint": "تستخدم عند التواء الزائدة (Kinked) وامتداد العدوى للقولون الصاعد والـ Jejunum.",
+        "ai_triggers": "Extension Logic: السماح بالتكويد المعقد فقط عند ثبوت الـ Perforation الممتد في الباثولوجي.",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_General_AR"
+      },
+      {
+        "procedure": "Cholecystectomy Lap",
+        "specialty": "General Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1 يوم",
+        "complications": [
+          "1. CBD injury"
+        ],
+        "keywords": [
+          "CVOS",
+          "Cystic duct",
+          "Impacted stone",
+          "Adhesions"
+        ],
+        "coding_hint": "Small Stone Paradox: الحصوات الصغيرة (Microlithiasis) أخطر من الكبيرة لتسببها في انسداد الـ CBD.",
+        "ai_triggers": "Adhesiolysis Guard: رفض كود الالتصاقات إلا في حالة وجود جراحات سابقة (Past history like CS).",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_General_AR"
+      },
+      {
+        "procedure": "Inguinal Hernia (Young Pt)",
+        "specialty": "General Surgery",
+        "classification": "congenital",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "1. Recurrence"
+        ],
+        "keywords": [
+          "Strangulated",
+          "Mesh",
+          "Proline",
+          "Cord structures"
+        ],
+        "coding_hint": "Congenital Shield: يرفض التأمين الفتق الإربي للشباب إلا إذا وثقت كحالة طارئة (Strangulated).",
+        "ai_triggers": "Emergency Loophole: المحرك يبحث عن \"Cord Obstruction\" أو \"Tear\" لتمرير المطالبة تأمينياً.",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_General_AR"
+      },
+      {
+        "procedure": "Complex Wall Recon.",
+        "specialty": "General Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "4 - 6 أيام",
+        "complications": [
+          "1. Recurrence"
+        ],
+        "keywords": [
+          "Mesh",
+          "TAR",
+          "Rectus repair",
+          "Defect size"
+        ],
+        "coding_hint": "Defect Logic: الشبكة (Mesh 15x15) ضرورية وظيفياً للـ Defect الكبير ولا تعتبر تجميلاً.",
+        "ai_triggers": "Cosmetic Filter: عزل الـ Abdominoplasty كإجراء تجميلي غير مغطى (90% Rejection).",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_General_AR"
+      },
+      {
+        "procedure": "Hemorrhoidectomy (Stapler)",
+        "specialty": "General Surgery",
+        "classification": "major",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "1. Profuse Bleeding"
+        ],
+        "keywords": [
+          "Stapler PPH",
+          "Grade 4",
+          "Strangulated",
+          "Bleeding"
+        ],
+        "coding_hint": "Grade Gate: تغطية الدرجة 3 و4 فقط. الـ Harmonic غير مبرر طبياً للبواسير.",
+        "ai_triggers": "Technology Guard: رفض كود الـ Laser في 70% من البوالص وتنبيه الـ Upcoding للـ Harmonic.",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_General_AR"
+      },
+      {
+        "procedure": "High Fistula (Staged)",
+        "specialty": "General Surgery",
+        "classification": "complex",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "1. Incontinence"
+        ],
+        "keywords": [
+          "Seton",
+          "Trans-sphincteric",
+          "EUA",
+          "MRI perianal"
+        ],
+        "coding_hint": "Sphincter Gate: الحالات الـ High تخترق الـ Internal sphincter وتتطلب 2-3 جلسات.",
+        "ai_triggers": "Complexity Trigger: وجود خيط الـ \"Seton\" يرفع تصنيف الحالة تلقائياً ويبرر تعدد العمليات.",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_General_AR"
+      },
+      {
+        "procedure": "Colectomy (Malignancy)",
+        "specialty": "General Surgery",
+        "classification": "special_character",
+        "complexity_score": 0,
+        "los": "5 - 10 أيام",
+        "complications": [
+          "1. Anastomotic leak"
+        ],
+        "keywords": [
+          "Resection",
+          "Stoma",
+          "Safety margins",
+          "Colon Cancer"
+        ],
+        "coding_hint": "Stoma Protocol: في الحالات الصعبة يتم عمل \"فتحة جانبية\" (Stoma) ثم غلقها لاحقاً (كودين منفصلين).",
+        "ai_triggers": "Integrity Gate: منع المطالبة المالية بدون تقرير باثولوجي يثبت الـ Tumor والـ Safety margins.",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_General_AR"
+      },
+      {
+        "procedure": "Whipple Procedure",
+        "specialty": "General Surgery",
+        "classification": "ultra_complex",
+        "complexity_score": 0,
+        "los": "14 - 21 يوم",
+        "complications": [
+          "1. Pancreatic Fistula"
+        ],
+        "keywords": [
+          "Whipple",
+          "DJ",
+          "Pancreas head",
+          "Sarcoma"
+        ],
+        "coding_hint": "أعلى فئة تكويد (Special Char). مخصصة لحالات سرطان رأس البنكرياس.",
+        "ai_triggers": "Max Tier Trigger: كلمات مثل \"Duodenojejunostomy\" تفعل أعلى تعويض مالي للمطالبة.",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_General_AR"
+      },
+      {
+        "procedure": "Skin Lesion Excision",
+        "specialty": "General Surgery",
+        "classification": "minor",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Infection",
+          "Bleeding",
+          "Scar"
+        ],
+        "keywords": [
+          "skin",
+          "lesion",
+          "excision",
+          "biopsy"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Skin Lesion Excision by Laser",
+        "specialty": "General Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Burn",
+          "Infection",
+          "Scar"
+        ],
+        "keywords": [
+          "skin",
+          "lesion",
+          "laser",
+          "excision"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Wide Local Excision",
+        "specialty": "General Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Wound infection",
+          "Bleeding",
+          "Scar"
+        ],
+        "keywords": [
+          "skin",
+          "lesion",
+          "excision",
+          "wide margin"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Wide Excision with Safety Margin",
+        "specialty": "General Surgery",
+        "classification": "major",
+        "complexity_score": 0,
+        "los": "0–1 days",
+        "complications": [
+          "Wound infection",
+          "Bleeding",
+          "Scar"
+        ],
+        "keywords": [
+          "skin",
+          "lesion",
+          "excision",
+          "safety margin"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Wide Excision + Flap Reconstruction",
+        "specialty": "General Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1–2 days",
+        "complications": [
+          "Flap necrosis",
+          "Infection",
+          "Hematoma"
+        ],
+        "keywords": [
+          "skin",
+          "lesion",
+          "flap",
+          "reconstruction"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Needle Biopsy Thyroid",
+        "specialty": "General Surgery",
+        "classification": "minor",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Hematoma",
+          "Pain",
+          "Infection"
+        ],
+        "keywords": [
+          "thyroid",
+          "biopsy",
+          "needle",
+          "fine-needle"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Core Biopsy Thyroid",
+        "specialty": "General Surgery",
+        "classification": "minor",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Hematoma",
+          "Pain",
+          "Infection"
+        ],
+        "keywords": [
+          "thyroid",
+          "biopsy",
+          "core",
+          "needle"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Excisional Biopsy Thyroid",
+        "specialty": "General Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Hematoma",
+          "Infection",
+          "Scar"
+        ],
+        "keywords": [
+          "thyroid",
+          "biopsy",
+          "excision",
+          "lesion"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Thyroid Lobectomy",
+        "specialty": "General Surgery",
+        "classification": "major",
+        "complexity_score": 0,
+        "los": "0–1 days",
+        "complications": [
+          "Hypocalcemia",
+          "Recurrent laryngeal nerve injury",
+          "Bleeding"
+        ],
+        "keywords": [
+          "thyroid",
+          "lobectomy",
+          "open",
+          "surgery"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Total Thyroidectomy",
+        "specialty": "General Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1–2 days",
+        "complications": [
+          "Hypocalcemia",
+          "Nerve injury",
+          "Bleeding"
+        ],
+        "keywords": [
+          "thyroid",
+          "total thyroidectomy",
+          "surgery"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Total Thyroidectomy + LN Dissection",
+        "specialty": "General Surgery",
+        "classification": "special_character",
+        "complexity_score": 0,
+        "los": "2–3 days",
+        "complications": [
+          "Hypocalcemia",
+          "Lymph leak",
+          "Nerve injury"
+        ],
+        "keywords": [
+          "thyroid",
+          "total thyroidectomy",
+          "LN dissection"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Appendectomy Open",
+        "specialty": "General Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "2",
+        "complications": [
+          "Wound infection",
+          "Ileus",
+          "Bleeding"
+        ],
+        "keywords": [
+          "appendicitis",
+          "open surgery",
+          "abdomen",
+          "emergency"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Appendectomy Laparoscopic",
+        "specialty": "General Surgery",
+        "classification": "major",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Bleeding",
+          "Infection",
+          "Intra-abdominal abscess"
+        ],
+        "keywords": [
+          "appendicitis",
+          "laparoscopy",
+          "abdomen",
+          "emergency"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Appendectomy Robotic",
+        "specialty": "General Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Bleeding",
+          "Infection",
+          "Intra-abdominal abscess"
+        ],
+        "keywords": [
+          "appendicitis",
+          "robotic",
+          "laparoscopy",
+          "abdomen"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Cholecystectomy Open",
+        "specialty": "General Surgery",
+        "classification": "major",
+        "complexity_score": 0,
+        "los": "2–4 days",
+        "complications": [
+          "Wound infection",
+          "Bleeding",
+          "Bile leak"
+        ],
+        "keywords": [
+          "gallbladder",
+          "open surgery",
+          "cholelithiasis"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Cholecystectomy Laparoscopic",
+        "specialty": "General Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Bile leak",
+          "Bleeding",
+          "CBD injury"
+        ],
+        "keywords": [
+          "gallbladder",
+          "laparoscopy",
+          "cholelithiasis"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Cholecystectomy Robotic",
+        "specialty": "General Surgery",
+        "classification": "special_character",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Bile leak",
+          "Bleeding",
+          "CBD injury"
+        ],
+        "keywords": [
+          "gallbladder",
+          "robotic",
+          "laparoscopy"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Inguinal Hernia Repair Open",
+        "specialty": "General Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Seroma",
+          "Recurrence",
+          "Pain"
+        ],
+        "keywords": [
+          "hernia",
+          "inguinal",
+          "open surgery",
+          "mesh"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Inguinal Hernia Repair Laparoscopic",
+        "specialty": "General Surgery",
+        "classification": "major",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Seroma",
+          "Recurrence",
+          "Urinary retention"
+        ],
+        "keywords": [
+          "hernia",
+          "inguinal",
+          "laparoscopy",
+          "mesh"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Inguinal Hernia Repair Robotic",
+        "specialty": "General Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Seroma",
+          "Recurrence",
+          "Urinary retention"
+        ],
+        "keywords": [
+          "hernia",
+          "inguinal",
+          "robotic",
+          "laparoscopy"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Ventral Hernia Repair with Mesh",
+        "specialty": "General Surgery",
+        "classification": "major",
+        "complexity_score": 0,
+        "los": "1–2 days",
+        "complications": [
+          "Seroma",
+          "Infection",
+          "Recurrence"
+        ],
+        "keywords": [
+          "hernia",
+          "ventral",
+          "mesh",
+          "abdominal wall"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Complex Abdominal Wall Reconstruction",
+        "specialty": "General Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "3–5 days",
+        "complications": [
+          "Seroma",
+          "Infection",
+          "Recurrence"
+        ],
+        "keywords": [
+          "hernia",
+          "complex",
+          "abdominal wall",
+          "reconstruction"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Diastasis Recti Repair",
+        "specialty": "General Surgery",
+        "classification": "major",
+        "complexity_score": 0,
+        "los": "0–1 days",
+        "complications": [
+          "Seroma",
+          "Hematoma",
+          "Recurrence"
+        ],
+        "keywords": [
+          "diastasis",
+          "rectus abdominis",
+          "abdominal wall",
+          "repair"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Diastasis Recti + Mesh",
+        "specialty": "General Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1–2 days",
+        "complications": [
+          "Seroma",
+          "Hematoma",
+          "Infection"
+        ],
+        "keywords": [
+          "diastasis",
+          "rectus abdominis",
+          "mesh",
+          "repair"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Diastasis Recti + Abdominoplasty",
+        "specialty": "General Surgery",
+        "classification": "special_character",
+        "complexity_score": 0,
+        "los": "3",
+        "complications": [
+          "Seroma",
+          "Hematoma",
+          "Infection"
+        ],
+        "keywords": [
+          "diastasis",
+          "rectus abdominis",
+          "abdominoplasty",
+          "cosmetic"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Hemorrhoidectomy Open",
+        "specialty": "General Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Pain",
+          "Bleeding",
+          "Urinary retention"
+        ],
+        "keywords": [
+          "hemorrhoids",
+          "open",
+          "excision",
+          "rectum"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Hemorrhoidectomy Laser",
+        "specialty": "General Surgery",
+        "classification": "major",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Pain",
+          "Bleeding",
+          "Urinary retention"
+        ],
+        "keywords": [
+          "hemorrhoids",
+          "laser",
+          "rectum",
+          "proctology"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Hemorrhoidectomy Stapler",
+        "specialty": "General Surgery",
+        "classification": "major",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Pain",
+          "Bleeding",
+          "Infection"
+        ],
+        "keywords": [
+          "hemorrhoids",
+          "stapler",
+          "excision",
+          "rectum"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Hemorrhoidectomy Doppler Guided",
+        "specialty": "General Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Pain",
+          "Bleeding",
+          "Infection"
+        ],
+        "keywords": [
+          "hemorrhoids",
+          "doppler",
+          "guided",
+          "rectum"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Colectomy Open",
+        "specialty": "General Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "4–6 days",
+        "complications": [
+          "Bleeding",
+          "Anastomotic leak",
+          "Infection"
+        ],
+        "keywords": [
+          "colon",
+          "colectomy",
+          "open",
+          "surgery"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      },
+      {
+        "procedure": "Colectomy Laparoscopic",
+        "specialty": "General Surgery",
+        "classification": "special_character",
+        "complexity_score": 0,
+        "los": "2–4 days",
+        "complications": [
+          "Bleeding",
+          "Anastomotic leak",
+          "Infection"
+        ],
+        "keywords": [
+          "colon",
+          "colectomy",
+          "laparoscopy"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Book1_G_EN"
+      }
+    ],
+    "hand_surgery": [
+      {
+        "procedure": "Skin Lesion Excision Hand",
+        "specialty": "Hand Surgery",
+        "classification": "minor",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Infection",
+          "Bleeding",
+          "Scar"
+        ],
+        "keywords": [
+          "hand",
+          "skin",
+          "lesion",
+          "excision"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Skin Lesion Excision Hand + Flap",
+        "specialty": "Hand Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Flap necrosis",
+          "Infection",
+          "Hematoma"
+        ],
+        "keywords": [
+          "hand",
+          "lesion",
+          "flap",
+          "reconstruction"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Ganglion Cyst Excision Wrist",
+        "specialty": "Hand Surgery",
+        "classification": "minor",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Recurrence",
+          "Stiffness",
+          "Infection"
+        ],
+        "keywords": [
+          "hand",
+          "wrist",
+          "ganglion",
+          "excision"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Ganglion Excision Arthroscopic",
+        "specialty": "Hand Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Recurrence",
+          "Stiffness",
+          "Infection"
+        ],
+        "keywords": [
+          "hand",
+          "wrist",
+          "arthroscopy",
+          "ganglion"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Carpal Tunnel Release Open",
+        "specialty": "Hand Surgery",
+        "classification": "minor",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Pain",
+          "Nerve irritation",
+          "Infection"
+        ],
+        "keywords": [
+          "carpal tunnel",
+          "hand",
+          "median nerve",
+          "open"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Carpal Tunnel Release Endoscopic",
+        "specialty": "Hand Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Nerve injury",
+          "Pain",
+          "Hematoma"
+        ],
+        "keywords": [
+          "carpal tunnel",
+          "endoscopic",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Trigger Finger Release",
+        "specialty": "Hand Surgery",
+        "classification": "minor",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Stiffness",
+          "Infection",
+          "Pain"
+        ],
+        "keywords": [
+          "trigger finger",
+          "hand",
+          "release"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Trigger Finger Release Percutaneous",
+        "specialty": "Hand Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Tendon injury",
+          "Pain",
+          "Infection"
+        ],
+        "keywords": [
+          "trigger finger",
+          "percutaneous",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Tendon Repair Primary",
+        "specialty": "Hand Surgery",
+        "classification": "skilled",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Adhesions",
+          "Rupture",
+          "Stiffness"
+        ],
+        "keywords": [
+          "tendon",
+          "repair",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Tendon Repair Microsurgical",
+        "specialty": "Hand Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Adhesions",
+          "Rupture",
+          "Stiffness"
+        ],
+        "keywords": [
+          "tendon",
+          "microsurgery",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Tendon Grafting",
+        "specialty": "Hand Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1–2",
+        "complications": [
+          "Adhesions",
+          "Failure",
+          "Infection"
+        ],
+        "keywords": [
+          "tendon",
+          "graft",
+          "reconstruction"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Tendon Transfer",
+        "specialty": "Hand Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Failure",
+          "Weakness",
+          "Stiffness"
+        ],
+        "keywords": [
+          "tendon transfer",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Nerve Repair Primary",
+        "specialty": "Hand Surgery",
+        "classification": "skilled",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Neuroma",
+          "Failure",
+          "Paresthesia"
+        ],
+        "keywords": [
+          "nerve repair",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Nerve Repair Microsurgical",
+        "specialty": "Hand Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Neuroma",
+          "Failure",
+          "Paresthesia"
+        ],
+        "keywords": [
+          "nerve",
+          "microsurgery",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Nerve Grafting",
+        "specialty": "Hand Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1–2",
+        "complications": [
+          "Failure",
+          "Neuroma",
+          "Sensory deficit"
+        ],
+        "keywords": [
+          "nerve graft",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Digital Nerve Repair",
+        "specialty": "Hand Surgery",
+        "classification": "skilled",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Neuroma",
+          "Sensory loss",
+          "Infection"
+        ],
+        "keywords": [
+          "digital nerve",
+          "repair"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Flexor Tendon Repair",
+        "specialty": "Hand Surgery",
+        "classification": "skilled",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Adhesions",
+          "Rupture",
+          "Stiffness"
+        ],
+        "keywords": [
+          "flexor tendon",
+          "repair"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Extensor Tendon Repair",
+        "specialty": "Hand Surgery",
+        "classification": "skilled",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Stiffness",
+          "Rupture",
+          "Adhesions"
+        ],
+        "keywords": [
+          "extensor tendon",
+          "repair"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Finger Amputation",
+        "specialty": "Hand Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Bleeding",
+          "Infection",
+          "Neuroma"
+        ],
+        "keywords": [
+          "finger",
+          "amputation"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Finger Amputation Revision",
+        "specialty": "Hand Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Neuroma",
+          "Pain",
+          "Infection"
+        ],
+        "keywords": [
+          "finger",
+          "revision amputation"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Finger Replantation",
+        "specialty": "Hand Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "5–7",
+        "complications": [
+          "Thrombosis",
+          "Failure",
+          "Infection"
+        ],
+        "keywords": [
+          "finger",
+          "replantation",
+          "microsurgery"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Thumb Replantation",
+        "specialty": "Hand Surgery",
+        "classification": "special_character",
+        "complexity_score": 0,
+        "los": "7–10",
+        "complications": [
+          "Thrombosis",
+          "Failure",
+          "Infection"
+        ],
+        "keywords": [
+          "thumb",
+          "replantation"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Free Flap Hand Reconstruction",
+        "specialty": "Hand Surgery",
+        "classification": "special_character",
+        "complexity_score": 0,
+        "los": "7–10",
+        "complications": [
+          "Flap failure",
+          "Infection",
+          "Thrombosis"
+        ],
+        "keywords": [
+          "free flap",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Local Flap Hand",
+        "specialty": "Hand Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1–2",
+        "complications": [
+          "Flap necrosis",
+          "Infection",
+          "Hematoma"
+        ],
+        "keywords": [
+          "local flap",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Skin Graft Hand",
+        "specialty": "Hand Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Graft loss",
+          "Infection",
+          "Scar"
+        ],
+        "keywords": [
+          "skin graft",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Wrist Arthroscopy",
+        "specialty": "Hand Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Stiffness",
+          "Infection",
+          "Pain"
+        ],
+        "keywords": [
+          "wrist",
+          "arthroscopy"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Wrist Arthroscopy + TFCC Repair",
+        "specialty": "Hand Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Stiffness",
+          "Failure",
+          "Infection"
+        ],
+        "keywords": [
+          "wrist",
+          "TFCC",
+          "repair"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Dupuytren Contracture Release",
+        "specialty": "Hand Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Recurrence",
+          "Nerve injury",
+          "Stiffness"
+        ],
+        "keywords": [
+          "dupuytren",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Dupuytren Fasciectomy Extensive",
+        "specialty": "Hand Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1–2",
+        "complications": [
+          "Recurrence",
+          "Stiffness",
+          "Infection"
+        ],
+        "keywords": [
+          "dupuytren",
+          "fasciectomy"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Hand Fracture ORIF",
+        "specialty": "Hand Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Infection",
+          "Nonunion",
+          "Stiffness"
+        ],
+        "keywords": [
+          "hand fracture",
+          "ORIF"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Metacarpal ORIF",
+        "specialty": "Hand Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Nonunion",
+          "Infection",
+          "Stiffness"
+        ],
+        "keywords": [
+          "metacarpal",
+          "fracture"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Phalangeal ORIF",
+        "specialty": "Hand Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Stiffness",
+          "Nonunion",
+          "Infection"
+        ],
+        "keywords": [
+          "phalanx",
+          "fracture"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "K-wire Fixation Hand",
+        "specialty": "Hand Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Pin infection",
+          "Migration",
+          "Stiffness"
+        ],
+        "keywords": [
+          "k wire",
+          "fixation"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Hand External Fixator",
+        "specialty": "Hand Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1–2",
+        "complications": [
+          "Pin infection",
+          "Stiffness",
+          "Malunion"
+        ],
+        "keywords": [
+          "external fixator",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Compartment Release Hand",
+        "specialty": "Hand Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1",
+        "complications": [
+          "Infection",
+          "Stiffness",
+          "Bleeding"
+        ],
+        "keywords": [
+          "compartment syndrome",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Fasciotomy Hand",
+        "specialty": "Hand Surgery",
+        "classification": "advanced",
+        "complexity_score": 0,
+        "los": "1–2",
+        "complications": [
+          "Infection",
+          "Stiffness",
+          "Bleeding"
+        ],
+        "keywords": [
+          "fasciotomy",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Foreign Body Removal Hand",
+        "specialty": "Hand Surgery",
+        "classification": "minor",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Infection",
+          "Bleeding",
+          "Scar"
+        ],
+        "keywords": [
+          "foreign body",
+          "hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      },
+      {
+        "procedure": "Foreign Body Removal Deep Hand",
+        "specialty": "Hand Surgery",
+        "classification": "intermediate",
+        "complexity_score": 0,
+        "los": "Same day",
+        "complications": [
+          "Infection",
+          "Bleeding",
+          "Nerve injury"
+        ],
+        "keywords": [
+          "foreign body",
+          "deep hand"
+        ],
+        "coding_hint": "",
+        "ai_triggers": "",
+        "primary_keywords": [],
+        "secondary_keywords": [],
+        "exclusion_keywords": [],
+        "drg_group": "",
+        "urgency": "",
+        "indication": "",
+        "anesthesia": "",
+        "approach": "",
+        "asa_score": "",
+        "source": "Hand_surgery_Excel"
+      }
+    ],
+    "bariatric": [
+      {
+        "procedure": "Laparoscopic Sleeve Gastrectomy",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "advanced",
+        "complexity_score": 5,
+        "los": "1–2 days",
+        "complications": [
+          "Leak",
+          "Bleeding",
+          "GERD"
+        ],
+        "keywords": [
+          "sleeve",
+          "bariatric",
+          "obesity"
+        ],
+        "coding_hint": "Bariatric primary",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "sleeve",
+          "LSG"
+        ],
+        "secondary_keywords": [
+          "bariatric",
+          "obesity"
+        ],
+        "exclusion_keywords": [
+          "partial gastrectomy"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Elective",
+        "indication": "BMI>40",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Sleeve Gastrectomy Robotic",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "special_character",
+        "complexity_score": 6,
+        "los": "1–2 days",
+        "complications": [
+          "Leak",
+          "Bleeding",
+          "GERD"
+        ],
+        "keywords": [
+          "robotic sleeve",
+          "bariatric"
+        ],
+        "coding_hint": "Bariatric robotic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "robotic sleeve"
+        ],
+        "secondary_keywords": [
+          "bariatric"
+        ],
+        "exclusion_keywords": [
+          "partial gastrectomy"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Elective",
+        "indication": "BMI>40",
+        "anesthesia": "General",
+        "approach": "Robotic",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Mini Gastric Bypass",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "special_character",
+        "complexity_score": 6,
+        "los": "2–3 days",
+        "complications": [
+          "Leak",
+          "Malabsorption",
+          "Bleeding"
+        ],
+        "keywords": [
+          "MGB",
+          "bypass"
+        ],
+        "coding_hint": "Bariatric complex",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "MGB"
+        ],
+        "secondary_keywords": [
+          "bypass",
+          "bariatric"
+        ],
+        "exclusion_keywords": [
+          "gastric bypass revision"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Elective",
+        "indication": "Failed diet",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Roux-en-Y Gastric Bypass",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "special_character",
+        "complexity_score": 7,
+        "los": "2–4 days",
+        "complications": [
+          "Leak",
+          "Internal hernia",
+          "Bleeding"
+        ],
+        "keywords": [
+          "RYGB",
+          "bypass"
+        ],
+        "coding_hint": "Bariatric complex",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "RYGB"
+        ],
+        "secondary_keywords": [
+          "gastric bypass"
+        ],
+        "exclusion_keywords": [
+          "sleeve"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Elective",
+        "indication": "Reflux + obesity",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Revisional Sleeve",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "skilled",
+        "complexity_score": 7,
+        "los": "2–3 days",
+        "complications": [
+          "Leak",
+          "Bleeding",
+          "Stricture"
+        ],
+        "keywords": [
+          "revision sleeve"
+        ],
+        "coding_hint": "Revision bariatric",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "revision sleeve"
+        ],
+        "secondary_keywords": [
+          "bariatric revision"
+        ],
+        "exclusion_keywords": [
+          "primary sleeve"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Elective",
+        "indication": "After LSG",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Sleeve to Bypass Conversion",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "special_character",
+        "complexity_score": 8,
+        "los": "3–4 days",
+        "complications": [
+          "Leak",
+          "Bleeding",
+          "Malabsorption"
+        ],
+        "keywords": [
+          "conversion bypass"
+        ],
+        "coding_hint": "Bariatric revision",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "conversion bypass"
+        ],
+        "secondary_keywords": [
+          "revisional bariatric"
+        ],
+        "exclusion_keywords": [
+          "primary bypass"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Elective",
+        "indication": "GERD severe",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Laparoscopic Fundoplication (Nissen)",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "advanced",
+        "complexity_score": 4,
+        "los": "0–1 days",
+        "complications": [
+          "Dysphagia",
+          "Gas bloat",
+          "Recurrence"
+        ],
+        "keywords": [
+          "nissen",
+          "reflux"
+        ],
+        "coding_hint": "Anti reflux",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "fundoplication"
+        ],
+        "secondary_keywords": [
+          "GERD",
+          "hiatal"
+        ],
+        "exclusion_keywords": [
+          "bypass"
+        ],
+        "drg_group": "Upper GI DRG",
+        "urgency": "Elective",
+        "indication": "Failed medication",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Hiatal Hernia Repair Laparoscopic",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "major",
+        "complexity_score": 3,
+        "los": "0–1 days",
+        "complications": [
+          "Recurrence",
+          "Dysphagia",
+          "Bleeding"
+        ],
+        "keywords": [
+          "hiatal hernia"
+        ],
+        "coding_hint": "Upper GI",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "hiatal hernia"
+        ],
+        "secondary_keywords": [
+          "GERD repair"
+        ],
+        "exclusion_keywords": [
+          "fundoplication"
+        ],
+        "drg_group": "Upper GI DRG",
+        "urgency": "Elective",
+        "indication": "GERD",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Laparoscopic Adhesiolysis",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "intermediate",
+        "complexity_score": 3,
+        "los": "1",
+        "complications": [
+          "Bowel injury",
+          "Bleeding",
+          "Recurrence"
+        ],
+        "keywords": [
+          "adhesiolysis"
+        ],
+        "coding_hint": "General lap",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "adhesiolysis"
+        ],
+        "secondary_keywords": [
+          "bowel obstruction"
+        ],
+        "exclusion_keywords": [
+          "open laparotomy"
+        ],
+        "drg_group": "Abdominal DRG",
+        "urgency": "Emergency",
+        "indication": "Abdominal pain",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Diagnostic Laparoscopy",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "minor",
+        "complexity_score": 2,
+        "los": "Same day",
+        "complications": [
+          "Bleeding",
+          "Infection",
+          "Injury"
+        ],
+        "keywords": [
+          "diagnostic lap"
+        ],
+        "coding_hint": "Minor lap",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "diagnostic lap"
+        ],
+        "secondary_keywords": [
+          "exploratory"
+        ],
+        "exclusion_keywords": [
+          "open exlap"
+        ],
+        "drg_group": "General DRG",
+        "urgency": "Elective",
+        "indication": "Unclear diagnosis",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "I",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Laparoscopic Ventral Hernia Repair",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "major",
+        "complexity_score": 4,
+        "los": "0–1 days",
+        "complications": [
+          "Seroma",
+          "Recurrence",
+          "Pain"
+        ],
+        "keywords": [
+          "lap ventral hernia"
+        ],
+        "coding_hint": "Hernia lap",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "lap ventral"
+        ],
+        "secondary_keywords": [
+          "mesh repair"
+        ],
+        "exclusion_keywords": [
+          "open mesh"
+        ],
+        "drg_group": "Hernia DRG",
+        "urgency": "Elective",
+        "indication": "Bulge",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Laparoscopic Incisional Hernia Repair",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "advanced",
+        "complexity_score": 5,
+        "los": "1–2 days",
+        "complications": [
+          "Seroma",
+          "Recurrence",
+          "Infection"
+        ],
+        "keywords": [
+          "lap incisional hernia"
+        ],
+        "coding_hint": "Hernia complex",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "incisional lap"
+        ],
+        "secondary_keywords": [
+          "mesh repair"
+        ],
+        "exclusion_keywords": [
+          "open repair"
+        ],
+        "drg_group": "Hernia DRG",
+        "urgency": "Elective",
+        "indication": "Post surgery",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Sleeve Re-sleeve",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "skilled",
+        "complexity_score": 7,
+        "los": "2–3 days",
+        "complications": [
+          "Leak",
+          "Bleeding",
+          "Stricture"
+        ],
+        "keywords": [
+          "resleeve",
+          "revision",
+          "bariatric"
+        ],
+        "coding_hint": "Bariatric revision",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "resleeve"
+        ],
+        "secondary_keywords": [
+          "revision bariatric"
+        ],
+        "exclusion_keywords": [
+          "primary sleeve"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Elective",
+        "indication": "Dilated sleeve",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Sleeve to Mini Bypass",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "special_character",
+        "complexity_score": 8,
+        "los": "3–4 days",
+        "complications": [
+          "Leak",
+          "Malabsorption",
+          "Bleeding"
+        ],
+        "keywords": [
+          "sleeve to mgb"
+        ],
+        "coding_hint": "Bariatric revision",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "sleeve mgb"
+        ],
+        "secondary_keywords": [
+          "revisional bariatric"
+        ],
+        "exclusion_keywords": [
+          "primary mgb"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Elective",
+        "indication": "Failed sleeve",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Sleeve to Roux-en-Y",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "special_character",
+        "complexity_score": 8,
+        "los": "3–5 days",
+        "complications": [
+          "Leak",
+          "Internal hernia",
+          "Bleeding"
+        ],
+        "keywords": [
+          "sleeve to rygb"
+        ],
+        "coding_hint": "Bariatric revision",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "sleeve rygb"
+        ],
+        "secondary_keywords": [
+          "conversion bariatric"
+        ],
+        "exclusion_keywords": [
+          "primary rygb"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Elective",
+        "indication": "Failed sleeve",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Band Removal",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "intermediate",
+        "complexity_score": 3,
+        "los": "1",
+        "complications": [
+          "Bleeding",
+          "Infection",
+          "Injury"
+        ],
+        "keywords": [
+          "band removal"
+        ],
+        "coding_hint": "Bariatric minor",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "band removal"
+        ],
+        "secondary_keywords": [
+          "lap band"
+        ],
+        "exclusion_keywords": [
+          "revision sleeve"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Elective",
+        "indication": "Slippage",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Band to Sleeve Conversion",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "advanced",
+        "complexity_score": 6,
+        "los": "2–3 days",
+        "complications": [
+          "Leak",
+          "Bleeding",
+          "Stricture"
+        ],
+        "keywords": [
+          "band to sleeve"
+        ],
+        "coding_hint": "Bariatric revision",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "band sleeve"
+        ],
+        "secondary_keywords": [
+          "revision bariatric"
+        ],
+        "exclusion_keywords": [
+          "primary sleeve"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Elective",
+        "indication": "Weight regain",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Band to Bypass Conversion",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "special_character",
+        "complexity_score": 8,
+        "los": "3–5 days",
+        "complications": [
+          "Leak",
+          "Bleeding",
+          "Malabsorption"
+        ],
+        "keywords": [
+          "band to bypass"
+        ],
+        "coding_hint": "Bariatric revision",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "band bypass"
+        ],
+        "secondary_keywords": [
+          "revision bariatric"
+        ],
+        "exclusion_keywords": [
+          "primary bypass"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Elective",
+        "indication": "GERD",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Gastric Bypass Revision",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "special_character",
+        "complexity_score": 8,
+        "los": "3–5 days",
+        "complications": [
+          "Leak",
+          "Bleeding",
+          "Malnutrition"
+        ],
+        "keywords": [
+          "rygb revision"
+        ],
+        "coding_hint": "Bariatric revision",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "rygb revision"
+        ],
+        "secondary_keywords": [
+          "revisional bypass"
+        ],
+        "exclusion_keywords": [
+          "primary rygb"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Elective",
+        "indication": "Dilated pouch",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Gastrojejunostomy Revision",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "skilled",
+        "complexity_score": 7,
+        "los": "2–3 days",
+        "complications": [
+          "Leak",
+          "Bleeding",
+          "Stricture"
+        ],
+        "keywords": [
+          "gj revision"
+        ],
+        "coding_hint": "Bariatric revision",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "gj revision"
+        ],
+        "secondary_keywords": [
+          "bypass revision"
+        ],
+        "exclusion_keywords": [
+          "primary bypass"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Elective",
+        "indication": "Weight regain",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Bariatric Leak Repair Laparoscopic",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "special_character",
+        "complexity_score": 9,
+        "los": "4–6 days",
+        "complications": [
+          "Sepsis",
+          "Leak",
+          "Bleeding"
+        ],
+        "keywords": [
+          "leak repair"
+        ],
+        "coding_hint": "Emergency bariatric",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "bariatric leak"
+        ],
+        "secondary_keywords": [
+          "revision emergency"
+        ],
+        "exclusion_keywords": [
+          "primary bariatric"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Emergency",
+        "indication": "Emergency",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "IV",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Internal Hernia Repair Post Bypass",
+        "specialty": "Bariatric & Advanced Laparoscopy",
+        "classification": "advanced",
+        "complexity_score": 6,
+        "los": "1–2 days",
+        "complications": [
+          "Bowel injury",
+          "Recurrence",
+          "Bleeding"
+        ],
+        "keywords": [
+          "internal hernia"
+        ],
+        "coding_hint": "Bariatric complication",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "internal hernia"
+        ],
+        "secondary_keywords": [
+          "post bypass"
+        ],
+        "exclusion_keywords": [
+          "adhesiolysis"
+        ],
+        "drg_group": "Bariatric DRG",
+        "urgency": "Emergency",
+        "indication": "Pain",
+        "anesthesia": "General",
+        "approach": "Laparoscopic",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      }
+    ],
+    "breast": [
+      {
+        "procedure": "Core Needle Biopsy Breast",
+        "specialty": "Breast Surgery",
+        "classification": "minor",
+        "complexity_score": 1,
+        "los": "Same day",
+        "complications": [
+          "Hematoma",
+          "Pain",
+          "Infection"
+        ],
+        "keywords": [
+          "breast biopsy",
+          "core"
+        ],
+        "coding_hint": "Diagnostic minor",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "core biopsy"
+        ],
+        "secondary_keywords": [
+          "breast lump"
+        ],
+        "exclusion_keywords": [
+          "excision"
+        ],
+        "drg_group": "Breast DRG",
+        "urgency": "Elective",
+        "indication": "Diagnosis",
+        "anesthesia": "Local",
+        "approach": "Percutaneous",
+        "asa_score": "I",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Excisional Biopsy Breast",
+        "specialty": "Breast Surgery",
+        "classification": "intermediate",
+        "complexity_score": 2,
+        "los": "Same day",
+        "complications": [
+          "Hematoma",
+          "Infection",
+          "Scar"
+        ],
+        "keywords": [
+          "excisional biopsy"
+        ],
+        "coding_hint": "Diagnostic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "excisional biopsy"
+        ],
+        "secondary_keywords": [
+          "breast mass"
+        ],
+        "exclusion_keywords": [
+          "mastectomy"
+        ],
+        "drg_group": "Breast DRG",
+        "urgency": "Elective",
+        "indication": "Diagnosis",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "I",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Lumpectomy (Wide Local Excision)",
+        "specialty": "Breast Surgery",
+        "classification": "intermediate",
+        "complexity_score": 3,
+        "los": "1",
+        "complications": [
+          "Seroma",
+          "Infection",
+          "Bleeding"
+        ],
+        "keywords": [
+          "lumpectomy",
+          "WLE"
+        ],
+        "coding_hint": "Oncologic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "lumpectomy"
+        ],
+        "secondary_keywords": [
+          "WLE"
+        ],
+        "exclusion_keywords": [
+          "mastectomy"
+        ],
+        "drg_group": "Breast DRG",
+        "urgency": "Elective",
+        "indication": "Early stage",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Lumpectomy + Sentinel LN Biopsy",
+        "specialty": "Breast Surgery",
+        "classification": "advanced",
+        "complexity_score": 4,
+        "los": "0–1 days",
+        "complications": [
+          "Seroma",
+          "Lymphedema",
+          "Infection"
+        ],
+        "keywords": [
+          "sentinel node"
+        ],
+        "coding_hint": "Oncology staging",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "sentinel node"
+        ],
+        "secondary_keywords": [
+          "axillary biopsy"
+        ],
+        "exclusion_keywords": [
+          "dissection"
+        ],
+        "drg_group": "Breast DRG",
+        "urgency": "Elective",
+        "indication": "Staging",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Modified Radical Mastectomy (MRM)",
+        "specialty": "Breast Surgery",
+        "classification": "advanced",
+        "complexity_score": 5,
+        "los": "1–2 days",
+        "complications": [
+          "Seroma",
+          "Lymphedema",
+          "Infection"
+        ],
+        "keywords": [
+          "MRM"
+        ],
+        "coding_hint": "Oncologic major",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "MRM"
+        ],
+        "secondary_keywords": [
+          "mastectomy simple"
+        ],
+        "exclusion_keywords": [
+          "lumpectomy"
+        ],
+        "drg_group": "Breast DRG",
+        "urgency": "Elective",
+        "indication": "Advanced tumor",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Simple Mastectomy",
+        "specialty": "Breast Surgery",
+        "classification": "major",
+        "complexity_score": 4,
+        "los": "2",
+        "complications": [
+          "Seroma",
+          "Infection",
+          "Hematoma"
+        ],
+        "keywords": [
+          "simple mastectomy"
+        ],
+        "coding_hint": "Oncology",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "simple mastectomy"
+        ],
+        "secondary_keywords": [
+          "prophylactic"
+        ],
+        "exclusion_keywords": [
+          "MRM"
+        ],
+        "drg_group": "Breast DRG",
+        "urgency": "Elective",
+        "indication": "Prophylactic",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Skin-Sparing Mastectomy",
+        "specialty": "Breast Surgery",
+        "classification": "advanced",
+        "complexity_score": 5,
+        "los": "1–2 days",
+        "complications": [
+          "Skin necrosis",
+          "Infection",
+          "Seroma"
+        ],
+        "keywords": [
+          "skin sparing"
+        ],
+        "coding_hint": "Oncoplastic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "skin sparing"
+        ],
+        "secondary_keywords": [
+          "reconstruction"
+        ],
+        "exclusion_keywords": [
+          "simple mastectomy"
+        ],
+        "drg_group": "Breast DRG",
+        "urgency": "Elective",
+        "indication": "Reconstruction",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Nipple-Sparing Mastectomy",
+        "specialty": "Breast Surgery",
+        "classification": "special_character",
+        "complexity_score": 6,
+        "los": "1–2 days",
+        "complications": [
+          "Necrosis",
+          "Infection",
+          "Seroma"
+        ],
+        "keywords": [
+          "nipple sparing"
+        ],
+        "coding_hint": "Oncoplastic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "nipple sparing"
+        ],
+        "secondary_keywords": [
+          "oncoplastic"
+        ],
+        "exclusion_keywords": [
+          "skin sparing"
+        ],
+        "drg_group": "Breast DRG",
+        "urgency": "Elective",
+        "indication": "Cosmetic + oncologic",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Axillary Lymph Node Dissection",
+        "specialty": "Breast Surgery",
+        "classification": "advanced",
+        "complexity_score": 4,
+        "los": "2",
+        "complications": [
+          "Lymphedema",
+          "Nerve injury",
+          "Seroma"
+        ],
+        "keywords": [
+          "axillary dissection"
+        ],
+        "coding_hint": "Oncology",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "axillary dissection"
+        ],
+        "secondary_keywords": [
+          "LN removal"
+        ],
+        "exclusion_keywords": [
+          "sentinel node"
+        ],
+        "drg_group": "Breast DRG",
+        "urgency": "Elective",
+        "indication": "Node positive",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Breast Reconstruction Implant",
+        "specialty": "Breast Surgery",
+        "classification": "advanced",
+        "complexity_score": 5,
+        "los": "1–2 days",
+        "complications": [
+          "Infection",
+          "Capsular contracture",
+          "Seroma"
+        ],
+        "keywords": [
+          "implant reconstruction"
+        ],
+        "coding_hint": "Reconstruction",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "implant reconstruction"
+        ],
+        "secondary_keywords": [
+          "breast implant"
+        ],
+        "exclusion_keywords": [
+          "expander"
+        ],
+        "drg_group": "Breast DRG",
+        "urgency": "Elective",
+        "indication": "Reconstruction",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Breast Reconstruction Free Flap",
+        "specialty": "Breast Surgery",
+        "classification": "special_character",
+        "complexity_score": 9,
+        "los": "4–6 days",
+        "complications": [
+          "Flap failure",
+          "Thrombosis",
+          "Infection"
+        ],
+        "keywords": [
+          "free flap breast"
+        ],
+        "coding_hint": "Reconstruction complex",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "free flap"
+        ],
+        "secondary_keywords": [
+          "DIEP flap"
+        ],
+        "exclusion_keywords": [
+          "implant"
+        ],
+        "drg_group": "Breast DRG",
+        "urgency": "Elective",
+        "indication": "Reconstruction",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Mastopexy (Breast Lift)",
+        "specialty": "Breast Surgery",
+        "classification": "intermediate",
+        "complexity_score": 3,
+        "los": "1",
+        "complications": [
+          "Scar",
+          "Infection",
+          "Asymmetry"
+        ],
+        "keywords": [
+          "mastopexy"
+        ],
+        "coding_hint": "Cosmetic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "mastopexy"
+        ],
+        "secondary_keywords": [
+          "breast lift"
+        ],
+        "exclusion_keywords": [
+          "reduction"
+        ],
+        "drg_group": "Breast DRG",
+        "urgency": "Elective",
+        "indication": "Cosmetic",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "I",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Breast Reduction",
+        "specialty": "Breast Surgery",
+        "classification": "major",
+        "complexity_score": 4,
+        "los": "0–1 days",
+        "complications": [
+          "Seroma",
+          "Infection",
+          "Necrosis"
+        ],
+        "keywords": [
+          "reduction mammoplasty"
+        ],
+        "coding_hint": "Cosmetic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "reduction mammoplasty"
+        ],
+        "secondary_keywords": [
+          "breast reduction"
+        ],
+        "exclusion_keywords": [
+          "augmentation"
+        ],
+        "drg_group": "Breast DRG",
+        "urgency": "Elective",
+        "indication": "Symptoms",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Breast Augmentation",
+        "specialty": "Breast Surgery",
+        "classification": "intermediate",
+        "complexity_score": 3,
+        "los": "Same day",
+        "complications": [
+          "Infection",
+          "Capsular contracture",
+          "Hematoma"
+        ],
+        "keywords": [
+          "breast augmentation"
+        ],
+        "coding_hint": "Cosmetic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "augmentation"
+        ],
+        "secondary_keywords": [
+          "implant"
+        ],
+        "exclusion_keywords": [
+          "reconstruction"
+        ],
+        "drg_group": "Breast DRG",
+        "urgency": "Elective",
+        "indication": "Cosmetic",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "I",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Breast Implant Removal",
+        "specialty": "Breast Surgery",
+        "classification": "intermediate",
+        "complexity_score": 3,
+        "los": "Same day",
+        "complications": [
+          "Infection",
+          "Seroma",
+          "Bleeding"
+        ],
+        "keywords": [
+          "implant removal"
+        ],
+        "coding_hint": "Cosmetic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "implant removal"
+        ],
+        "secondary_keywords": [
+          "capsule"
+        ],
+        "exclusion_keywords": [
+          "augmentation"
+        ],
+        "drg_group": "Breast DRG",
+        "urgency": "Elective",
+        "indication": "Rupture",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "I",
+        "source": "Plastic_and_Breast.xlsx"
+      }
+    ],
+    "plastic": [
+      {
+        "procedure": "Skin Graft Split Thickness",
+        "specialty": "Plastic & Reconstructive Surgery",
+        "classification": "intermediate",
+        "complexity_score": 3,
+        "los": "1",
+        "complications": [
+          "Graft loss",
+          "Infection",
+          "Hematoma"
+        ],
+        "keywords": [
+          "skin graft",
+          "STSG"
+        ],
+        "coding_hint": "Plastic minor",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "STSG"
+        ],
+        "secondary_keywords": [
+          "graft reconstruction"
+        ],
+        "exclusion_keywords": [
+          "flap"
+        ],
+        "drg_group": "Plastic DRG",
+        "urgency": "Elective",
+        "indication": "Trauma / ulcer",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Skin Graft Full Thickness",
+        "specialty": "Plastic & Reconstructive Surgery",
+        "classification": "advanced",
+        "complexity_score": 4,
+        "los": "0–1 days",
+        "complications": [
+          "Graft loss",
+          "Infection",
+          "Necrosis"
+        ],
+        "keywords": [
+          "FTSG",
+          "graft"
+        ],
+        "coding_hint": "Plastic moderate",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "FTSG"
+        ],
+        "secondary_keywords": [
+          "full graft"
+        ],
+        "exclusion_keywords": [
+          "STSG"
+        ],
+        "drg_group": "Plastic DRG",
+        "urgency": "Elective",
+        "indication": "Cosmetic / tumor excision",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Local Flap Reconstruction",
+        "specialty": "Plastic & Reconstructive Surgery",
+        "classification": "advanced",
+        "complexity_score": 5,
+        "los": "2",
+        "complications": [
+          "Flap necrosis",
+          "Infection",
+          "Hematoma"
+        ],
+        "keywords": [
+          "local flap"
+        ],
+        "coding_hint": "Plastic flap",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "local flap"
+        ],
+        "secondary_keywords": [
+          "reconstruction"
+        ],
+        "exclusion_keywords": [
+          "free flap"
+        ],
+        "drg_group": "Plastic DRG",
+        "urgency": "Elective",
+        "indication": "Post excision",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Regional Flap Reconstruction",
+        "specialty": "Plastic & Reconstructive Surgery",
+        "classification": "skilled",
+        "complexity_score": 6,
+        "los": "3",
+        "complications": [
+          "Necrosis",
+          "Infection",
+          "Hematoma"
+        ],
+        "keywords": [
+          "regional flap"
+        ],
+        "coding_hint": "Plastic advanced",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "regional flap"
+        ],
+        "secondary_keywords": [
+          "reconstruction"
+        ],
+        "exclusion_keywords": [
+          "local flap"
+        ],
+        "drg_group": "Plastic DRG",
+        "urgency": "Elective",
+        "indication": "Trauma",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Free Flap Microvascular",
+        "specialty": "Plastic & Reconstructive Surgery",
+        "classification": "special_character",
+        "complexity_score": 9,
+        "los": "4–6 days",
+        "complications": [
+          "Flap failure",
+          "Thrombosis",
+          "Infection"
+        ],
+        "keywords": [
+          "free flap",
+          "microvascular"
+        ],
+        "coding_hint": "Plastic complex",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "free flap"
+        ],
+        "secondary_keywords": [
+          "microvascular"
+        ],
+        "exclusion_keywords": [
+          "local flap"
+        ],
+        "drg_group": "Plastic DRG",
+        "urgency": "Elective",
+        "indication": "oncologic reconstruction",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "III",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Abdominoplasty",
+        "specialty": "Plastic & Reconstructive Surgery",
+        "classification": "major",
+        "complexity_score": 5,
+        "los": "1–2 days",
+        "complications": [
+          "Seroma",
+          "Hematoma",
+          "Infection"
+        ],
+        "keywords": [
+          "abdominoplasty"
+        ],
+        "coding_hint": "Cosmetic plastic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "tummy tuck"
+        ],
+        "secondary_keywords": [
+          "cosmetic liposuction"
+        ],
+        "exclusion_keywords": [
+          "hernia repair"
+        ],
+        "drg_group": "Plastic DRG",
+        "urgency": "Elective",
+        "indication": "Redundant skin",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Abdominoplasty with Umbilical Transposition",
+        "specialty": "Plastic & Reconstructive Surgery",
+        "classification": "advanced",
+        "complexity_score": 6,
+        "los": "3",
+        "complications": [
+          "Seroma",
+          "Hematoma",
+          "Necrosis"
+        ],
+        "keywords": [
+          "abdominoplasty umbilical"
+        ],
+        "coding_hint": "Cosmetic plastic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "umbilical transposition"
+        ],
+        "secondary_keywords": [
+          "abdominoplasty"
+        ],
+        "exclusion_keywords": [
+          "hernia"
+        ],
+        "drg_group": "Plastic DRG",
+        "urgency": "Elective",
+        "indication": "Redundant skin",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Umbilical Reconstruction",
+        "specialty": "Plastic & Reconstructive Surgery",
+        "classification": "intermediate",
+        "complexity_score": 3,
+        "los": "1",
+        "complications": [
+          "Infection",
+          "Necrosis",
+          "Scar"
+        ],
+        "keywords": [
+          "umbilical reconstruction"
+        ],
+        "coding_hint": "Cosmetic plastic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "umbilicus"
+        ],
+        "secondary_keywords": [
+          "navel repair"
+        ],
+        "exclusion_keywords": [
+          "hernia"
+        ],
+        "drg_group": "Plastic DRG",
+        "urgency": "Elective",
+        "indication": "Cosmetic",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "I",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Liposuction",
+        "specialty": "Plastic & Reconstructive Surgery",
+        "classification": "intermediate",
+        "complexity_score": 3,
+        "los": "Same day",
+        "complications": [
+          "Seroma",
+          "Contour irregularity",
+          "Hematoma"
+        ],
+        "keywords": [
+          "liposuction"
+        ],
+        "coding_hint": "Cosmetic plastic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "lipo"
+        ],
+        "secondary_keywords": [
+          "body contour"
+        ],
+        "exclusion_keywords": [
+          "abdominoplasty"
+        ],
+        "drg_group": "Plastic DRG",
+        "urgency": "Elective",
+        "indication": "Obesity localized",
+        "anesthesia": "General",
+        "approach": "Minimally invasive",
+        "asa_score": "I",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Gynecomastia Excision",
+        "specialty": "Plastic & Reconstructive Surgery",
+        "classification": "intermediate",
+        "complexity_score": 3,
+        "los": "1",
+        "complications": [
+          "Hematoma",
+          "Seroma",
+          "Scar"
+        ],
+        "keywords": [
+          "gynecomastia"
+        ],
+        "coding_hint": "Cosmetic plastic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "gynecomastia"
+        ],
+        "secondary_keywords": [
+          "male breast"
+        ],
+        "exclusion_keywords": [
+          "mastectomy"
+        ],
+        "drg_group": "Plastic DRG",
+        "urgency": "Elective",
+        "indication": "Cosmetic",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "I",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Scar Revision",
+        "specialty": "Plastic & Reconstructive Surgery",
+        "classification": "minor",
+        "complexity_score": 2,
+        "los": "Same day",
+        "complications": [
+          "Scar",
+          "Infection",
+          "Dehiscence"
+        ],
+        "keywords": [
+          "scar revision"
+        ],
+        "coding_hint": "Minor plastic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "scar revision"
+        ],
+        "secondary_keywords": [
+          "cosmetic"
+        ],
+        "exclusion_keywords": [
+          "excision"
+        ],
+        "drg_group": "Plastic DRG",
+        "urgency": "Elective",
+        "indication": "Cosmetic",
+        "anesthesia": "Local",
+        "approach": "Open",
+        "asa_score": "I",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Keloid Excision",
+        "specialty": "Plastic & Reconstructive Surgery",
+        "classification": "minor",
+        "complexity_score": 2,
+        "los": "Same day",
+        "complications": [
+          "Recurrence",
+          "Scar",
+          "Infection"
+        ],
+        "keywords": [
+          "keloid"
+        ],
+        "coding_hint": "Minor plastic",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "keloid"
+        ],
+        "secondary_keywords": [
+          "scar revision"
+        ],
+        "exclusion_keywords": [
+          "excision"
+        ],
+        "drg_group": "Plastic DRG",
+        "urgency": "Elective",
+        "indication": "Cosmetic",
+        "anesthesia": "Local",
+        "approach": "Open",
+        "asa_score": "I",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Tissue Expander Placement",
+        "specialty": "Plastic & Reconstructive Surgery",
+        "classification": "advanced",
+        "complexity_score": 5,
+        "los": "2",
+        "complications": [
+          "Infection",
+          "Expander exposure",
+          "Seroma"
+        ],
+        "keywords": [
+          "tissue expander"
+        ],
+        "coding_hint": "Plastic advanced",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "expander"
+        ],
+        "secondary_keywords": [
+          "reconstruction"
+        ],
+        "exclusion_keywords": [
+          "implant"
+        ],
+        "drg_group": "Plastic DRG",
+        "urgency": "Elective",
+        "indication": "Delayed reconstruction",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      },
+      {
+        "procedure": "Tissue Expander Removal",
+        "specialty": "Plastic & Reconstructive Surgery",
+        "classification": "intermediate",
+        "complexity_score": 3,
+        "los": "1",
+        "complications": [
+          "Infection",
+          "Seroma",
+          "Bleeding"
+        ],
+        "keywords": [
+          "expander removal"
+        ],
+        "coding_hint": "Plastic moderate",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "expander removal"
+        ],
+        "secondary_keywords": [
+          "reconstruction"
+        ],
+        "exclusion_keywords": [
+          "implant"
+        ],
+        "drg_group": "Plastic DRG",
+        "urgency": "Elective",
+        "indication": "Reconstruction",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Plastic_and_Breast.xlsx"
+      }
+    ],
+    "orthopaedic": [
+      {
+        "procedure": "Closed Reduction Fracture",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "minor",
+        "complexity_score": 1,
+        "los": "Same day",
+        "complications": [
+          "Loss reduction",
+          "Pain",
+          "Swelling"
+        ],
+        "keywords": [
+          "closed reduction"
+        ],
+        "coding_hint": "Trauma",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "reduction"
+        ],
+        "secondary_keywords": [
+          "fracture fixation"
+        ],
+        "exclusion_keywords": [
+          "ORIF"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Emergency",
+        "indication": "displacement",
+        "anesthesia": "Sedation",
+        "approach": "Closed",
+        "asa_score": "I",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "ORIF Long Bone",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "advanced",
+        "complexity_score": 5,
+        "los": "1–2 days",
+        "complications": [
+          "Infection",
+          "Nonunion",
+          "Bleeding"
+        ],
+        "keywords": [
+          "ORIF"
+        ],
+        "coding_hint": "Trauma",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "ORIF"
+        ],
+        "secondary_keywords": [
+          "plate fixation"
+        ],
+        "exclusion_keywords": [
+          "IM nail"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Emergency",
+        "indication": "unstable",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Intramedullary Nailing Femur",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "advanced",
+        "complexity_score": 6,
+        "los": "3",
+        "complications": [
+          "Fat embolism",
+          "Infection",
+          "Nonunion"
+        ],
+        "keywords": [
+          "IM nail femur"
+        ],
+        "coding_hint": "Trauma",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "IM nail"
+        ],
+        "secondary_keywords": [
+          "femur fixation"
+        ],
+        "exclusion_keywords": [
+          "plate"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Emergency",
+        "indication": "shaft fracture",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Intramedullary Nailing Tibia",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "advanced",
+        "complexity_score": 5,
+        "los": "1–2 days",
+        "complications": [
+          "Infection",
+          "Nonunion",
+          "Pain"
+        ],
+        "keywords": [
+          "IM nail tibia"
+        ],
+        "coding_hint": "Trauma",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "IM nail"
+        ],
+        "secondary_keywords": [
+          "tibia fixation"
+        ],
+        "exclusion_keywords": [
+          "plate"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Emergency",
+        "indication": "shaft",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "External Fixator",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "intermediate",
+        "complexity_score": 4,
+        "los": "0–1 days",
+        "complications": [
+          "Pin infection",
+          "Loosening",
+          "Pain"
+        ],
+        "keywords": [
+          "external fixator"
+        ],
+        "coding_hint": "Trauma",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "ex fix"
+        ],
+        "secondary_keywords": [
+          "damage control"
+        ],
+        "exclusion_keywords": [
+          "ORIF"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Emergency",
+        "indication": "damage control",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Plating Humerus",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "advanced",
+        "complexity_score": 5,
+        "los": "2",
+        "complications": [
+          "Infection",
+          "Nerve injury",
+          "Nonunion"
+        ],
+        "keywords": [
+          "humerus plate"
+        ],
+        "coding_hint": "Trauma",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "humerus ORIF"
+        ],
+        "secondary_keywords": [
+          "plate fixation"
+        ],
+        "exclusion_keywords": [
+          "IM nail"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Emergency",
+        "indication": "unstable",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Plating Radius Ulna",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "advanced",
+        "complexity_score": 5,
+        "los": "2",
+        "complications": [
+          "Infection",
+          "Nonunion",
+          "Compartment syndrome"
+        ],
+        "keywords": [
+          "radius ulna ORIF"
+        ],
+        "coding_hint": "Trauma",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "forearm ORIF"
+        ],
+        "secondary_keywords": [
+          "radius ulna"
+        ],
+        "exclusion_keywords": [
+          "closed reduction"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Emergency",
+        "indication": "unstable",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Dynamic Hip Screw (DHS)",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "advanced",
+        "complexity_score": 6,
+        "los": "3",
+        "complications": [
+          "Infection",
+          "Failure",
+          "Bleeding"
+        ],
+        "keywords": [
+          "DHS"
+        ],
+        "coding_hint": "Trauma",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "DHS"
+        ],
+        "secondary_keywords": [
+          "hip fixation"
+        ],
+        "exclusion_keywords": [
+          "hemiarthroplasty"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Emergency",
+        "indication": "intertrochanteric",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "III",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Total Knee Replacement",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "special_character",
+        "complexity_score": 7,
+        "los": "2–4 days",
+        "complications": [
+          "Infection",
+          "DVT",
+          "Loosening"
+        ],
+        "keywords": [
+          "TKR"
+        ],
+        "coding_hint": "Joint",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "TKR"
+        ],
+        "secondary_keywords": [
+          "knee prosthesis"
+        ],
+        "exclusion_keywords": [
+          "arthroscopy"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Elective",
+        "indication": "severe",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "III",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Total Hip Replacement",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "special_character",
+        "complexity_score": 7,
+        "los": "2–4 days",
+        "complications": [
+          "Dislocation",
+          "Infection",
+          "DVT"
+        ],
+        "keywords": [
+          "THR"
+        ],
+        "coding_hint": "Joint",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "THR"
+        ],
+        "secondary_keywords": [
+          "hip prosthesis"
+        ],
+        "exclusion_keywords": [
+          "DHS"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Elective",
+        "indication": "arthritis",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "III",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Hemiarthroplasty Hip",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "advanced",
+        "complexity_score": 6,
+        "los": "2–3 days",
+        "complications": [
+          "Dislocation",
+          "Infection",
+          "DVT"
+        ],
+        "keywords": [
+          "hemiarthroplasty"
+        ],
+        "coding_hint": "Trauma",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "hemiarthroplasty"
+        ],
+        "secondary_keywords": [
+          "hip fracture"
+        ],
+        "exclusion_keywords": [
+          "THR"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Emergency",
+        "indication": "elderly",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "III",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Knee Arthroscopy Diagnostic",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "minor",
+        "complexity_score": 2,
+        "los": "Same day",
+        "complications": [
+          "Effusion",
+          "Pain",
+          "Infection"
+        ],
+        "keywords": [
+          "knee scope"
+        ],
+        "coding_hint": "Arthroscopy",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "knee scope"
+        ],
+        "secondary_keywords": [
+          "diagnostic"
+        ],
+        "exclusion_keywords": [
+          "open knee"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Elective",
+        "indication": "diagnosis",
+        "anesthesia": "General",
+        "approach": "Endoscopic",
+        "asa_score": "I",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Meniscectomy Arthroscopic",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "intermediate",
+        "complexity_score": 3,
+        "los": "Same day",
+        "complications": [
+          "Effusion",
+          "Pain",
+          "Infection"
+        ],
+        "keywords": [
+          "meniscectomy"
+        ],
+        "coding_hint": "Arthroscopy",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "meniscus"
+        ],
+        "secondary_keywords": [
+          "knee scope"
+        ],
+        "exclusion_keywords": [
+          "open"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Elective",
+        "indication": "tear",
+        "anesthesia": "General",
+        "approach": "Endoscopic",
+        "asa_score": "I",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "ACL Reconstruction",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "advanced",
+        "complexity_score": 5,
+        "los": "0–1 days",
+        "complications": [
+          "Graft failure",
+          "Stiffness",
+          "Infection"
+        ],
+        "keywords": [
+          "ACL tear"
+        ],
+        "coding_hint": "Sports",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "ACL"
+        ],
+        "secondary_keywords": [
+          "knee ligament"
+        ],
+        "exclusion_keywords": [
+          "meniscus"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Elective",
+        "indication": "tear",
+        "anesthesia": "General",
+        "approach": "Endoscopic",
+        "asa_score": "I",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Shoulder Arthroscopy",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "intermediate",
+        "complexity_score": 3,
+        "los": "Same day",
+        "complications": [
+          "Stiffness",
+          "Infection",
+          "Pain"
+        ],
+        "keywords": [
+          "shoulder scope"
+        ],
+        "coding_hint": "Arthroscopy",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "shoulder scope"
+        ],
+        "secondary_keywords": [
+          "rotator cuff"
+        ],
+        "exclusion_keywords": [
+          "open shoulder"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Elective",
+        "indication": "diagnosis",
+        "anesthesia": "General",
+        "approach": "Endoscopic",
+        "asa_score": "I",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Rotator Cuff Repair",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "advanced",
+        "complexity_score": 5,
+        "los": "0–1 days",
+        "complications": [
+          "Failure",
+          "Stiffness",
+          "Infection"
+        ],
+        "keywords": [
+          "rotator cuff tear"
+        ],
+        "coding_hint": "Shoulder",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "rotator cuff"
+        ],
+        "secondary_keywords": [
+          "shoulder repair"
+        ],
+        "exclusion_keywords": [
+          "scope"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Elective",
+        "indication": "tear",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Laminectomy Spine",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "advanced",
+        "complexity_score": 6,
+        "los": "1–2 days",
+        "complications": [
+          "Bleeding",
+          "Nerve injury",
+          "Infection"
+        ],
+        "keywords": [
+          "laminectomy"
+        ],
+        "coding_hint": "Spine",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "laminectomy"
+        ],
+        "secondary_keywords": [
+          "spine"
+        ],
+        "exclusion_keywords": [
+          "discectomy"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Elective",
+        "indication": "compression",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Discectomy Lumbar",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "advanced",
+        "complexity_score": 5,
+        "los": "1–2 days",
+        "complications": [
+          "Nerve injury",
+          "Recurrence",
+          "Infection"
+        ],
+        "keywords": [
+          "discectomy"
+        ],
+        "coding_hint": "Spine",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "discectomy"
+        ],
+        "secondary_keywords": [
+          "lumbar disc"
+        ],
+        "exclusion_keywords": [
+          "laminectomy"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Elective",
+        "indication": "herniation",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "II",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Spinal Fusion",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "special_character",
+        "complexity_score": 8,
+        "los": "3–5 days",
+        "complications": [
+          "Hardware failure",
+          "Infection",
+          "Bleeding"
+        ],
+        "keywords": [
+          "spinal fusion"
+        ],
+        "coding_hint": "Spine",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "fusion"
+        ],
+        "secondary_keywords": [
+          "instrumentation"
+        ],
+        "exclusion_keywords": [
+          "laminectomy"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Elective",
+        "indication": "deformity",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "III",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Clubfoot Correction",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "advanced",
+        "complexity_score": 5,
+        "los": "1–2 days",
+        "complications": [
+          "Recurrence",
+          "Infection",
+          "Stiffness"
+        ],
+        "keywords": [
+          "clubfoot"
+        ],
+        "coding_hint": "Pediatric",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "clubfoot"
+        ],
+        "secondary_keywords": [
+          "pediatric foot"
+        ],
+        "exclusion_keywords": [
+          "trauma"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Elective",
+        "indication": "congenital",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "I",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Amputation (Below Knee)",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "advanced",
+        "complexity_score": 6,
+        "los": "2–4 days",
+        "complications": [
+          "Infection",
+          "Bleeding",
+          "Phantom pain"
+        ],
+        "keywords": [
+          "BKA"
+        ],
+        "coding_hint": "Major",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "amputation"
+        ],
+        "secondary_keywords": [
+          "BKA"
+        ],
+        "exclusion_keywords": [
+          "ORIF"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Emergency",
+        "indication": "non viable limb",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "III",
+        "source": "Ortho.xlsx"
+      },
+      {
+        "procedure": "Tumor Resection Bone",
+        "specialty": "Orthopaedic Surgery",
+        "classification": "special_character",
+        "complexity_score": 8,
+        "los": "3–5 days",
+        "complications": [
+          "Bleeding",
+          "Recurrence",
+          "Infection"
+        ],
+        "keywords": [
+          "bone tumor"
+        ],
+        "coding_hint": "Oncology",
+        "ai_triggers": "",
+        "primary_keywords": [
+          "tumor resection"
+        ],
+        "secondary_keywords": [
+          "oncology"
+        ],
+        "exclusion_keywords": [
+          "benign lesion"
+        ],
+        "drg_group": "Ortho DRG",
+        "urgency": "Elective",
+        "indication": "malignancy",
+        "anesthesia": "General",
+        "approach": "Open",
+        "asa_score": "III",
+        "source": "Ortho.xlsx"
+      }
+    ]
+  },
+  "medical_logic": {
+    "general_surgery": {
+      "skin_lesion": {
+        "six_s_rule": "ALL skin lesions: 6S Rule mandatory — Site, Size, Shape, Surface, Consistency, Specimen",
+        "size_gate": "Coding strictly tied to maximum diameter of excised lesion — cross-match OT Notes vs Pathology",
+        "wle_gate": "Wide Local Excision justified ONLY by suspected/confirmed malignancy. Must mention Safety Margins + Specimen Orientation",
+        "upcoding_guard": "Flag WLE billed for benign Lipoma without malignancy evidence → downgrade to Simple Excision",
+        "fwa_alert": "Flag Large Excision >5cm if pre-op Radiology shows smaller mass",
+        "applies_to": [
+          "Skin Lesion Excision",
+          "Wide Local Excision",
+          "Wide Excision with Safety Margin",
+          "Wide Excision + Flap Reconstruction"
+        ]
+      },
+      "thyroid": {
+        "evidence_hierarchy": "OT Notes > Pathology > Radiology > Admission Notes — engine must enforce this order",
+        "fna_gate": "FNA = diagnostic gateway. Must correlate with TIRADS 3-5",
+        "lobectomy_gate": "Thyroid Lobectomy justified by Focal Lesion on one lobe via T99 Scan (Hot/Cold Nodule). Must document Isthmus division + unilateral RLN identification",
+        "total_tt_gate": "Total TT = bilateral disease or high-risk TIRADS. Must document bilateral RLN identification + Parathyroid preservation",
+        "ln_integrity_gate": "LN Dissection: match node count in OT Notes vs Histopathology log. Trigger TIRADS 4/5 or FNA positive for malignancy",
+        "upcoding_alert": "Flag LN Dissection billed for TIRADS 2 (Benign Hyperplasia) without clinical evidence",
+        "safety_net": "If Stridor documented → engine expects ICU Admission or Emergency Re-exploration",
+        "rln_trigger": "Issue immediate alert if RLN or Parathyroid not mentioned in TT operative notes",
+        "specimen_matcher": "Containers sent to lab must match surgical description — prevent phantom specimen billing",
+        "applies_to": [
+          "Needle Biopsy Thyroid",
+          "Core Biopsy Thyroid",
+          "Excisional Biopsy Thyroid",
+          "Thyroid Lobectomy",
+          "Total Thyroidectomy",
+          "Total Thyroidectomy + LN Dissection"
+        ]
+      },
+      "appendicitis": {
+        "pediatric_12hr_rule": "Children 10-14 yrs: surgery within 12h mandatory — life-saving/critical. Rapid perforation risk due to inability of omentum to localize",
+        "adult_rule": "Adults: surgical emergency within 24-36h",
+        "open_vs_lap": "Open = pediatric gold standard / perforation cases (superior peritoneal lavage). Laparoscopic = adult non-complicated standard",
+        "robotic_reject": "Robotic Appendectomy: FLAG/REJECT — not FDA agreed for appendectomy. Auto-downgrade to Laparoscopic/Open (95% rejection rate globally)",
+        "right_hemi_gate": "Right Hemicolectomy only if infection kinked + gangrene/perforation involving cecum/colon confirmed in OT notes + Histopathology",
+        "consumables_audit": "Cross-match Trocars/Staplers in consumables list to prevent Open→Lap upcoding",
+        "perforation_upgrade": "Keywords 'Pus', 'Fecalith', 'Gangrenous' → auto-upgrade to Complicated Appendectomy",
+        "sepsis_watch": "High WBC/CRP + Hypotension → upgrade to Critical Care/ICU Logic",
+        "applies_to": [
+          "Appendectomy Open",
+          "Appendectomy Laparoscopic",
+          "Appendectomy Robotic",
+          "Right Hemicolectomy"
+        ]
+      },
+      "cholecystectomy": {
+        "small_stone_paradox": "Microlithiasis (small stones) more dangerous than large stones — causes Common Bile Duct complications. Flag for documentation",
+        "adhesiolysis_guard": "Reject Adhesiolysis code unless past surgical history documented (e.g. previous laparotomy)",
+        "cvor_documentation": "CVOS (Critical View of Safety), Cystic duct identification mandatory in operative notes",
+        "robotic_watch": "Robotic Cholecystectomy = special character — verify clinical justification vs laparoscopic approach",
+        "applies_to": [
+          "Cholecystectomy Open",
+          "Cholecystectomy Laparoscopic",
+          "Cholecystectomy Robotic"
+        ]
+      },
+      "hernia": {
+        "inguinal_young": "Young patients: Insurance rejects inguinal hernia UNLESS documented as emergency (Strangulated, Cord Obstruction, or Tear)",
+        "emergency_loophole": "Engine searches for 'Cord Obstruction' or 'Tear' to pass claim for young patient hernia",
+        "mesh_logic": "Mesh (15x15) is medically necessary for large defects — not cosmetic. Document Defect Size",
+        "abdominoplasty_filter": "Abdominoplasty = cosmetic, 90% rejection. Only covered when concurrent with hernia repair (umbilical/incisional)",
+        "diastasis_watch": "Diastasis Recti + Abdominoplasty = flag for cosmetic exclusion unless hernia ICD code present",
+        "applies_to": [
+          "Inguinal Hernia Repair Open",
+          "Inguinal Hernia Repair Laparoscopic",
+          "Ventral Hernia Repair with Mesh",
+          "Complex Abdominal Wall Reconstruction",
+          "Diastasis Recti Repair",
+          "Diastasis Recti + Mesh",
+          "Diastasis Recti + Abdominoplasty"
+        ]
+      },
+      "colorectal": {
+        "hemorrhoid_grade_gate": "Hemorrhoidectomy coverage: Grade 3 and 4 ONLY. Laser not medically justified for hemorrhoids — flag upcoding",
+        "harmonic_reject": "Harmonic device billing for hemorrhoids = not medically justified → flag",
+        "technology_guard": "Reject Laser code in 70% of insurance policies — alert upcoding for Harmonic",
+        "fistula_sphincter": "High Fistula cases penetrate Internal Sphincter → require 2-3 sessions. Seton placement raises complexity classification",
+        "colectomy_stoma": "In difficult cases: Stoma (side opening) created first, closed later — must document both",
+        "pathology_gate": "Block colectomy financial claim without Pathology Report confirming Tumor + Safety Margins",
+        "applies_to": [
+          "Hemorrhoidectomy Open",
+          "Hemorrhoidectomy Laser",
+          "Hemorrhoidectomy Stapler",
+          "High Fistula (Staged)",
+          "Colectomy Open",
+          "Colectomy Laparoscopic"
+        ]
+      },
+      "oncology": {
+        "whipple_max_tier": "Whipple = highest coding tier (ultra_complex). Keywords 'Duodenojejunostomy' activate maximum financial tier",
+        "curative_vs_palliative": "Engine must distinguish curative vs palliative intent for Whipple/Gastrojejunostomy — coding differs significantly",
+        "tumor_location": "Must verify tumor location: Pancreas head/tail, Gallbladder, Duodenum",
+        "applies_to": [
+          "Whipple Procedure",
+          "Colectomy (Malignancy)"
+        ]
+      }
+    },
+    "hand_surgery": {
+      "soft_tissue": {
+        "ganglion_gate": "Ganglion Cyst: NOT cosmetic. Must document Pain, Inflammation, or Tendon Friction especially near joints",
+        "six_s_rule": "6S Rule mandatory for all cysts: Site, Size, Shape, Surface, Consistency, Surroundings",
+        "fb_depth_gate": "Foreign Body: Superficial = simple removal. Deep (below fascia) = OR + C-Arm. Document 'Radio-opaque' or 'Deep to Fascia'"
+      },
+      "nerve_decompression": {
+        "cts_ncv_gate": "Carpal Tunnel surgery NOT approved without positive NCV/EMG Test — Median/Ulnar nerve compression confirmed",
+        "trigger_finger_occupation": "Trigger Finger: verify patient occupation — repetitive motion at work → flag for Workman's Compensation",
+        "functional_goal": "Document Grip and Object Handling restoration as outcome"
+      },
+      "trauma": {
+        "mode_of_injury_shield": "CRITICAL: scan ER report for Fighting, Self-inflicted, Hazardous sports → immediate insurance rejection",
+        "tendon_timing_rule": "Tendon repair >24h post-injury = high infection risk → Delayed Repair coding tier",
+        "tendon_graft_gate": "Tendon Grafting justified only if tissue loss documented in operative notes",
+        "nerve_rehab_gate": "Nerve Repair must include post-op Rehabilitation Plan for sensory/motor recovery",
+        "amputation_demarcation": "Amputation at Line of Demarcation (Dead vs Viable tissue) — must be documented"
+      },
+      "bone_fixation": {
+        "scaphoid_gate": "Wrist Arthroscopy primarily for Scaphoid Fractures where ORIF is technically difficult",
+        "imaging_gate": "Hand fractures: X-ray in 3 views mandatory — AP, Lateral, Oblique",
+        "hardware_logic": "K-Wire = standard. Plates & Screws ONLY for Comminuted/Complex fractures"
+      },
+      "emergency": {
+        "compartment_gate": "Compartment Syndrome: Localized swelling + Vascular obstruction = emergency. Document 'Tense compartment' or 'Absent pulses'",
+        "fasciotomy_tier": "Fasciotomy = life-saving/limb-saving emergency — highest urgency classification"
+      }
+    },
+    "bariatric": {
+      "bmi_gate": {
+        "rule": "Sleeve Gastrectomy covered ONLY if BMI > 40 (Morbid Obesity). ALL other weight-loss procedures = cosmetic by default",
+        "calculation": "BMI = Weight(kg) / [Height(m)]^2 — engine must AUTO-CALCULATE, never accept manual entry",
+        "rejection": "BMI ≤ 40 → REJECT as cosmetic weight-loss procedure",
+        "applies_to": [
+          "Laparoscopic Sleeve Gastrectomy",
+          "Sleeve Gastrectomy Robotic"
+        ]
+      },
+      "bypass_cosmetic": {
+        "rule": "Gastric Bypass, Mini Gastric Bypass, Lap Band = NOT COVERED — cosmetic by default",
+        "action": "AUTO_REJECT unless BMI > 40 AND morbid obesity complications documented"
+      },
+      "revisional_protocol": {
+        "rule": "All revisional procedures require primary surgery documentation + prior BMI + indication for revision",
+        "applies_to": [
+          "Revisional Sleeve",
+          "Sleeve to Bypass Conversion",
+          "Band to Bypass Conversion",
+          "Gastric Bypass Revision"
+        ]
+      },
+      "leak_repair": {
+        "rule": "Bariatric Leak Repair = Common Complication NOT malpractice",
+        "methylene_blue_gate": "Check Methylene Blue Test documentation in operative findings — key quality indicator",
+        "action": "FLAG if Methylene Blue Test absent"
+      },
+      "adhesiolysis": {
+        "rule": "Covered as standalone ONLY when linked to Laparotomy or Repeated C-Sections (≥3)",
+        "action": "APPROVE if linked — REJECT as standalone"
+      },
+      "hernia_reflux": {
+        "rule": "Ventral Hernia, Hiatal Hernia, Fundoplication = HIGH RISK → Senior Medical Review",
+        "diagnostic_trap": "Hiatus hernia often misdiagnosed as GERD or Peptic Ulcer → flag for senior review",
+        "action": "FLAG_SENIOR_REVIEW"
+      },
+      "whipple_oncology": {
+        "rule": "Whipple/Gastrojejunostomy = highly complex oncology. Distinguish curative vs palliative intent",
+        "applies_to": [
+          "Whipple Procedure",
+          "Gastrojejunostomy Revision"
+        ]
+      }
+    },
+    "breast": {
+      "reduction_gate": {
+        "rule": "Breast Reduction = cosmetic by default. Covered ONLY if chronic back pain or thoracic/lumbar OA ICD code linked",
+        "action": "FLAG_REJECTION_RISK if no spinal ICD code present"
+      },
+      "oncology_protocol": {
+        "rule": "All malignant breast: Wide Local Excision WITH Safety Margin + LN Excision mandatory",
+        "action": "FLAG if Safety Margin or LN Excision absent from operative findings",
+        "applies_to": [
+          "Lumpectomy (Wide Local Excision)",
+          "Modified Radical Mastectomy (MRM)",
+          "Skin-Sparing Mastectomy"
+        ]
+      },
+      "emergency_abscess": {
+        "rule": "Breast Abscess = Emergency — AUTO_APPROVE, bypass pre-auth",
+        "lactational_mastitis": "Lactational Mastitis = medical condition, fully covered, NOT subject to maternity sub-limits",
+        "urgent_6_rule": "Priority emergency abscesses: Breast + Brain (2B), Lung + Liver (2L), Gluteal (G)"
+      },
+      "cosmetic_exclusions": {
+        "rule": "Breast Augmentation, Mastopexy = strict cosmetic exclusions",
+        "action": "AUTO_REJECT unless functional/medical documentation present"
+      },
+      "free_flap": {
+        "rule": "Breast Reconstruction Free Flap = complexity 9. Microvascular anastomosis must be documented",
+        "action": "FLAG if anastomosis technique absent from operative notes"
+      }
+    },
+    "plastic": {
+      "skin_graft": {
+        "rule": "STSG/FTSG generally covered. Exclusion check: extreme sports, war, self-inflicted injury",
+        "los_benchmark": "Standard LOS = 1 day. First dressing change Day 5 — outpatient follow-up if stable",
+        "action": "EXCLUSION_HUNTER on mode of injury"
+      },
+      "free_flap": {
+        "rule": "Microvascular Free Flap = complexity 9 — anastomosis documentation mandatory",
+        "action": "FLAG if anastomosis absent from operative notes"
+      },
+      "abdominoplasty": {
+        "rule": "Abdominoplasty = cosmetic by default. Covered ONLY concurrent with hernia repair",
+        "umbilical_coding": "Umbilical Reconstruction = additional procedure — reflects true surgical skill",
+        "action": "REJECT unless hernia ICD code present. FLAG umbilical as add-on code"
+      },
+      "cosmetic_exclusions": {
+        "rule": "Liposuction, Tissue Expanders = cosmetic exclusions. Scar Revision only inside repeated C-section billing. Keloid Excision needs functional impairment proof",
+        "gynecomastia": "Gynecomastia = cosmetic — check for lipoma tissue under nipple for any coverage"
+      }
+    },
+    "orthopaedic": {
+      "fracture_fixation": {
+        "plate_rule": "Plates & Screws (ORIF) = articular/peri-articular fractures near joints ONLY",
+        "im_nail_rule": "IM Nailing = long bone shaft fractures (Femur, Humerus, Tibia) ONLY",
+        "fat_embolism_alert": "CRITICAL: Fat Embolism = high-risk specific complication in Femur nailing — monitor",
+        "external_fixator": "External Fixator = damage control for open/contaminated fractures",
+        "hardware_removal": "Hardware removal decision based on X-ray healing status",
+        "action": "HARDWARE_AUDITOR: verify fixation method matches fracture type"
+      },
+      "trauma_exclusion": {
+        "rule": "Verify Mode of Trauma and Incident Cause for ALL fracture cases",
+        "exclusion_check": "Non-covered: professional sports, criminal acts, hazardous activities",
+        "action": "EXCLUSION_HUNTER active for all trauma/fracture cases"
+      },
+      "hip_age_gate": {
+        "rule": "DHS = first choice for YOUNGER patients without AVN. Hip Replacement = preferred for ELDERLY",
+        "avn_check": "Check for Avascular Necrosis (AVN) — changes DHS to replacement",
+        "hemiarthroplasty": "Hemiarthroplasty = elderly + femoral neck fracture (emergency status)",
+        "action": "AGE_GATE: elderly + hip fracture → recommend Hemiarthroplasty/THR over DHS"
+      },
+      "knee_mri_gate": {
+        "rule": "Knee Arthroscopy requires MRI Grade 3 or 4 OA, degenerative tears, or patellar instability",
+        "age_protocol_young": "Young patients: surgery is first-line",
+        "age_protocol_elderly": "Elderly: conservative first (Medical + Physio + Steroid/Hyaluronic) — surgery as LAST RESORT",
+        "prp_rejection": "PRP/Plasma injections = AUTO_REJECT — not FDA approved, classified as trial",
+        "tkr_preexisting": "TKR frequently flagged as Pre-existing condition — watch for this flag",
+        "tkr_imaging": "TKR requires AP X-ray showing aggressive OA",
+        "action": "FLAG if MRI absent. AUTO_REJECT PRP. FLAG TKR for pre-existing check"
+      },
+      "shoulder": {
+        "rule": "Shoulder decompression often flagged as Upcoding — engine defends based on surgical standards",
+        "action": "FLAG_UPCODING_DEFENSE for decompression procedures"
+      },
+      "spine": {
+        "rule": "Spinal Fusion requires MRI + failed conservative management history",
+        "complexity_levels": "Complexity by number of levels: 1-level vs 3-level — more levels = higher complexity",
+        "laminectomy": "Laminectomy = spinal stenosis decompression",
+        "discectomy": "Discectomy = lumbar disc herniation with nerve compression",
+        "action": "FLAG if MRI absent or conservative management history not documented"
+      },
+      "congenital_exclusions": {
+        "rule": "Scoliosis and Flatfoot = CONGENITAL — strictly non-covered",
+        "action": "AUTO_REJECT — congenital exclusion"
+      }
+    }
+  },
+  "intelligence_triggers": {
+    "exclusion_hunter": {
+      "description": "Scan ER/admission notes for policy exclusion keywords",
+      "keywords": [
+        "fight",
+        "fighting",
+        "self-inflicted",
+        "self-harm",
+        "hazardous sport",
+        "extreme sport",
+        "adrenaline sport",
+        "professional sport",
+        "criminal",
+        "war",
+        "assault perpetrator",
+        "self injury"
+      ],
+      "action": "AUTO_REJECT",
+      "specialties": [
+        "All"
+      ]
+    },
+    "bmi_calculator": {
+      "description": "Auto-calculate BMI for bariatric coverage gate",
+      "formula": "BMI = Weight(kg) / (Height(m))^2",
+      "threshold": 40,
+      "action": "REJECT if BMI ≤ 40 for weight-loss procedures"
+    },
+    "cosmetic_filter": {
+      "description": "Flag cosmetic procedures submitted as medical",
+      "cosmetic_procedures": [
+        "Breast Augmentation",
+        "Mastopexy (Breast Lift)",
+        "Liposuction",
+        "Scar Revision",
+        "Keloid Excision",
+        "Gynecomastia Excision",
+        "Abdominoplasty",
+        "Tissue Expander Placement",
+        "Tissue Expander Removal",
+        "Gastric Bypass",
+        "Mini Gastric Bypass",
+        "Band Removal"
+      ],
+      "action": "AUTO_REJECT unless medical exception documented"
+    },
+    "mri_gate": {
+      "description": "Knee arthroscopy and spinal surgery require MRI confirmation",
+      "trigger_procedures": [
+        "Knee Arthroscopy Diagnostic",
+        "Meniscectomy Arthroscopic",
+        "ACL Reconstruction",
+        "Laminectomy Spine",
+        "Discectomy Lumbar",
+        "Spinal Fusion"
+      ],
+      "action": "FLAG_MISSING_IMAGING"
+    },
+    "age_gate": {
+      "description": "Hip fracture — DHS for young, replacement for elderly",
+      "trigger_procedures": [
+        "Dynamic Hip Screw (DHS)",
+        "Total Hip Replacement",
+        "Hemiarthroplasty Hip"
+      ],
+      "action": "FLAG_AGE_APPROPRIATE_TREATMENT"
+    },
+    "prp_rejector": {
+      "description": "PRP injections are not FDA approved",
+      "trigger_keywords": [
+        "PRP",
+        "plasma injection",
+        "platelet rich plasma"
+      ],
+      "action": "AUTO_REJECT"
+    },
+    "methylene_blue_checker": {
+      "description": "Bariatric leak repair must document Methylene Blue Test",
+      "trigger_procedures": [
+        "Bariatric Leak Repair Laparoscopic"
+      ],
+      "action": "FLAG if Methylene Blue Test absent"
+    },
+    "ncv_matcher": {
+      "description": "Carpal Tunnel surgery requires positive NCV/EMG",
+      "trigger_procedures": [
+        "Carpal Tunnel Release Open",
+        "Carpal Tunnel Release Endoscopic"
+      ],
+      "action": "FLAG_REJECTION_RISK if NCV absent"
+    },
+    "oncologic_margin_checker": {
+      "description": "Breast oncology requires safety margin + LN excision",
+      "trigger_procedures": [
+        "Lumpectomy (Wide Local Excision)",
+        "Modified Radical Mastectomy (MRM)"
+      ],
+      "action": "FLAG if Safety Margin or LN Excision absent"
+    },
+    "emergency_auto_approve": {
+      "description": "Emergency procedures bypass pre-auth",
+      "trigger_procedures": [
+        "Bariatric Leak Repair Laparoscopic",
+        "Closed Reduction Fracture",
+        "Hemiarthroplasty Hip",
+        "Appendectomy Open",
+        "Appendectomy Laparoscopic"
+      ],
+      "action": "AUTO_APPROVE_EMERGENCY"
+    },
+    "hardware_auditor": {
+      "description": "Fixation method must match fracture type",
+      "rules": {
+        "plates_screws": "Articular/peri-articular fractures only",
+        "im_nail": "Long bone shaft fractures only",
+        "external_fixator": "Open/contaminated fractures — damage control"
+      },
+      "action": "FLAG_NON_MEDICALLY_NECESSARY if mismatch"
+    },
+    "robotic_rejector": {
+      "description": "Robotic Appendectomy not FDA approved for this indication",
+      "trigger_procedures": [
+        "Appendectomy Robotic"
+      ],
+      "action": "AUTO_DOWNGRADE to Laparoscopic/Open"
+    },
+    "rln_safety_alert": {
+      "description": "Total Thyroidectomy must document bilateral RLN and Parathyroid",
+      "trigger_procedures": [
+        "Total Thyroidectomy",
+        "Total Thyroidectomy + LN Dissection"
+      ],
+      "required_keywords": [
+        "RLN",
+        "Recurrent Laryngeal Nerve",
+        "Parathyroid"
+      ],
+      "action": "ALERT if RLN or Parathyroid not mentioned in operative notes"
+    },
+    "senior_review_flag": {
+      "description": "Complex or misdiagnosis-prone cases require senior medical review",
+      "trigger_procedures": [
+        "Laparoscopic Fundoplication (Nissen)",
+        "Hiatal Hernia Repair Laparoscopic",
+        "Free Flap Microvascular",
+        "Breast Reconstruction Free Flap",
+        "Spinal Fusion",
+        "Tumor Resection Bone",
+        "Whipple Procedure"
+      ],
+      "action": "FLAG_SENIOR_REVIEW"
+    },
+    "specimen_matcher": {
+      "description": "Lab container count must match surgical description",
+      "specialties": [
+        "General Surgery",
+        "Breast Surgery"
+      ],
+      "action": "FLAG if specimen count mismatch between OT Notes and Pathology"
+    },
+    "occupational_alert": {
+      "description": "Trigger Finger in manual labor worker — potential Workman's Compensation",
+      "trigger_procedures": [
+        "Trigger Finger Release",
+        "Trigger Finger Release Percutaneous"
+      ],
+      "action": "FLAG_OCCUPATIONAL_INJURY — cross-check patient occupation"
+    },
+    "timing_checker": {
+      "description": "Tendon repair timing gate",
+      "rule": "Tendon repair >24h post-injury = Delayed Repair coding tier",
+      "trigger_procedures": [
+        "Tendon Repair Primary",
+        "Flexor Tendon Repair",
+        "Extensor Tendon Repair"
+      ],
+      "action": "UPGRADE_CODING_TIER if >24h from injury"
+    }
+  },
+  "clinical_rules": {
+    "imaging_gates": {
+      "thyroid": "TIRADS score + TSH/T3/T4 + T99 Nuclear Scan",
+      "appendicitis": "US abdomen or CT scan + WBC/CRP for severity",
+      "cholecystectomy": "US abdomen mandatory — HIDA scan if needed",
+      "knee_arthroscopy": "MRI Grade 3/4 OA mandatory",
+      "spinal_surgery": "MRI + failed conservative management history",
+      "tkr": "AP X-ray showing aggressive OA",
+      "hand_fracture": "X-ray AP + Lateral + Oblique (3 views)",
+      "scaphoid": "X-ray 3 views + CT/MRI",
+      "carpal_tunnel": "NCV/EMG mandatory",
+      "breast_biopsy": "Mammogram or US + BI-RADS score",
+      "breast_oncology": "MRI + Histopathology + LN status"
+    },
+    "los_benchmarks": {
+      "same_day": [
+        "Skin Lesion Excision",
+        "Needle Biopsy Thyroid",
+        "Core Biopsy Thyroid",
+        "Appendectomy Laparoscopic",
+        "Inguinal Hernia Repair Open",
+        "Hemorrhoidectomy Open",
+        "Hemorrhoidectomy Laser",
+        "High Fistula (Staged)",
+        "Carpal Tunnel Release Open",
+        "Trigger Finger Release",
+        "Knee Arthroscopy Diagnostic",
+        "Meniscectomy Arthroscopic",
+        "Shoulder Arthroscopy",
+        "Core Needle Biopsy Breast",
+        "Excisional Biopsy Breast",
+        "Breast Augmentation",
+        "Breast Implant Removal"
+      ],
+      "1_day": [
+        "Excisional Biopsy Thyroid",
+        "Appendectomy Open",
+        "Cholecystectomy Laparoscopic",
+        "Inguinal Hernia Repair Laparoscopic",
+        "Lumpectomy (Wide Local Excision)",
+        "Skin Graft Split Thickness",
+        "Tendon Repair Primary",
+        "Nerve Repair Primary"
+      ],
+      "1_2_days": [
+        "Thyroid Lobectomy",
+        "Wide Excision with Safety Margin",
+        "Plating Humerus",
+        "Plating Radius Ulna"
+      ],
+      "2_3_days": [
+        "Total Thyroidectomy",
+        "Laparoscopic Sleeve Gastrectomy",
+        "Laminectomy Spine",
+        "Discectomy Lumbar"
+      ],
+      "2_4_days": [
+        "Total Thyroidectomy + LN Dissection"
+      ],
+      "3_4_days": [
+        "Mini Gastric Bypass",
+        "Dynamic Hip Screw (DHS)",
+        "Hemiarthroplasty Hip"
+      ],
+      "3_5_days": [
+        "Roux-en-Y Gastric Bypass",
+        "Total Knee Replacement",
+        "Total Hip Replacement"
+      ],
+      "4_5_days": [
+        "Spinal Fusion",
+        "Sleeve to Bypass Conversion",
+        "ACL Reconstruction"
+      ],
+      "5_7_days": [
+        "Right Hemicolectomy",
+        "Free Flap Microvascular",
+        "Breast Reconstruction Free Flap",
+        "Bariatric Leak Repair Laparoscopic",
+        "Finger Replantation"
+      ],
+      "7_10_days": [
+        "Thumb Replantation",
+        "Free Flap Hand Reconstruction"
+      ],
+      "14_21_days": [
+        "Whipple Procedure"
+      ]
+    }
+  }
+}
