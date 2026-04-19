@@ -73,15 +73,22 @@ EPISODE_STORE: dict[str, dict] = {}
 
 # ── Load Medical Logic KB ─────────────────────────────────────────────────
 MEDICAL_LOGIC_KB: dict = {}
-_kb_path = KB_DIR / "keyword_dictionary_medical_logic_v2.json"
+_kb_path = KB_DIR / "keyword_dictionary_medical_logic_v3.json"
 if _kb_path.exists():
     with open(_kb_path, encoding="utf-8") as f:
         MEDICAL_LOGIC_KB = json.load(f)
-    print(f"[OK] Medical Logic KB loaded: "
-          f"{len(MEDICAL_LOGIC_KB.get('procedures',{}).get('general_surgery',[]))} GS + "
-          f"{len(MEDICAL_LOGIC_KB.get('procedures',{}).get('hand_surgery',[]))} HS procedures")
+    _meta   = MEDICAL_LOGIC_KB.get("_meta", {})
+    _counts = _meta.get("procedure_counts", {})
+    _total  = _meta.get("total_procedures", 0)
+    _trigs  = _meta.get("intelligence_triggers", 0)
+    print(f"[OK] Medical Logic KB v{_meta.get('version','?')} loaded — {_total} procedures | {_trigs} triggers")
+    print(f"     Bariatric:{_counts.get('bariatric',0)} | Breast:{_counts.get('breast',0)} | "
+          f"Plastic:{_counts.get('plastic',0)} | Ortho:{_counts.get('ortho',_counts.get('orthopaedic',0))} | "
+          f"Hand:{_counts.get('hand',_counts.get('hand_surgery',0))} | "
+          f"General:{_counts.get('general',_counts.get('general_surgery',0))}")
 else:
-    print(f"[WARN] Medical Logic KB not found at {_kb_path}")
+    print(f"[WARN] Medical Logic KB not found: {_kb_path}")
+    print(f"       → Place keyword_dictionary_medical_logic_v3.json in knowledge_base/")
 
 # ── Initialise engine (once at startup) ───────────────────────────────────
 _engine: NOVIQEngine | None = None
@@ -421,9 +428,19 @@ async def kb_status():
         "dcl_table": "stub — purchase AR-DRG Definitions Manual",
         "appendix_c": "7/47 unconditional exclusions confirmed",
         "medical_logic_kb": {
-            "general_surgery_procedures": len(MEDICAL_LOGIC_KB.get("procedures", {}).get("general_surgery", [])),
-            "hand_surgery_procedures":    len(MEDICAL_LOGIC_KB.get("procedures", {}).get("hand_surgery", [])),
-            "intelligence_triggers":      len(MEDICAL_LOGIC_KB.get("intelligence_triggers", {})),
+            "version":             MEDICAL_LOGIC_KB.get("_meta", {}).get("version", "unknown"),
+            "total_procedures":    MEDICAL_LOGIC_KB.get("_meta", {}).get("total_procedures", 0),
+            "bariatric":           len(MEDICAL_LOGIC_KB.get("procedures", {}).get("bariatric", [])),
+            "breast":              len(MEDICAL_LOGIC_KB.get("procedures", {}).get("breast", [])),
+            "plastic":             len(MEDICAL_LOGIC_KB.get("procedures", {}).get("plastic", [])),
+            "orthopaedic":         len(MEDICAL_LOGIC_KB.get("procedures", {}).get("ortho",
+                                   MEDICAL_LOGIC_KB.get("procedures", {}).get("orthopaedic", []))),
+            "hand_surgery":        len(MEDICAL_LOGIC_KB.get("procedures", {}).get("hand",
+                                   MEDICAL_LOGIC_KB.get("procedures", {}).get("hand_surgery", []))),
+            "general_surgery":     len(MEDICAL_LOGIC_KB.get("procedures", {}).get("general",
+                                   MEDICAL_LOGIC_KB.get("procedures", {}).get("general_surgery", []))),
+            "intelligence_triggers": len(MEDICAL_LOGIC_KB.get("intelligence_triggers", {})),
+            "logic_sections":      len(MEDICAL_LOGIC_KB.get("medical_logic", {})),
         },
         "engine_available": ENGINE_AVAILABLE,
     }
