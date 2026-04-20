@@ -145,4 +145,39 @@ async def get_queue():
     # ترتيب الحالات من الأحدث للأقدم
     queue_list.sort(key=lambda x: x.get("processed_at") or "", reverse=True)
     
-    return {"queue": queue_list, "total": len(queue_list)}
+    return {"queue": queue_list, "total": len(queue_list)}# ─── 5. اعتماد الحالة (Approve Endpoint) ───
+@app.post("/api/approve/{episode_id}")
+async def approve_episode(episode_id: str, request: Request):
+    if episode_id not in EPISODE_STORE:
+        raise HTTPException(status_code=404, detail="Episode not found.")
+    
+    body = await request.json()
+    physician_id = body.get("physician_id", "DR_KASSAB_ADMIN")
+    
+    # تحديث الحالة إلى معتمد
+    EPISODE_STORE[episode_id]["status"] = "APPROVED"
+    EPISODE_STORE[episode_id]["approved_by"] = physician_id
+    EPISODE_STORE[episode_id]["approved_at"] = datetime.now().isoformat()
+
+    return {
+        "episode_id": episode_id,
+        "status": "APPROVED",
+        "message": f"Episode confirmed by {physician_id}"
+    }
+
+# ─── 6. تقرير حالة النظام (System Health) ───
+@app.get("/api/kb/status")
+async def kb_status():
+    return {
+        "engine_available": ENGINE_AVAILABLE,
+        "demo_mode": not ENGINE_AVAILABLE,
+        "database_type": "In-Memory (EPISODE_STORE)",
+        "knowledge_base_version": "v3.0.0-Clean",
+        "system_time": datetime.now().isoformat()
+    }
+
+# ─── 7. تشغيل المحرك (Main Entry Point) ───
+if __name__ == "__main__":
+    import uvicorn
+    # التشغيل على بورت 8000
+    uvicorn.run(app, host="0.0.0.0", port=8000)
