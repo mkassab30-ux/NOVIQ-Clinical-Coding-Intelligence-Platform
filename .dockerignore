@@ -22,6 +22,5 @@ Dockerfile
 *.csv
 *.xlsx
 *.json.bak
-
 # أي ملفات خاصة بـ Railway أو التعديلات المؤقتة
 railway.json
