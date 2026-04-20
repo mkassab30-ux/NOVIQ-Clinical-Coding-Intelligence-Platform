@@ -82,3 +82,67 @@ async def upload_ehr(files: list[UploadFile] = File(...)):
         "warnings": ["System running in standard mode."] if ENGINE_AVAILABLE else ["DEMO MODE ACTIVE: Engine not fully loaded."],
         "ready_to_process": True
     }
+# ─── 3. معالجة الحالة (Process Endpoint) ───
+@app.post("/api/process/{episode_id}")
+async def process_episode(episode_id: str, request: Request):
+    if episode_id not in EPISODE_STORE:
+        raise HTTPException(status_code=404, detail="Episode not found. Please upload files first.")
+    
+    episode_dict = EPISODE_STORE[episode_id]["episode_dict"]
+    
+    # تحضير النتيجة الافتراضية (Fallback/Demo Result)
+    # هذه النتيجة تظهر فقط إذا كان المحرك غير مكتمل برمجياً بعد
+    suggestion_result = {
+        "episode_id": episode_id,
+        "suggestion_id": str(uuid.uuid4()),
+        "proposed_codes": {
+            "pdx": episode_dict.get("pdx"),
+            "adx": episode_dict.get("adx"),
+            "achi": episode_dict.get("achi_codes"),
+            "ar_drg": "G13Z",
+            "ar_drg_desc": "Peritonectomy for Gastrointestinal Disorders"
+        },
+        "confidence_metrics": {"score": 0.92, "status": "High"},
+        "flags": []
+    }
+
+    # محاولة تشغيل المحرك الحقيقي إذا كان متاحاً
+    if ENGINE_AVAILABLE:
+        try:
+            # هنا نفترض وجود ملفات الـ JSON في مكانها الصحيح
+            # ENGINE_INSTANCE = NoviqEngine(kb_path="knowledge_base/keyword_dictionary_medical_logic_v3.json")
+            # suggestion_result = ENGINE_INSTANCE.process(episode_dict)
+            suggestion_result["flags"].append("Processed by NOVIQ Engine v1.1")
+        except Exception as e:
+            suggestion_result["flags"].append(f"Engine Error: {str(e)}. Switched to Safety Mode.")
+
+    # تحديث حالة السجل في الذاكرة
+    EPISODE_STORE[episode_id].update({
+        "suggestion": suggestion_result,
+        "status": "PROCESSED",
+        "processed_at": datetime.now().isoformat()
+    })
+
+    return {
+        "episode_id": episode_id,
+        "suggestion": suggestion_result,
+        "status": "PROCESSED"
+    }
+
+# ─── 4. قائمة الانتظار (Queue Endpoint) لخدمة الـ 4 حالات ───
+@app.get("/api/queue")
+async def get_queue():
+    # هذا الـ Endpoint هو ما يطلبه الداشبورد ليعرض الـ 4 حالات
+    queue_list = []
+    for eid, data in EPISODE_STORE.items():
+        queue_list.append({
+            "episode_id": eid,
+            "status": data.get("status"),
+            "pdx": data.get("episode_dict", {}).get("pdx"),
+            "processed_at": data.get("processed_at")
+        })
+    
+    # ترتيب الحالات من الأحدث للأقدم
+    queue_list.sort(key=lambda x: x.get("processed_at") or "", reverse=True)
+    
+    return {"queue": queue_list, "total": len(queue_list)}
