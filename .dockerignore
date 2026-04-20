@@ -18,7 +18,6 @@ Dockerfile
 .github/
 .vscode/
 *.log
-
 # منع ملفات البيانات الضخمة (لو لسه موجودة بره الـ Data folder)
 *.csv
 *.xlsx
