@@ -13,7 +13,7 @@
     "ipv6EgressEnabled": false,
     "multiRegionConfig": {
       "europe-west4-drams3a": {
-        "numReplicas": 1
+        "numReplicas": 2
       }
     },
     "restartPolicyType": "ON_FAILURE",
