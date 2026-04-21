@@ -22,7 +22,6 @@ BASE_DIR   = Path(__file__).parent
 ENGINE_DIR = BASE_DIR / "engine"
 KB_DIR     = BASE_DIR / "knowledge_base"
 
-sys.path.insert(0, str(ENGINE_DIR))
 sys.path.insert(0, str(BASE_DIR))
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
@@ -33,13 +32,17 @@ warnings.filterwarnings("ignore")
 # ── Import engine ──────────────────────────────────────────────────────────
 ENGINE_AVAILABLE = False
 try:
-    from noviq_engine import NOVIQEngine
-    from models import APPROVAL_APPROVED, APPROVAL_PENDING, APPROVAL_REJECTED, CodingSuggestion
-    from validation_rules import KnowledgeBaseIncompleteError
+    try:
+    from engine.noviq_engine import NOVIQEngine
+    from engine.models import APPROVAL_APPROVED, APPROVAL_PENDING, APPROVAL_REJECTED, CodingSuggestion
+    from engine.validation_rules import KnowledgeBaseIncompleteError
+
     ENGINE_AVAILABLE = True
     print("[OK] Engine modules loaded")
-except ImportError as e:
-    print(f"[WARN] Engine modules missing: {e} — running in Demo Mode")
+
+except Exception as e:
+    ENGINE_AVAILABLE = False
+    print(f"[WARN] Engine modules failed: {e} — running in Demo Mode")
 
 # ── App ────────────────────────────────────────────────────────────────────
 app = FastAPI(title="NOVIQ Engine API", version="1.0.0")
