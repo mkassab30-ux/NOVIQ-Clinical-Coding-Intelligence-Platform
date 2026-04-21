@@ -22,7 +22,7 @@ sys.path.insert(0, str(BASE_DIR))
 _KB_CANDIDATES = [BASE_DIR / "knowledge_base", BASE_DIR]
 KB_DIR = next((p for p in _KB_CANDIDATES if (p / "ar_drg_kb_seed_v11_new_adrgs.json").exists()), BASE_DIR)
 
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 warnings.filterwarnings("ignore")
@@ -49,6 +49,18 @@ app = FastAPI(title="NOVIQ Engine API", version="1.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 EPISODE_STORE: dict[str, dict] = {}
+
+# Daily episode counter for EP-YYYY-NNNN format
+_episode_counter: dict[str, int] = {}
+
+def _generate_episode_id() -> str:
+    today = datetime.now().strftime("%Y-%m-%d")
+    year = datetime.now().strftime("%Y")
+    if today not in _episode_counter:
+        _episode_counter[today] = 0
+    _episode_counter[today] += 1
+    seq = _episode_counter[today]
+    return f"EP-{year}-{seq:04d}"
 
 # ── Medical Logic KB ─────────────────────────────────────────────────────
 MEDICAL_LOGIC_KB: dict = {}
@@ -104,10 +116,30 @@ async def serve_dashboard():
         return HTMLResponse(p.read_text(encoding="utf-8"))
     return HTMLResponse("<h1>NOVIQ Engine API</h1><p>Dashboard file not found in root folder.</p>")
 
+# ── Create Episode ────────────────────────────────────────────────────────
+@app.post("/api/episodes")
+async def create_episode(
+    patient_name: str = Form("Ahmed Al-Rashid"),
+    patient_age: int = Form(58),
+    patient_sex: str = Form("Female"),
+    specialty: str = Form("General Surgery"),
+):
+    episode_id = _generate_episode_id()
+    EPISODE_STORE[episode_id] = {
+        "episode_id": episode_id,
+        "patient_name": patient_name,
+        "patient_age": patient_age,
+        "patient_sex": patient_sex,
+        "specialty": specialty,
+        "status": "upload_pending",
+        "created_at": _now(),
+    }
+    return {"episode_id": episode_id, "episode": EPISODE_STORE[episode_id]}
+
 # ── Upload ────────────────────────────────────────────────────────────────
 @app.post("/api/upload")
 async def upload_ehr(files: list[UploadFile] = File(...)):
-    episode_id   = f"EP-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:6].upper()}"
+    episode_id   = _generate_episode_id()
     episode_dict = _empty_episode(episode_id)
     docs_read, warn_list = [], []
 
@@ -223,6 +255,7 @@ async def get_queue():
         r  = data.get("suggestion", {})
         queue.append({
             "episode_id":   ep_id,
+            "patient_name": data.get("patient_name", ep.get("patient_name", "—")),
             "patient_age":  ep.get("patient_age"),
             "patient_sex":  ep.get("patient_sex"),
             "pdx":          ep.get("pdx"),
