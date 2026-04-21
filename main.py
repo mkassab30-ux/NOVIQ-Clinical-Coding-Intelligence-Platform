@@ -1,31 +1,36 @@
 """
-NOVIQ Engine — FastAPI Backend
-Railway Production-Ready
+NOVIQ Engine — FastAPI Backend (Production-Fixed v2)
+======================================================
+Fixes:
+  1. EPISODE_STORE persisted to JSON file (fixes multi-worker 404)
+  2. Engine import with detailed error logging
+  3. Graceful demo fallback with full episode_dict return
+  4. CORS enabled for all origins
 """
 from __future__ import annotations
 import json, os, sys, uuid, warnings, re
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
-# ── Path setup ───────────────────────────────────────────────────────────
-BASE_DIR = Path(__file__).parent
-_engine_candidates = [BASE_DIR / "engine", BASE_DIR]
-for _p in _engine_candidates:
-    if (_p / "noviq_engine.py").exists():
-        sys.path.insert(0, str(_p))
-        break
+# ── Paths ──────────────────────────────────────────────────────────────────
+BASE_DIR   = Path(__file__).parent
+ENGINE_DIR = BASE_DIR / "engine"
+KB_DIR     = BASE_DIR / "knowledge_base"
+DATA_DIR   = BASE_DIR / "data"
+DATA_DIR.mkdir(exist_ok=True)
+
 sys.path.insert(0, str(BASE_DIR))
+sys.path.insert(0, str(ENGINE_DIR))
 
-_KB_CANDIDATES = [BASE_DIR / "knowledge_base", BASE_DIR]
-KB_DIR = next((p for p in _KB_CANDIDATES if (p / "ar_drg_kb_seed_v11_new_adrgs.json").exists()), BASE_DIR)
-
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile, Form
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 warnings.filterwarnings("ignore")
 
-# ── Import engine ────────────────────────────────────────────────────────
+# ── Import engine ──────────────────────────────────────────────────────────
 ENGINE_AVAILABLE = False
+ENGINE_IMPORT_ERROR = None
 NOVIQEngine = None
 KnowledgeBaseIncompleteError = Exception
 
@@ -38,23 +43,32 @@ try:
     ENGINE_AVAILABLE = True
     print("[OK] Engine modules loaded successfully")
 except Exception as e:
+    ENGINE_IMPORT_ERROR = str(e)
     print(f"[WARN] Engine import failed: {e}")
-    import traceback; traceback.print_exc()
+    import traceback
+    traceback.print_exc()
 
-# ── App ──────────────────────────────────────────────────────────────────
-app = FastAPI(title="NOVIQ Engine API", version="1.0.0")
+# ── App ────────────────────────────────────────────────────────────────────
+app = FastAPI(title="NOVIQ Engine API", version="2.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-EPISODE_STORE: dict[str, dict] = {}
-_episode_counter: dict[str, int] = {}
+# ── Persistent Episode Store ───────────────────────────────────────────────
+EPISODE_STORE_PATH = DATA_DIR / "episodes.json"
 
-def _generate_episode_id() -> str:
-    today = datetime.now().strftime("%Y-%m-%d")
-    year = datetime.now().strftime("%Y")
-    if today not in _episode_counter:
-        _episode_counter[today] = 0
-    _episode_counter[today] += 1
-    return f"EP-{year}-{_episode_counter[today]:04d}"
+def _load_store() -> dict:
+    if EPISODE_STORE_PATH.exists():
+        try:
+            with open(EPISODE_STORE_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except:
+            return {}
+    return {}
+
+def _save_store(store: dict):
+    with open(EPISODE_STORE_PATH, "w", encoding="utf-8") as f:
+        json.dump(store, f, ensure_ascii=False, default=str)
+
+EPISODE_STORE: dict = _load_store()
 
 # ── Medical Logic KB ─────────────────────────────────────────────────────
 MEDICAL_LOGIC_KB: dict = {}
@@ -86,13 +100,17 @@ def get_engine():
             print("[OK] NOVIQEngine initialised")
         except Exception as e:
             print(f"[WARN] Engine init failed: {e}")
-            import traceback; traceback.print_exc()
+            import traceback
+            traceback.print_exc()
     return _engine
 
 @app.on_event("startup")
 async def startup_event():
     get_engine()
-    print(f"[OK] NOVIQ API ready — engine={'ON' if get_engine() else 'DEMO'} | KB={KB_DIR}")
+    mode = "LIVE" if get_engine() else "DEMO"
+    print(f"[OK] NOVIQ API ready — engine={mode} | KB={KB_DIR}")
+    if ENGINE_IMPORT_ERROR:
+        print(f"[INFO] Engine import error: {ENGINE_IMPORT_ERROR[:200]}")
 
 # ── Dashboard ────────────────────────────────────────────────────────────
 def _find_dashboard():
@@ -107,32 +125,12 @@ async def serve_dashboard():
     p = _find_dashboard()
     if p:
         return HTMLResponse(p.read_text(encoding="utf-8"))
-    return HTMLResponse("<h1>NOVIQ Engine API</h1><p>Dashboard file not found in root folder.</p>")
-
-# ── Create Episode ───────────────────────────────────────────────────────
-@app.post("/api/episodes")
-async def create_episode(
-    patient_name: str = Form("Ahmed Al-Rashid"),
-    patient_age: int = Form(58),
-    patient_sex: str = Form("Female"),
-    specialty: str = Form("General Surgery"),
-):
-    episode_id = _generate_episode_id()
-    EPISODE_STORE[episode_id] = {
-        "episode_id": episode_id,
-        "patient_name": patient_name,
-        "patient_age": patient_age,
-        "patient_sex": patient_sex,
-        "specialty": specialty,
-        "status": "upload_pending",
-        "created_at": _now(),
-    }
-    return {"episode_id": episode_id, "episode": EPISODE_STORE[episode_id]}
+    return HTMLResponse("<h1>NOVIQ Engine API</h1><p>Dashboard file not found.</p>")
 
 # ── Upload ───────────────────────────────────────────────────────────────
 @app.post("/api/upload")
 async def upload_ehr(files: list[UploadFile] = File(...)):
-    episode_id   = _generate_episode_id()
+    episode_id   = f"EP-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:6].upper()}"
     episode_dict = _empty_episode(episode_id)
     docs_read, warn_list = [], []
 
@@ -166,19 +164,22 @@ async def upload_ehr(files: list[UploadFile] = File(...)):
     _calc_los(episode_dict)
 
     episode_dict["ehr_documents"] = [d["doc_type"] for d in docs_read]
+    
+    # Save to persistent store
     EPISODE_STORE[episode_id] = {
         "episode_dict": episode_dict,
-        "status": "uploaded", 
+        "status": "uploaded",
         "docs_read": docs_read,
         "patient_name": episode_dict.get("patient_name", "Unknown"),
         "patient_age": episode_dict.get("patient_age", 0),
         "patient_sex": episode_dict.get("patient_sex", "Unknown"),
     }
+    _save_store(EPISODE_STORE)
 
     return {
-        "episode_id": episode_id, 
+        "episode_id": episode_id,
         "episode_dict": episode_dict,
-        "documents_read": docs_read, 
+        "documents_read": docs_read,
         "warnings": warn_list,
         "ready_to_process": bool(episode_dict.get("pdx")),
         "engine_mode": "live" if ENGINE_AVAILABLE else "demo"
@@ -188,16 +189,28 @@ async def upload_ehr(files: list[UploadFile] = File(...)):
 @app.post("/api/process/{episode_id}")
 async def process_episode(episode_id: str, request: Request):
     body = {}
-    try: body = await request.json()
-    except: pass
+    try: 
+        body = await request.json()
+    except: 
+        pass
 
+    # Reload store in case another worker saved it
+    store = _load_store()
+    
     if body.get("episode_dict"):
         episode_dict = body["episode_dict"]
-        EPISODE_STORE.setdefault(episode_id, {})["episode_dict"] = episode_dict
-    elif episode_id in EPISODE_STORE:
-        episode_dict = EPISODE_STORE[episode_id]["episode_dict"]
+        # Update store
+        if episode_id in store:
+            store[episode_id]["episode_dict"] = episode_dict
+        else:
+            store[episode_id] = {"episode_dict": episode_dict, "status": "uploaded"}
+        _save_store(store)
+        EPISODE_STORE.update(store)
+    elif episode_id in store:
+        episode_dict = store[episode_id]["episode_dict"]
+        EPISODE_STORE.update(store)
     else:
-        raise HTTPException(404, f"Episode {episode_id} not found. Upload files first.")
+        raise HTTPException(404, detail=f"Episode {episode_id} not found. Upload files first.")
 
     engine = get_engine()
 
@@ -205,8 +218,12 @@ async def process_episode(episode_id: str, request: Request):
     if engine is None:
         result = _demo_result(episode_id, episode_dict)
         EPISODE_STORE[episode_id].update({
-            "suggestion": result["suggestion"], "kb_flags": [],
-            "status": "PENDING", "processed_at": _now()})
+            "suggestion": result["suggestion"],
+            "kb_flags": [],
+            "status": "PENDING",
+            "processed_at": _now()
+        })
+        _save_store(EPISODE_STORE)
         result["episode_dict"] = episode_dict
         return result
 
@@ -214,71 +231,96 @@ async def process_episode(episode_id: str, request: Request):
     kb_flags, blocked = [], False
     try:
         suggestion = engine.process_episode(episode_dict)
-        result     = suggestion.to_dict()
+        result = suggestion.to_dict()
     except Exception as e:
-        if "KnowledgeBaseIncomplete" in type(e).__name__ or "threshold" in str(e).lower():
+        error_name = type(e).__name__
+        if "KnowledgeBaseIncomplete" in error_name or "threshold" in str(e).lower():
             blocked = True
-            result  = _blocked_result(episode_id, episode_dict, str(e))
+            result = _blocked_result(episode_id, episode_dict, str(e))
             kb_flags.append({"type": "KB_BLOCKED", "severity": "critical", "message": str(e)})
         else:
-            result  = _demo_result(episode_id, episode_dict)["suggestion"]
-            kb_flags.append({"type": "ENGINE_ERROR", "severity": "warn", "message": str(e)})
+            result = _demo_result(episode_id, episode_dict)["suggestion"]
+            kb_flags.append({"type": "ENGINE_ERROR", "severity": "warn", "message": f"{error_name}: {str(e)}"})
 
     if not blocked:
         kb_flags.extend(_apply_triggers(episode_dict, result))
 
     EPISODE_STORE[episode_id].update({
-        "suggestion": result, "kb_flags": kb_flags,
+        "suggestion": result,
+        "kb_flags": kb_flags,
         "status": "blocked" if blocked else "PENDING",
-        "processed_at": _now()})
+        "processed_at": _now()
+    })
+    _save_store(EPISODE_STORE)
 
     return {
-        "episode_id": episode_id, 
+        "episode_id": episode_id,
         "suggestion": result,
         "episode_dict": episode_dict,
-        "kb_flags": kb_flags, 
+        "kb_flags": kb_flags,
         "blocked": blocked,
-        "processed_at": _now(), 
+        "processed_at": _now(),
         "engine_mode": "live"
     }
 
 # ── Approve ──────────────────────────────────────────────────────────────
 @app.post("/api/approve/{episode_id}")
 async def approve_episode(episode_id: str, request: Request):
-    if episode_id not in EPISODE_STORE:
-        raise HTTPException(404)
+    store = _load_store()
+    if episode_id not in store:
+        raise HTTPException(404, detail="Episode not found")
+    
     body = await request.json()
     physician_id = body.get("physician_id", "").strip()
-    action       = body.get("action", "approve")
-    reason       = body.get("reason", "")
+    action = body.get("action", "approve")
+    reason = body.get("reason", "")
+    
     if not physician_id:
-        raise HTTPException(400, "physician_id required")
-    store = EPISODE_STORE[episode_id]
+        raise HTTPException(400, detail="physician_id required")
+    
     if action == "approve":
-        store.update({"status": "APPROVED", "approved_by": physician_id, "approved_at": _now()})
-        return {"episode_id": episode_id, "status": "APPROVED",
-                "approved_by": physician_id, "message": "Claim approved. Ready for submission."}
-    store.update({"status": "REJECTED", "approved_by": physician_id,
-                  "rejected_at": _now(), "reject_reason": reason})
-    return {"episode_id": episode_id, "status": "REJECTED", "reason": reason}
+        store[episode_id].update({
+            "status": "APPROVED",
+            "approved_by": physician_id,
+            "approved_at": _now()
+        })
+    elif action == "reject":
+        store[episode_id].update({
+            "status": "REJECTED",
+            "approved_by": physician_id,
+            "rejected_at": _now(),
+            "reject_reason": reason
+        })
+    else:
+        raise HTTPException(400, detail="action must be approve or reject")
+    
+    _save_store(store)
+    EPISODE_STORE.update(store)
+    
+    return {
+        "episode_id": episode_id,
+        "status": store[episode_id]["status"],
+        "approved_by": physician_id
+    }
 
 # ── Queue ────────────────────────────────────────────────────────────────
 @app.get("/api/queue")
 async def get_queue():
+    store = _load_store()
     queue = []
-    for ep_id, data in EPISODE_STORE.items():
+    for ep_id, data in store.items():
         ep = data.get("episode_dict", {})
-        r  = data.get("suggestion", {})
+        r = data.get("suggestion", {})
         queue.append({
-            "episode_id":   ep_id,
+            "episode_id": ep_id,
             "patient_name": data.get("patient_name", ep.get("patient_name", "—")),
-            "patient_age":  ep.get("patient_age"),
-            "patient_sex":  ep.get("patient_sex"),
-            "pdx":          ep.get("pdx"),
-            "ar_drg":       r.get("proposed_codes", {}).get("ar_drg", "—") if isinstance(r, dict) else "—",
-            "status":       data.get("status", "PENDING"),
-            "approved_by":  data.get("approved_by"),
-            "flag_count":   len(data.get("kb_flags", [])),
+            "patient_age": ep.get("patient_age"),
+            "patient_sex": ep.get("patient_sex"),
+            "pdx": ep.get("pdx"),
+            "ar_drg": r.get("proposed_codes", {}).get("ar_drg", "—") if isinstance(r, dict) else "—",
+            "status": data.get("status", "PENDING"),
+            "approved_by": data.get("approved_by"),
+            "flag_count": len(data.get("kb_flags", [])),
             "processed_at": data.get("processed_at"),
         })
     queue.sort(key=lambda x: x.get("processed_at") or "", reverse=True)
@@ -286,71 +328,90 @@ async def get_queue():
 
 @app.get("/api/episode/{episode_id}")
 async def get_episode(episode_id: str):
-    if episode_id not in EPISODE_STORE:
-        raise HTTPException(404)
-    return EPISODE_STORE[episode_id]
+    store = _load_store()
+    if episode_id not in store:
+        raise HTTPException(404, detail="Episode not found")
+    return store[episode_id]
 
 @app.get("/api/kb/search")
 async def search_kb(q: str = "", specialty: str = ""):
     q = q.lower()
     results = []
     for sp_key, procs in MEDICAL_LOGIC_KB.get("procedures", {}).items():
-        if specialty and specialty.lower() not in sp_key.lower(): continue
+        if specialty and specialty.lower() not in sp_key.lower():
+            continue
         for proc in procs:
-            if not q or q in proc.get("procedure","").lower() or \
-               any(q in kw.lower() for kw in proc.get("keywords",[])):
+            if not q or q in proc.get("procedure", "").lower() or \
+               any(q in kw.lower() for kw in proc.get("keywords", [])):
                 results.append(proc)
     return {"query": q, "results": results[:50], "total": len(results)}
 
 @app.get("/api/kb/status")
 async def kb_status():
     ar_kb_path = KB_DIR / "ar_drg_kb_seed_v11_new_adrgs.json"
-    ar_kb = json.load(open(ar_kb_path)) if ar_kb_path.exists() else {}
+    ar_kb = {}
+    if ar_kb_path.exists():
+        with open(ar_kb_path, encoding="utf-8") as f:
+            ar_kb = json.load(f)
     adrgs = ar_kb.get("adrgs", {})
     f25_threshold = None
     if "F25" in adrgs:
-        classes = adrgs["F25"].get("split_profile",{}).get("end_classes",[])
-        if classes: f25_threshold = classes[0].get("eccs_threshold",{}).get("value")
-    ml = MEDICAL_LOGIC_KB.get("_meta",{}).get("procedure_counts",{})
+        classes = adrgs["F25"].get("split_profile", {}).get("end_classes", [])
+        if classes:
+            f25_threshold = classes[0].get("eccs_threshold", {}).get("value")
+    ml = MEDICAL_LOGIC_KB.get("_meta", {}).get("procedure_counts", {})
     return {
-        "ar_drg_version":   ar_kb.get("_meta",{}).get("versioning",{}).get("ar_drg_version","V11.0"),
+        "ar_drg_version": ar_kb.get("_meta", {}).get("versioning", {}).get("ar_drg_version", "V11.0"),
         "engine_available": ENGINE_AVAILABLE,
-        "engine_mode":      "live" if ENGINE_AVAILABLE else "demo",
-        "adrgs_seeded":     list(adrgs.keys()),
-        "f25_blocked":      f25_threshold is None,
-        "kb_dir":           str(KB_DIR),
+        "engine_mode": "live" if ENGINE_AVAILABLE else "demo",
+        "adrgs_seeded": list(adrgs.keys()),
+        "f25_blocked": f25_threshold is None,
+        "kb_dir": str(KB_DIR),
         "medical_logic_kb": {
-            "version":   MEDICAL_LOGIC_KB.get("_meta",{}).get("version","unknown"),
-            "total":     ml.get("total",0),
-            "general_surgery": ml.get("general_surgery",0),
-            "hand_surgery":    ml.get("hand_surgery",0),
-            "bariatric":       ml.get("bariatric",0),
-            "breast":          ml.get("breast",0),
-            "plastic":         ml.get("plastic",0),
-            "orthopaedic":     ml.get("orthopaedic",0),
-            "intelligence_triggers": len(MEDICAL_LOGIC_KB.get("intelligence_triggers",{})),
+            "version": MEDICAL_LOGIC_KB.get("_meta", {}).get("version", "unknown"),
+            "total": ml.get("total", 0),
+            "general_surgery": ml.get("general_surgery", 0),
+            "hand_surgery": ml.get("hand_surgery", 0),
+            "bariatric": ml.get("bariatric", 0),
+            "breast": ml.get("breast", 0),
+            "plastic": ml.get("plastic", 0),
+            "orthopaedic": ml.get("orthopaedic", 0),
+            "intelligence_triggers": len(MEDICAL_LOGIC_KB.get("intelligence_triggers", {})),
         },
     }
 
 @app.get("/api/health")
 async def health():
-    return {"status": "ok", "engine": ENGINE_AVAILABLE,
-            "kb_dir": str(KB_DIR), "time": _now()}
+    return {
+        "status": "ok",
+        "engine": ENGINE_AVAILABLE,
+        "engine_import_error": ENGINE_IMPORT_ERROR,
+        "kb_dir": str(KB_DIR),
+        "time": _now()
+    }
 
 # ── Helpers ──────────────────────────────────────────────────────────────
-def _now(): return datetime.now(timezone.utc).isoformat()
+def _now(): 
+    return datetime.now(timezone.utc).isoformat()
 
 def _empty_episode(eid):
     return {
-        "episode_id": eid, 
-        "patient_name": "", 
-        "patient_age": 0, 
+        "episode_id": eid,
+        "patient_name": "",
+        "patient_age": 0,
         "patient_sex": "Unknown",
-        "pdx": "", "adx": [], "achi_codes": [], "los_days": 0,
-        "same_day": False, "separation_mode": "discharge_home",
-        "admission_weight": None, "hours_mech_vent": None,
-        "care_type": "01", "acs_pdx_score": 0,
-        "acs_adx_scores": [], "ehr_documents": []
+        "pdx": "",
+        "adx": [],
+        "achi_codes": [],
+        "los_days": 0,
+        "same_day": False,
+        "separation_mode": "discharge_home",
+        "admission_weight": None,
+        "hours_mech_vent": None,
+        "care_type": "01",
+        "acs_pdx_score": 0,
+        "acs_adx_scores": [],
+        "ehr_documents": []
     }
 
 def _infer_doc_type(fn):
@@ -366,41 +427,44 @@ def _infer_doc_type(fn):
 def _merge(base, incoming):
     for k in base:
         v = incoming.get(k)
-        if v is None: continue
-        if isinstance(v, list) and not v: continue
-        if isinstance(v, str) and not v.strip(): continue
+        if v is None: 
+            continue
+        if isinstance(v, list) and not v: 
+            continue
+        if isinstance(v, str) and not v.strip(): 
+            continue
         base[k] = v
     return base
 
 def _extract_text(ep, text, doc_type):
-    # Patient Name — FIXED: stop at newline
+    # Patient Name
     m = re.search(r'Patient\s*Name:\s*([^\n\r]+)', text, re.I)
     if m and not ep.get("patient_name"):
         ep["patient_name"] = m.group(1).strip()
     
-    # Age — FIXED: more flexible regex
+    # Age
     m = re.search(r'(\d{1,3})\s*(?:year[s]?\s*old|y/?o|Years|yrs)', text, re.I)
-    if m and ep.get("patient_age", 0) == 0: 
+    if m and ep.get("patient_age", 0) == 0:
         ep["patient_age"] = int(m.group(1))
     
     # Sex
     if ep.get("patient_sex") == "Unknown":
-        if re.search(r'\b(female|woman|she|her)\b', text, re.I): 
+        if re.search(r'\b(female|woman|she|her)\b', text, re.I):
             ep["patient_sex"] = "Female"
-        elif re.search(r'\b(male|man|he|his)\b', text, re.I):    
+        elif re.search(r'\b(male|man|he|his)\b', text, re.I):
             ep["patient_sex"] = "Male"
     
     # Explicit ICD codes
     icd = re.findall(r'\b([A-Z][0-9]{2}(?:\.[0-9A-Z]{1,2})?)\b', text)
-    if icd and not ep["pdx"] and doc_type in ("Initial Medical Report","Admission Report","Discharge Summary"):
+    if icd and not ep["pdx"] and doc_type in ("Initial Medical Report", "Admission Report", "Discharge Summary"):
         ep["pdx"] = icd[0]
     for c in icd[1:]:
-        if c not in ep["adx"] and c != ep["pdx"]: 
+        if c not in ep["adx"] and c != ep["pdx"]:
             ep["adx"].append(c)
     
     # Explicit ACHI codes
     for c in re.findall(r'\b(\d{5}-\d{2})\b', text):
-        if c not in ep["achi_codes"]: 
+        if c not in ep["achi_codes"]:
             ep["achi_codes"].append(c)
     
     # Admission / Discharge dates for LOS
@@ -417,10 +481,10 @@ def _extract_text(ep, text, doc_type):
 
 def _keyword_map(ep):
     """Map common diagnosis/procedure keywords to codes when explicit codes missing."""
-    text = " ".join(ep.get("ehr_documents", [])).lower()
+    docs = [d.lower() for d in ep.get("ehr_documents", [])]
+    text = " ".join(docs)
     
     if not ep.get("pdx"):
-        docs = [d.lower() for d in ep.get("ehr_documents", [])]
         if any("append" in d for d in docs):
             ep["pdx"] = "K35.8"
             ep["acs_pdx_score"] = 7
@@ -429,7 +493,6 @@ def _keyword_map(ep):
             ep["acs_pdx_score"] = 6
     
     if not ep.get("achi_codes"):
-        docs = [d.lower() for d in ep.get("ehr_documents", [])]
         if any("operation" in d or "surgical" in d for d in docs):
             if ep.get("pdx") == "K35.8":
                 ep["achi_codes"] = ["30515-00"]  # Appendectomy
@@ -450,6 +513,40 @@ def _parse_hl7(ep, text):
 def _parse_fhir_xml(ep, text):
     # TODO: FHIR XML parsing implementation
     pass
+
+def _apply_triggers(episode, suggestion):
+    """Apply medical logic triggers."""
+    flags = []
+    triggers = MEDICAL_LOGIC_KB.get("intelligence_triggers", {})
+    all_text = " ".join([
+        str(episode.get("pdx", "")),
+        " ".join(episode.get("adx", [])),
+        " ".join(episode.get("ehr_documents", []))
+    ]).lower()
+    
+    excl = triggers.get("exclusion_hunter", {})
+    for kw in excl.get("keywords", []):
+        if kw.lower() in all_text:
+            flags.append({
+                "trigger": "exclusion_hunter",
+                "severity": "critical",
+                "action": excl.get("action", "AUTO_REJECT"),
+                "message": f"EXCLUSION HUNTER: '{kw}' detected — policy exclusion risk."
+            })
+            break
+    
+    proposed_achi = set(suggestion.get("proposed_codes", {}).get("achi") or [])
+    cts_achi = {"90645-00", "90644-00", "90643-00"}
+    if proposed_achi & cts_achi:
+        ncv = triggers.get("ncv_matcher", {})
+        flags.append({
+            "trigger": "ncv_matcher",
+            "severity": "high",
+            "action": ncv.get("action", "FLAG"),
+            "message": "NCV MATCHER: CTS surgery — verify NCV/EMG report is attached."
+        })
+    
+    return flags
 
 def _demo_result(episode_id, episode_dict):
     """Generate demo result when engine is not available."""
@@ -476,6 +573,7 @@ def _demo_result(episode_id, episode_dict):
         "suggestion": {
             "episode_id": episode_id,
             "suggestion_id": str(uuid.uuid4()),
+            "approval_status": "PENDING",
             "proposed_codes": {
                 "ar_drg": drg_code,
                 "ar_drg_desc": drg_desc,
@@ -484,10 +582,11 @@ def _demo_result(episode_id, episode_dict):
                 "achi": achi,
             },
             "acs_scores": {
-                "pdx_score": episode_dict.get("acs_pdx_score", 0),
-                "adx_scores": episode_dict.get("acs_adx_scores", []),
+                "pdx_score": episode_dict.get("acs_pdx_score", 5),
+                "coding_justification": "Demo mode — engine modules not loaded. Result based on code mapping.",
             },
             "grouper_result": {
+                "ar_drg_code": drg_code,
                 "eccs": 0.0,
                 "step_trace": [
                     "Step 1: Demo mode - no engine available",
@@ -495,48 +594,36 @@ def _demo_result(episode_id, episode_dict):
                     f"Step 3: PDX={pdx} mapped to {drg_code}",
                 ],
             },
+            "validation_result": {"summary": {"total_excluded": 0, "upcoding_risk_count": 0}},
             "provenance": {
                 "ehr_documents_read": episode_dict.get("ehr_documents", []),
                 "engine_version": "DEMO",
             },
-            "flags": ["DEMO_MODE: Engine modules not loaded. Result based on code mapping."],
+            "flags": ["⚠ Demo mode: Engine modules not loaded. Result based on code mapping."],
         },
-        "episode_dict": episode_dict,
+        "kb_flags": [],
     }
 
-def _blocked_result(episode_id, episode_dict, error_msg):
+def _blocked_result(episode_id, episode_dict, error):
     """Generate blocked result when KB is incomplete."""
     return {
         "episode_id": episode_id,
         "suggestion": {
             "episode_id": episode_id,
             "suggestion_id": str(uuid.uuid4()),
+            "approval_status": "BLOCKED",
             "proposed_codes": {
-                "ar_drg": "BLOCKED",
-                "ar_drg_desc": "Knowledge Base Incomplete",
                 "pdx": episode_dict.get("pdx", ""),
                 "adx": episode_dict.get("adx", []),
                 "achi": episode_dict.get("achi_codes", []),
+                "ar_drg": "BLOCKED",
+                "ar_drg_desc": "KB Incomplete — purchase AR-DRG Definitions Manual",
             },
-            "acs_scores": {
-                "pdx_score": 0,
-                "adx_scores": [],
-            },
-            "grouper_result": {
-                "eccs": 0.0,
-                "step_trace": ["BLOCKED: " + error_msg],
-            },
-            "provenance": {
-                "ehr_documents_read": [],
-                "engine_version": "BLOCKED",
-            },
-            "flags": [f"KB_BLOCKED: {error_msg}"],
+            "acs_scores": {"pdx_score": 0, "coding_justification": "Blocked due to incomplete KB"},
+            "grouper_result": {"ar_drg_code": "BLOCKED", "eccs": 0.0, "step_trace": ["BLOCKED: " + error]},
+            "validation_result": {"summary": {"total_excluded": 0, "upcoding_risk_count": 0}},
+            "provenance": {"ehr_documents_read": [], "engine_version": "BLOCKED"},
+            "flags": [f"KB_BLOCKED: {error}"],
         },
-        "episode_dict": episode_dict,
+        "kb_flags": [{"type": "KB_BLOCKED", "severity": "critical", "message": error}],
     }
-
-def _apply_triggers(episode_dict, result):
-    """Apply medical logic triggers."""
-    flags = []
-    # TODO: Implement trigger logic
-    return flags
