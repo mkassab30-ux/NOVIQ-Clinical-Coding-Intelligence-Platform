@@ -1,10 +1,10 @@
-# NOVIQ Engine — Optimized for Railway (< 4GB)
+# NOVIQ Engine — Optimized for Railway Deployment
 
-# Core AI (API-based)
+# Core AI (API-based, lightweight)
 anthropic>=0.25.0
 langchain-core>=0.2.0
 
-# RAG (lightweight)
+# RAG (lightweight only)
 llama-index-core>=0.10.0
 qdrant-client>=1.9.0
 tiktoken>=0.7.0
@@ -12,7 +12,7 @@ tiktoken>=0.7.0
 # EHR Integration
 fhir.resources>=7.0.0
 
-# Document Processing (light)
+# Document Processing (no heavy OCR)
 pypdf>=4.2.0
 pdfplumber>=0.11.0
 Pillow>=10.3.0
@@ -23,3 +23,6 @@ uvicorn>=0.30.0
 pydantic>=2.7.0
 python-dotenv>=1.0.0
 httpx>=0.27.0
+
+# Required for file uploads (IMPORTANT FIX)
+python-multipart>=0.0.9
