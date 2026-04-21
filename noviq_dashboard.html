@@ -39,7 +39,6 @@
     overflow-x: hidden;
   }
 
-  /* LANDING PAGE */
   .landing-page {
     display: flex;
     flex-direction: column;
@@ -197,7 +196,6 @@
     color: var(--muted);
   }
 
-  /* TOP NAV */
   .topnav {
     display: flex;
     align-items: center;
@@ -269,7 +267,6 @@
     color: var(--bg);
   }
 
-  /* LAYOUT */
   .layout {
     display: grid;
     grid-template-columns: 220px 1fr 320px;
@@ -277,7 +274,6 @@
     overflow: hidden;
   }
 
-  /* SIDEBAR */
   .sidebar {
     background: var(--surface);
     border-right: 1px solid var(--border);
@@ -330,7 +326,6 @@
   .count-badge.warn { border-color: var(--warn); color: var(--warn); background: #2A1F10; }
   .count-badge.danger { border-color: var(--danger); color: var(--danger); background: #2A1010; }
 
-  /* MAIN */
   .main {
     overflow-y: auto;
     background: var(--bg);
@@ -351,7 +346,6 @@
     font-size: 13px;
   }
 
-  /* STEPS */
   .steps {
     display: flex;
     align-items: center;
@@ -400,7 +394,6 @@
   .step.active .step-label { color: var(--text); }
   .step.done .step-label { color: var(--accent); }
 
-  /* UPLOAD OPTIONS */
   .upload-options {
     display: flex;
     gap: 12px;
@@ -437,7 +430,6 @@
     line-height: 1.4;
   }
 
-  /* UPLOAD ZONE */
   .upload-zone {
     border: 1.5px dashed var(--border2);
     border-radius: 16px;
@@ -508,7 +500,6 @@
   .upload-btn:hover { opacity: .85; }
   .upload-btn:disabled { opacity: .4; cursor: not-allowed; }
 
-  /* FILE UPLOAD ROWS */
   .file-upload-rows {
     display: flex;
     flex-direction: column;
@@ -590,7 +581,6 @@
   }
   .file-upload-row.completed .file-row-status { display: block; }
 
-  /* BATCH UPLOAD */
   .batch-upload-area {
     border: 2px dashed var(--border2);
     border-radius: 16px;
@@ -655,36 +645,6 @@
   }
   .batch-file-remove:hover { background: rgba(255,107,107,.1); }
 
-  /* DOC CARDS */
-  .doc-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-top: 20px;
-  }
-  .doc-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
-    cursor: pointer;
-    transition: all .15s;
-    position: relative;
-  }
-  .doc-card:hover { border-color: var(--border2); background: var(--surface2); }
-  .doc-card.uploaded { border-color: var(--accent); }
-  .doc-card.uploaded::after {
-    content: '✓';
-    position: absolute;
-    top: 10px; right: 12px;
-    color: var(--accent);
-    font-size: 12px;
-  }
-  .doc-icon { font-size: 18px; margin-bottom: 8px; }
-  .doc-name { font-size: 12px; font-weight: 500; margin-bottom: 3px; }
-  .doc-hint { font-size: 11px; color: var(--muted); }
-
-  /* AGENTS GRID 2x2 */
   .agents-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -817,7 +777,6 @@
     color: var(--muted);
   }
 
-  /* RESULT CARD */
   .result-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -941,7 +900,6 @@
   .code-chip.pdx { border-color: var(--accent); color: var(--accent); background: rgba(78,205,196,.08); }
   .code-chip.achi { border-color: var(--accent2); color: var(--accent2); background: rgba(255,230,109,.06); }
 
-  /* FLAGS */
   .flags-section {
     padding: 0 24px 20px;
   }
@@ -970,7 +928,6 @@
   .flag-item.warn .flag-text strong { color: var(--warn); }
   .flag-item.info .flag-text strong { color: var(--accent); }
 
-  /* CODE SUMMARY */
   .code-summary-section {
     padding: 20px 24px;
     border-top: 1px solid var(--border);
@@ -1017,7 +974,6 @@
     margin-top: 4px;
   }
 
-  /* APPROVE BAR */
   .approve-bar {
     padding: 16px 24px;
     border-top: 1px solid var(--border);
@@ -1066,7 +1022,6 @@
   }
   .btn-reject:hover { background: rgba(255,107,107,.08); }
 
-  /* QUEUE TABLE */
   .queue-table {
     width: 100%;
     border-collapse: collapse;
@@ -1094,7 +1049,6 @@
   .pt-name { font-weight: 500; }
   .pt-id { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
 
-  /* RIGHT PANEL */
   .right-panel {
     background: var(--surface);
     border-left: 1px solid var(--border);
@@ -1141,7 +1095,6 @@
   .trace-line.step4 { color: var(--accent2); }
   .trace-line.step5 { color: var(--success); }
 
-  /* DCL ENHANCED */
   .dcl-section { margin-top: 16px; }
   .dcl-card {
     background: var(--surface2);
@@ -1233,7 +1186,6 @@
   .dcl-dot.risk { background: var(--danger); }
   .dcl-dot.ok { background: var(--success); }
 
-  /* KB HEALTH ENHANCED */
   .kb-health-section { margin-top: 16px; }
   .kb-health-item {
     display: flex;
@@ -1279,12 +1231,10 @@
     border-radius: 4px;
   }
 
-  /* SCROLLBARS */
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
 
-  /* SECTION DIVIDER */
   .section-divider {
     display: flex; align-items: center; gap: 12px;
     margin: 24px 0 16px;
@@ -1296,10 +1246,8 @@
   }
   .divider-line { flex: 1; height: 1px; background: var(--border); }
 
-  /* HIDDEN */
   .hidden { display: none !important; }
 
-  /* TOAST */
   .toast {
     position: fixed;
     bottom: 24px;
@@ -1355,7 +1303,6 @@
 <!-- MAIN APP -->
 <div class="hidden" id="mainApp">
 
-<!-- TOP NAV -->
 <nav class="topnav">
   <div class="logo" onclick="showPage('upload')">
     <div class="logo-mark">N</div>
@@ -1371,10 +1318,8 @@
   </div>
 </nav>
 
-<!-- MAIN LAYOUT -->
 <div class="layout">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-label">Workflow</div>
@@ -1432,10 +1377,9 @@
     </div>
   </aside>
 
-  <!-- MAIN CONTENT -->
   <main class="main">
 
-    <!-- PAGE: UPLOAD -->
+    <!-- UPLOAD PAGE -->
     <div class="page active" id="page-upload">
       <div class="page-header">
         <div class="page-title">Upload Patient EHR</div>
@@ -1450,7 +1394,6 @@
         <div class="step" id="step5"><div class="step-num">5</div><div class="step-label">Physician Review</div></div>
       </div>
 
-      <!-- Upload Options -->
       <div class="upload-options">
         <div class="upload-option-btn active" onclick="setUploadMode('individual', this)">
           <div class="upload-option-icon">&#128196;</div>
@@ -1464,7 +1407,6 @@
         </div>
       </div>
 
-      <!-- Option 1: Individual Upload -->
       <div id="upload-individual">
         <div class="upload-zone" id="dropZoneIndividual" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleDropIndividual(event)" onclick="triggerUploadIndividual()">
           <div class="upload-icon">&#128450;</div>
@@ -1477,67 +1419,67 @@
         </div>
 
         <div class="file-upload-rows" id="individualRows">
-          <div class="file-upload-row completed" data-type="Initial Medical Report" data-index="1">
+          <div class="file-upload-row" data-type="" data-index="1">
             <div class="file-row-num">1</div>
             <select class="file-row-select" onchange="updateDocType(this)">
-              <option value="">Select document type...</option>
-              <option value="Initial Medical Report" selected>Initial Medical Report</option>
+              <option value="" selected>Select document type...</option>
+              <option value="Initial Medical Report">Initial Medical Report</option>
               <option value="Admission Report">Admission Report</option>
               <option value="Progress Notes">Progress Notes</option>
               <option value="Operation Notes">Operation Notes</option>
               <option value="Nursing Notes">Nursing Notes</option>
               <option value="Discharge Summary">Discharge Summary</option>
             </select>
-            <div class="file-row-name">initial_report_ahmed.pdf</div>
-            <button class="file-row-btn" onclick="triggerSingleUpload(1)">Change</button>
+            <div class="file-row-name">Waiting for file...</div>
+            <button class="file-row-btn" onclick="triggerSingleUpload(1)">Choose File</button>
             <div class="file-row-status">&#10003; Uploaded</div>
           </div>
-          <div class="file-upload-row completed" data-type="Admission Report" data-index="2">
+          <div class="file-upload-row" data-type="" data-index="2">
             <div class="file-row-num">2</div>
             <select class="file-row-select" onchange="updateDocType(this)">
-              <option value="">Select document type...</option>
+              <option value="" selected>Select document type...</option>
               <option value="Initial Medical Report">Initial Medical Report</option>
-              <option value="Admission Report" selected>Admission Report</option>
+              <option value="Admission Report">Admission Report</option>
               <option value="Progress Notes">Progress Notes</option>
               <option value="Operation Notes">Operation Notes</option>
               <option value="Nursing Notes">Nursing Notes</option>
               <option value="Discharge Summary">Discharge Summary</option>
             </select>
-            <div class="file-row-name">admission_ahmed.pdf</div>
-            <button class="file-row-btn" onclick="triggerSingleUpload(2)">Change</button>
+            <div class="file-row-name">Waiting for file...</div>
+            <button class="file-row-btn" onclick="triggerSingleUpload(2)">Choose File</button>
             <div class="file-row-status">&#10003; Uploaded</div>
           </div>
-          <div class="file-upload-row completed" data-type="Progress Notes" data-index="3">
+          <div class="file-upload-row" data-type="" data-index="3">
             <div class="file-row-num">3</div>
             <select class="file-row-select" onchange="updateDocType(this)">
-              <option value="">Select document type...</option>
+              <option value="" selected>Select document type...</option>
               <option value="Initial Medical Report">Initial Medical Report</option>
               <option value="Admission Report">Admission Report</option>
-              <option value="Progress Notes" selected>Progress Notes</option>
+              <option value="Progress Notes">Progress Notes</option>
               <option value="Operation Notes">Operation Notes</option>
               <option value="Nursing Notes">Nursing Notes</option>
               <option value="Discharge Summary">Discharge Summary</option>
             </select>
-            <div class="file-row-name">progress_notes_day1-5.pdf</div>
-            <button class="file-row-btn" onclick="triggerSingleUpload(3)">Change</button>
+            <div class="file-row-name">Waiting for file...</div>
+            <button class="file-row-btn" onclick="triggerSingleUpload(3)">Choose File</button>
             <div class="file-row-status">&#10003; Uploaded</div>
           </div>
-          <div class="file-upload-row completed" data-type="Operation Notes" data-index="4">
+          <div class="file-upload-row" data-type="" data-index="4">
             <div class="file-row-num">4</div>
             <select class="file-row-select" onchange="updateDocType(this)">
-              <option value="">Select document type...</option>
+              <option value="" selected>Select document type...</option>
               <option value="Initial Medical Report">Initial Medical Report</option>
               <option value="Admission Report">Admission Report</option>
               <option value="Progress Notes">Progress Notes</option>
-              <option value="Operation Notes" selected>Operation Notes</option>
+              <option value="Operation Notes">Operation Notes</option>
               <option value="Nursing Notes">Nursing Notes</option>
               <option value="Discharge Summary">Discharge Summary</option>
             </select>
-            <div class="file-row-name">operation_hipec_notes.pdf</div>
-            <button class="file-row-btn" onclick="triggerSingleUpload(4)">Change</button>
+            <div class="file-row-name">Waiting for file...</div>
+            <button class="file-row-btn" onclick="triggerSingleUpload(4)">Choose File</button>
             <div class="file-row-status">&#10003; Uploaded</div>
           </div>
-          <div class="file-upload-row" data-type="Nursing Notes" data-index="5">
+          <div class="file-upload-row" data-type="" data-index="5">
             <div class="file-row-num">5</div>
             <select class="file-row-select" onchange="updateDocType(this)">
               <option value="" selected>Select document type...</option>
@@ -1552,25 +1494,24 @@
             <button class="file-row-btn" onclick="triggerSingleUpload(5)">Choose File</button>
             <div class="file-row-status">&#10003; Uploaded</div>
           </div>
-          <div class="file-upload-row completed" data-type="Discharge Summary" data-index="6">
+          <div class="file-upload-row" data-type="" data-index="6">
             <div class="file-row-num">6</div>
             <select class="file-row-select" onchange="updateDocType(this)">
-              <option value="">Select document type...</option>
+              <option value="" selected>Select document type...</option>
               <option value="Initial Medical Report">Initial Medical Report</option>
               <option value="Admission Report">Admission Report</option>
               <option value="Progress Notes">Progress Notes</option>
               <option value="Operation Notes">Operation Notes</option>
               <option value="Nursing Notes">Nursing Notes</option>
-              <option value="Discharge Summary" selected>Discharge Summary</option>
+              <option value="Discharge Summary">Discharge Summary</option>
             </select>
-            <div class="file-row-name">discharge_summary_ahmed.pdf</div>
-            <button class="file-row-btn" onclick="triggerSingleUpload(6)">Change</button>
+            <div class="file-row-name">Waiting for file...</div>
+            <button class="file-row-btn" onclick="triggerSingleUpload(6)">Choose File</button>
             <div class="file-row-status">&#10003; Uploaded</div>
           </div>
         </div>
       </div>
 
-      <!-- Option 2: Batch Upload -->
       <div id="upload-batch" class="hidden">
         <div class="batch-upload-area" id="batchDropZone" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleBatchDrop(event)" onclick="triggerBatchUpload()">
           <div class="upload-icon">&#128228;</div>
@@ -1591,7 +1532,7 @@
       </div>
     </div>
 
-    <!-- PAGE: PROCESSING -->
+    <!-- PROCESSING PAGE -->
     <div class="page" id="page-processing">
       <div class="page-header">
         <div class="page-title">Processing Episode</div>
@@ -1599,42 +1540,42 @@
       </div>
 
       <div class="processing-center-info">
-        <div class="processing-episode-id" id="processingEpisodeId">EP-2026-0041</div>
-        <div class="processing-patient-info" id="processingPatientInfo">Patient: Ahmed Al-Rashid &middot; Age: 58 &middot; 58F &middot; Acute</div>
+        <div class="processing-episode-id" id="processingEpisodeId">EP-2026-0001</div>
+        <div class="processing-patient-info" id="processingPatientInfo">Waiting for patient data...</div>
       </div>
 
       <div class="agents-grid" id="agentsGrid">
-        <div class="agent-card done" id="agent1">
+        <div class="agent-card waiting" id="agent1">
           <div class="agent-card-header">
             <div class="agent-card-icon">&#128214;</div>
-            <div class="agent-card-status">COMPLETE</div>
+            <div class="agent-card-status">WAITING</div>
           </div>
           <div class="agent-card-title">Intent Agent</div>
-          <div class="agent-card-desc">Reading and parsing 5 EHR documents. Extracting clinical intent, diagnoses, and procedures from structured and unstructured data.</div>
-          <div class="agent-card-progress"><div class="agent-card-progress-bar" style="width:100%"></div></div>
-          <div class="agent-card-details">5 docs parsed &middot; 1.2s</div>
+          <div class="agent-card-desc">Reading and parsing EHR documents. Extracting clinical intent, diagnoses, and procedures from structured and unstructured data.</div>
+          <div class="agent-card-progress"><div class="agent-card-progress-bar" style="width:0%"></div></div>
+          <div class="agent-card-details">Awaiting start</div>
         </div>
 
-        <div class="agent-card done" id="agent2">
+        <div class="agent-card waiting" id="agent2">
           <div class="agent-card-header">
             <div class="agent-card-icon">&#128200;</div>
-            <div class="agent-card-status">COMPLETE</div>
+            <div class="agent-card-status">WAITING</div>
           </div>
           <div class="agent-card-title">ACS Scoring Engine</div>
-          <div class="agent-card-desc">Evaluating Principal Diagnosis (PDX) and 4 Additional Diagnoses (ADX) against ACS complexity criteria.</div>
-          <div class="agent-card-progress"><div class="agent-card-progress-bar" style="width:100%"></div></div>
-          <div class="agent-card-details">PDX Score: 6/7 &middot; 0.8s</div>
+          <div class="agent-card-desc">Evaluating Principal Diagnosis (PDX) and Additional Diagnoses (ADX) against ACS complexity criteria.</div>
+          <div class="agent-card-progress"><div class="agent-card-progress-bar" style="width:0%"></div></div>
+          <div class="agent-card-details">Awaiting intent extraction</div>
         </div>
 
-        <div class="agent-card running" id="agent3">
+        <div class="agent-card waiting" id="agent3">
           <div class="agent-card-header">
             <div class="agent-card-icon">&#127919;</div>
-            <div class="agent-card-status">RUNNING...</div>
+            <div class="agent-card-status">WAITING</div>
           </div>
           <div class="agent-card-title">AR-DRG V11.0 Grouper</div>
           <div class="agent-card-desc">Running 5-step pipeline: Pre-MDC check &rarr; MDC assignment &rarr; ADRG mapping &rarr; Split/unsplit &rarr; Final DRG.</div>
-          <div class="agent-card-progress"><div class="agent-card-progress-bar" style="width:65%"></div></div>
-          <div class="agent-card-details">Step 4 of 5 &middot; G13 &rarr; G13Z</div>
+          <div class="agent-card-progress"><div class="agent-card-progress-bar" style="width:0%"></div></div>
+          <div class="agent-card-details">Awaiting ACS scoring</div>
         </div>
 
         <div class="agent-card waiting" id="agent4">
@@ -1652,12 +1593,12 @@
       <div style="margin-top:20px;text-align:center;">
         <div style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:var(--surface);border:1px solid var(--border);border-radius:20px;">
           <div style="width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 1.2s infinite;"></div>
-          <span style="font-size:12px;color:var(--muted);">Processing &middot; 3 of 4 agents complete</span>
+          <span style="font-size:12px;color:var(--muted);" id="processingStatusText">Ready to process</span>
         </div>
       </div>
     </div>
 
-    <!-- PAGE: RESULT -->
+    <!-- RESULT PAGE -->
     <div class="page" id="page-result">
       <div class="page-header">
         <div class="page-title">Coding Suggestion</div>
@@ -1665,114 +1606,85 @@
       </div>
 
       <div class="result-card">
-        <!-- Patient Header Bar -->
         <div class="patient-header-bar">
           <div class="patient-info-main">
             <div class="patient-avatar">&#128104;</div>
             <div class="patient-details">
-              <div class="patient-name" id="patientName">Ahmed Al-Rashid</div>
+              <div class="patient-name" id="patientName">—</div>
               <div class="patient-meta" id="patientMeta">
-                <span>&#128197; 58 years</span>
-                <span>&#9794; Male</span>
-                <span>&#127973; 12 days LOS</span>
+                <span>&#128197; —</span>
+                <span>&#9794; —</span>
+                <span>&#127973; —</span>
               </div>
             </div>
           </div>
-          <div class="patient-specialty" id="patientSpecialty">&#9877; General Surgery &middot; Acute</div>
+          <div class="patient-specialty" id="patientSpecialty">&#9877; —</div>
         </div>
 
-        <!-- Result Header -->
         <div class="result-header">
           <div>
-            <div class="result-episode" id="resultEpisode">EP-2026-0041 &middot; 12 days LOS</div>
+            <div class="result-episode" id="resultEpisode">—</div>
             <div class="result-drg">
-              <div class="drg-code" id="drgCode">G13Z</div>
-              <div class="drg-desc" id="drgDesc">Peritonectomy for Gastrointestinal Disorders</div>
+              <div class="drg-code" id="drgCode">—</div>
+              <div class="drg-desc" id="drgDesc">—</div>
             </div>
           </div>
           <div class="result-status">
             <div class="status-pill pending" id="statusPill">PENDING APPROVAL</div>
-            <div style="font-size:11px;color:var(--muted)" id="suggestionId">Suggestion ID: 7f3a-b291</div>
+            <div style="font-size:11px;color:var(--muted)" id="suggestionId">—</div>
           </div>
         </div>
 
-        <!-- Metrics -->
         <div class="result-body">
           <div class="metric-block">
             <div class="metric-label">ECCS Score</div>
-            <div class="metric-value" style="color:var(--muted)" id="eccsValue">0.0</div>
-            <div class="metric-sub">Stub DCL table &middot; will update post-purchase</div>
+            <div class="metric-value" style="color:var(--muted)" id="eccsValue">—</div>
+            <div class="metric-sub" id="eccsSub">—</div>
           </div>
           <div class="metric-block">
             <div class="metric-label">ACS PDX Score</div>
-            <div class="metric-value" style="color:var(--success)" id="acsScore">6 / 7</div>
+            <div class="metric-value" style="color:var(--success)" id="acsScore">—</div>
             <div class="metric-sub">Meets coding threshold (&ge;5)</div>
           </div>
           <div class="metric-block">
             <div class="metric-label">Confidence</div>
-            <div class="metric-value" style="color:var(--accent2)" id="confidence">94%</div>
-            <div class="metric-sub">5 of 6 EHR docs read</div>
+            <div class="metric-value" style="color:var(--accent2)" id="confidence">—</div>
+            <div class="metric-sub" id="confidenceSub">—</div>
           </div>
         </div>
 
-        <!-- Codes -->
-        <div class="result-codes" id="resultCodes">
-          <span style="font-size:11px;color:var(--muted);margin-right:4px;align-self:center">PDX</span>
-          <span class="code-chip pdx">C48.1</span>
-          <span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">ADX</span>
-          <span class="code-chip">E11.9</span>
-          <span class="code-chip">I10</span>
-          <span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">ACHI</span>
-          <span class="code-chip achi">96211-00</span>
-          <span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">AR-DRG</span>
-          <span class="code-chip" style="border-color:var(--accent);color:var(--accent)">G13Z</span>
-        </div>
+        <div class="result-codes" id="resultCodes"></div>
 
-        <!-- Flags -->
         <div class="flags-section" id="flagsSection">
           <div class="flags-title">&#9873; Intelligence Flags</div>
-          <div class="flag-item risk">
-            <div class="flag-icon">&#9888;</div>
-            <div class="flag-text"><strong>UPCODING RISK:</strong> E61.1 (Iron Deficiency) excluded from ECCS complexity scoring &mdash; classified as a background clinical state, not acute complexity driver. Excluded per Appendix C logic.</div>
-          </div>
-          <div class="flag-item warn">
-            <div class="flag-icon">&#9673;</div>
-            <div class="flag-text"><strong>REVENUE LEAKAGE CHECK:</strong> Operation notes mention "HIPEC" &mdash; verify ACHI modifier code 96201-00 is included alongside 96211-00 for complete procedure documentation.</div>
-          </div>
-          <div class="flag-item info">
-            <div class="flag-icon">&#10022;</div>
-            <div class="flag-text"><strong>ACS 0001 CONFIRMED:</strong> PDX C48.1 confirmed by intraoperative findings and histopathology. Score 6/7 meets coding threshold. Principal diagnosis justified.</div>
-          </div>
         </div>
 
-        <!-- Code Summary Section -->
         <div class="code-summary-section">
           <div class="code-summary-title">&#128221; Final Code Summary</div>
-          <div class="code-summary-grid">
+          <div class="code-summary-grid" id="codeSummaryGrid">
             <div class="code-summary-item">
               <div class="code-summary-label">Principal DX</div>
-              <div class="code-summary-value accent">C48.1</div>
-              <div class="code-summary-sub">Malignant neoplasm</div>
+              <div class="code-summary-value accent" id="summaryPdx">—</div>
+              <div class="code-summary-sub" id="summaryPdxSub">—</div>
             </div>
             <div class="code-summary-item">
               <div class="code-summary-label">Procedure</div>
-              <div class="code-summary-value warn">96211-00</div>
-              <div class="code-summary-sub">Peritonectomy</div>
+              <div class="code-summary-value warn" id="summaryAchi">—</div>
+              <div class="code-summary-sub" id="summaryAchiSub">—</div>
             </div>
             <div class="code-summary-item">
               <div class="code-summary-label">AR-DRG</div>
-              <div class="code-summary-value success">G13Z</div>
-              <div class="code-summary-sub">Unsplit &middot; ECCS 0.0</div>
+              <div class="code-summary-value success" id="summaryDrg">—</div>
+              <div class="code-summary-sub" id="summaryDrgSub">—</div>
             </div>
             <div class="code-summary-item">
               <div class="code-summary-label">LOS</div>
-              <div class="code-summary-value">12d</div>
-              <div class="code-summary-sub">Within expected range</div>
+              <div class="code-summary-value" id="summaryLos">—</div>
+              <div class="code-summary-sub" id="summaryLosSub">—</div>
             </div>
           </div>
         </div>
 
-        <!-- Approve bar -->
         <div class="approve-bar">
           <div class="approve-info">
             Physician approval required before submission &middot; <strong>assert_approved()</strong> gate active
@@ -1785,7 +1697,7 @@
       </div>
     </div>
 
-    <!-- PAGE: QUEUE -->
+    <!-- QUEUE PAGE -->
     <div class="page" id="page-queue">
       <div class="page-header">
         <div class="page-title">Review Queue</div>
@@ -1799,59 +1711,18 @@
             <th>AR-DRG</th>
             <th>Flags</th>
             <th>Status</th>
-            <th>LOS</th>
+            <th>Processed</th>
           </tr>
         </thead>
-        <tbody>
-          <tr class="selected" onclick="showPage('result')">
-            <td>
-              <div class="pt-name">Ahmed Al-Rashid</div>
-              <div class="pt-id">PT-00441 &middot; 58M</div>
-            </td>
-            <td><span class="drg-mono">EP-2026-0041</span></td>
-            <td><span class="drg-mono">G13Z</span></td>
-            <td><span style="color:var(--warn);font-size:12px">&#9888; 2 flags</span></td>
-            <td><span class="status-pill pending" style="font-size:11px;padding:3px 10px">PENDING</span></td>
-            <td>12d</td>
-          </tr>
+        <tbody id="queueTableBody">
           <tr>
-            <td>
-              <div class="pt-name">Sara Mohammed</div>
-              <div class="pt-id">PT-00438 &middot; 72F</div>
-            </td>
-            <td><span class="drg-mono">EP-2026-0038</span></td>
-            <td><span class="drg-mono">B08B</span></td>
-            <td><span style="color:var(--muted);font-size:12px">&mdash; clean</span></td>
-            <td><span class="status-pill pending" style="font-size:11px;padding:3px 10px">PENDING</span></td>
-            <td>4d</td>
-          </tr>
-          <tr>
-            <td>
-              <div class="pt-name">Khalid Hassan</div>
-              <div class="pt-id">PT-00435 &middot; 45M</div>
-            </td>
-            <td><span class="drg-mono">EP-2026-0035</span></td>
-            <td><span class="drg-mono">F25&mdash;</span></td>
-            <td><span style="color:var(--danger);font-size:12px">&#9940; KB blocked</span></td>
-            <td><span class="status-pill flagged" style="font-size:11px;padding:3px 10px">BLOCKED</span></td>
-            <td>5d</td>
-          </tr>
-          <tr>
-            <td>
-              <div class="pt-name">Fatima Al-Zahra</div>
-              <div class="pt-id">PT-00430 &middot; 38F</div>
-            </td>
-            <td><span class="drg-mono">EP-2026-0030</span></td>
-            <td><span class="drg-mono">G13Z</span></td>
-            <td><span style="color:var(--muted);font-size:12px">&mdash; clean</span></td>
-            <td><span class="status-pill approved" style="font-size:11px;padding:3px 10px">APPROVED</span></td>
-            <td>9d</td>
+            <td colspan="6" style="text-align:center;color:var(--muted);padding:24px;">Loading queue...</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- PAGE: ANALYTICS -->
+    <!-- ANALYTICS PAGE -->
     <div class="page" id="page-analytics">
       <div class="page-header">
         <div class="page-title">Revenue Impact</div>
@@ -1874,25 +1745,6 @@
           <div class="stat-delta">Undercoded episodes corrected</div>
         </div>
       </div>
-      <div style="margin-top:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;">
-        <div style="font-size:13px;font-weight:500;margin-bottom:16px">Monthly Coding Accuracy</div>
-        <div style="display:flex;align-items:flex-end;gap:6px;height:80px;">
-          <div style="flex:1;background:var(--accent);opacity:.3;border-radius:4px 4px 0 0;height:60%"></div>
-          <div style="flex:1;background:var(--accent);opacity:.4;border-radius:4px 4px 0 0;height:65%"></div>
-          <div style="flex:1;background:var(--accent);opacity:.5;border-radius:4px 4px 0 0;height:70%"></div>
-          <div style="flex:1;background:var(--accent);opacity:.6;border-radius:4px 4px 0 0;height:80%"></div>
-          <div style="flex:1;background:var(--accent);opacity:.8;border-radius:4px 4px 0 0;height:88%"></div>
-          <div style="flex:1;background:var(--accent);border-radius:4px 4px 0 0;height:94%"></div>
-        </div>
-        <div style="display:flex;gap:6px;margin-top:6px;">
-          <div style="flex:1;font-size:10px;color:var(--muted);text-align:center">Nov</div>
-          <div style="flex:1;font-size:10px;color:var(--muted);text-align:center">Dec</div>
-          <div style="flex:1;font-size:10px;color:var(--muted);text-align:center">Jan</div>
-          <div style="flex:1;font-size:10px;color:var(--muted);text-align:center">Feb</div>
-          <div style="flex:1;font-size:10px;color:var(--muted);text-align:center">Mar</div>
-          <div style="flex:1;font-size:10px;color:var(--muted);text-align:center">Apr</div>
-        </div>
-      </div>
     </div>
 
   </main>
@@ -1903,14 +1755,14 @@
 
     <div class="stat-card">
       <div class="stat-label">Current Episode</div>
-      <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);margin-top:2px">EP-2026-0041</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:4px">Ahmed Al-Rashid &middot; 58M &middot; Acute</div>
+      <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);margin-top:2px" id="rightEpisodeId">—</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px" id="rightPatientInfo">—</div>
     </div>
 
     <div class="stat-card" style="margin-top:8px">
       <div class="stat-label">Assigned AR-DRG</div>
-      <div class="stat-value accent" style="font-size:20px">G13Z</div>
-      <div class="stat-delta">Peritonectomy &mdash; Unsplit</div>
+      <div class="stat-value accent" style="font-size:20px" id="rightDrg">—</div>
+      <div class="stat-delta" id="rightDrgDesc">—</div>
     </div>
 
     <div class="section-divider" style="margin:16px 0 10px">
@@ -1918,104 +1770,23 @@
       <div class="divider-line"></div>
     </div>
     <div class="trace-log" id="traceLog">
-      <div class="trace-line step1">Step 1 PASS &mdash; PDX=C48.1, 2 ADX, 1 ACHI validated</div>
-      <div class="trace-line step2">Step 2: No Pre-MDC trigger &rarr; MDC assignment proceeds</div>
-      <div class="trace-line step3">Step 3: C48.1 &rarr; MDC 06</div>
-      <div class="trace-line step4">Step 4: 96211-00 &rarr; ADRG G13 (intervention, pos 1)</div>
-      <div class="trace-line step5">Step 5: Unsplit ADRG &rarr; G13Z (ECCS=0.0 for reporting)</div>
+      <div style="color:var(--muted);font-style:italic;">No trace available yet.</div>
     </div>
 
-    <!-- DCL Contributions Enhanced -->
     <div class="section-divider" style="margin:16px 0 10px">
       <div class="divider-label">DCL Contributions</div>
       <div class="divider-line"></div>
     </div>
-
-    <div class="dcl-section">
-      <div class="dcl-card">
-        <div class="dcl-card-header">
-          <span class="dcl-card-code">C48.1</span>
-          <span class="dcl-card-badge ok">PDX</span>
-        </div>
-        <div class="dcl-card-body">
-          <span class="dcl-card-label">Malignant neoplasm of peritoneum</span>
-          <span class="dcl-card-value">DCL 0</span>
-        </div>
-      </div>
-      <div class="dcl-card">
-        <div class="dcl-card-header">
-          <span class="dcl-card-code">E11.9</span>
-          <span class="dcl-card-badge ok">ADX</span>
-        </div>
-        <div class="dcl-card-body">
-          <span class="dcl-card-label">Type 2 diabetes mellitus</span>
-          <span class="dcl-card-value">DCL 0</span>
-        </div>
-      </div>
-      <div class="dcl-card">
-        <div class="dcl-card-header">
-          <span class="dcl-card-code">E61.1</span>
-          <span class="dcl-card-badge excluded">EXCLUDED</span>
-        </div>
-        <div class="dcl-card-body">
-          <span class="dcl-card-label">Iron deficiency &middot; Background state</span>
-          <span class="dcl-card-value" style="color:var(--danger)">&mdash;</span>
-        </div>
-      </div>
-      <div class="dcl-card">
-        <div class="dcl-card-header">
-          <span class="dcl-card-code">Z59.0</span>
-          <span class="dcl-card-badge socioec">SOCIOEC</span>
-        </div>
-        <div class="dcl-card-body">
-          <span class="dcl-card-label">Homelessness &middot; Social determinant</span>
-          <span class="dcl-card-value" style="color:var(--warn)">&mdash;</span>
-        </div>
-      </div>
+    <div class="dcl-section" id="rightDclSection">
+      <div style="color:var(--muted);font-size:12px;font-style:italic;padding:8px;">No DCL data yet.</div>
     </div>
 
-    <!-- KB Health Enhanced -->
     <div class="section-divider" style="margin:16px 0 10px">
       <div class="divider-label">KB Health</div>
       <div class="divider-line"></div>
     </div>
-
-    <div class="kb-health-section">
-      <div class="kb-health-item">
-        <span class="kb-health-label">&#128200; B08A/B threshold</span>
-        <span class="kb-health-value ok">
-          &ge;3.0 &#10003;
-          <span class="kb-health-bar"><span class="kb-health-bar-fill" style="width:100%;background:var(--success)"></span></span>
-        </span>
-      </div>
-      <div class="kb-health-item">
-        <span class="kb-health-label">&#128200; F25 threshold</span>
-        <span class="kb-health-value danger">
-          null &#9940;
-          <span class="kb-health-bar"><span class="kb-health-bar-fill" style="width:0%;background:var(--danger)"></span></span>
-        </span>
-      </div>
-      <div class="kb-health-item">
-        <span class="kb-health-label">&#127919; G13Z (unsplit)</span>
-        <span class="kb-health-value ok">
-          N/A &#10003;
-          <span class="kb-health-bar"><span class="kb-health-bar-fill" style="width:100%;background:var(--success)"></span></span>
-        </span>
-      </div>
-      <div class="kb-health-item">
-        <span class="kb-health-label">&#128221; DCL table</span>
-        <span class="kb-health-value warn">
-          stub &#9888;
-          <span class="kb-health-bar"><span class="kb-health-bar-fill" style="width:50%;background:var(--warn)"></span></span>
-        </span>
-      </div>
-      <div class="kb-health-item">
-        <span class="kb-health-label">&#128214; Appendix C</span>
-        <span class="kb-health-value warn">
-          7/47 &#9888;
-          <span class="kb-health-bar"><span class="kb-health-bar-fill" style="width:15%;background:var(--warn)"></span></span>
-        </span>
-      </div>
+    <div class="kb-health-section" id="rightKbSection">
+      <div style="color:var(--muted);font-size:12px;font-style:italic;padding:8px;">KB status loading...</div>
     </div>
 
   </aside>
@@ -2027,16 +1798,14 @@
 <script>
   // ── Landing Page → App Entry ──────────────────────────────────────────
   function enterApp(mode) {
-    // Hide landing, show app
     document.getElementById('landingPage').classList.add('hidden');
     document.getElementById('mainApp').classList.remove('hidden');
-
-    // Reset sidebar
     document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
 
     if (mode === 'new') {
       showPage('upload');
       document.getElementById('sidebar-upload').classList.add('active');
+      resetUploadRows();
     } else if (mode === 'queue') {
       showPage('queue');
       document.getElementById('sidebar-queue').classList.add('active');
@@ -2044,15 +1813,26 @@
     }
   }
 
+  function resetUploadRows() {
+    const rows = document.querySelectorAll('#individualRows .file-upload-row');
+    rows.forEach(row => {
+      row.classList.remove('completed');
+      row.querySelector('.file-row-select').value = '';
+      row.querySelector('.file-row-name').textContent = 'Waiting for file...';
+      row.querySelector('.file-row-btn').textContent = 'Choose File';
+      delete row._file;
+    });
+    document.getElementById('batchFilesList').innerHTML = '';
+    batchFiles = [];
+  }
+
   // ── Config ────────────────────────────────────────────────────────────
   const API = window.location.origin;
 
   // ── State ─────────────────────────────────────────────────────────────
   let currentEpisodeId = null;
-  let uploadedFiles    = [];
   let batchFiles       = [];
   let uploadMode       = 'individual';
-  let currentUploadIndex = 0;
 
   // ── Navigation ────────────────────────────────────────────────────────
   function setActive(el, page) {
@@ -2078,8 +1858,16 @@
     else handleBatchFiles(e.target.files);
   });
 
-  function triggerUploadIndividual() { currentUploadIndex = 0; fileInput.click(); }
-  function triggerSingleUpload(i)    { currentUploadIndex = i; fileInput.click(); }
+  function triggerUploadIndividual() { fileInput.click(); }
+  function triggerSingleUpload(i)    { 
+    const row = document.querySelector(`#individualRows .file-upload-row[data-index="${i}"]`);
+    if (row) {
+      const select = row.querySelector('.file-row-select');
+      if (!select.value) { showToast('Please select document type first', 'error'); select.focus(); return; }
+      fileInput.dataset.targetIndex = i;
+      fileInput.click();
+    }
+  }
 
   function handleDropIndividual(e) {
     e.preventDefault();
@@ -2089,11 +1877,19 @@
 
   function handleIndividualFile(file) {
     if (!file) return;
-    const rows = document.querySelectorAll('#individualRows .file-upload-row');
+    const targetIndex = fileInput.dataset.targetIndex;
     let targetRow = null;
-    for (let row of rows) {
-      if (!row.classList.contains('completed')) { targetRow = row; break; }
+    
+    if (targetIndex) {
+      targetRow = document.querySelector(`#individualRows .file-upload-row[data-index="${targetIndex}"]`);
+      delete fileInput.dataset.targetIndex;
+    } else {
+      const rows = document.querySelectorAll('#individualRows .file-upload-row');
+      for (let row of rows) {
+        if (!row.classList.contains('completed')) { targetRow = row; break; }
+      }
     }
+    
     if (!targetRow) { showToast('All document slots are filled', 'error'); return; }
     const select = targetRow.querySelector('.file-row-select');
     if (!select.value) { showToast('Please select document type first', 'error'); select.focus(); return; }
@@ -2168,7 +1964,7 @@
     }
   }
 
-  // ── MAIN: Run Processing — calls real API ─────────────────────────────
+  // ── MAIN: Run Processing ──────────────────────────────────────────────
   async function runProcessing() {
     if (uploadMode === 'batch' && !validateBatchUpload()) {
       showToast('Please select document type for all files', 'error');
@@ -2182,84 +1978,122 @@
         if (row._file) filesToUpload.push(row._file);
       }
     } else {
-      filesToUpload = [...batchFiles];
+      const items = document.querySelectorAll('.batch-file-item');
+      items.forEach((item, idx) => {
+        const fileIdx = parseInt(item.dataset.fileIndex);
+        if (!isNaN(fileIdx) && batchFiles[fileIdx]) {
+          filesToUpload.push(batchFiles[fileIdx]);
+        }
+      });
+    }
+
+    if (filesToUpload.length === 0) {
+      showToast('Please upload at least one file', 'error');
+      return;
     }
 
     showPage('processing');
     updateStepIndicator(2);
-    document.getElementById('processingEpisodeId').textContent = 'Loading...';
+    resetAgents();
+    document.getElementById('processingEpisodeId').textContent = 'Uploading...';
+    document.getElementById('processingPatientInfo').textContent = 'Reading documents...';
 
     const form = new FormData();
-    if (filesToUpload.length > 0) {
-      for (const f of filesToUpload) form.append('files', f);
-    } else {
-      const sampleBlob = new Blob([JSON.stringify({
-        "episode_id": "EP-MANUAL-" + Date.now(),
-        "patient_age": 58, "patient_sex": "Female",
-        "pdx": "C48.1", "adx": ["E11.9", "I10"],
-        "achi_codes": ["96211-00"], "los_days": 12,
-        "same_day": false, "separation_mode": "discharge_home",
-        "care_type": "01", "acs_pdx_score": 6
-      })], {type: 'application/json'});
-      form.append('files', sampleBlob, 'episode.json');
-    }
-
-    animateAgents(() => {});
+    for (const f of filesToUpload) form.append('files', f);
 
     try {
+      // Step 1: Upload
       const uploadRes = await fetch(`${API}/api/upload`, {method:'POST', body: form});
       if (!uploadRes.ok) throw new Error(`Upload failed: ${uploadRes.status}`);
       const uploadData = await uploadRes.json();
       currentEpisodeId = uploadData.episode_id;
+      
+      const ep = uploadData.episode_dict || {};
       document.getElementById('processingEpisodeId').textContent = currentEpisodeId;
+      document.getElementById('processingPatientInfo').textContent = 
+        `${ep.patient_name || 'Unknown'} · ${ep.patient_age || '-'}y · ${ep.patient_sex || '-'} · ${ep.pdx || 'No DX'}`;
 
-      const procRes = await fetch(`${API}/api/process/${currentEpisodeId}`, {method:'POST'});
+      // Animate agents
+      animateAgents();
+
+      // Step 2: Process
+      const procRes = await fetch(`${API}/api/process/${currentEpisodeId}`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({})
+      });
       if (!procRes.ok) throw new Error(`Process failed: ${procRes.status}`);
       const procData = await procRes.json();
 
+      // Finish animation then show result
       setTimeout(() => {
+        finishAgents();
         renderResult(procData);
         updateStepIndicator(5);
-        setTimeout(() => showPage('result'), 400);
-      }, 500);
+        setTimeout(() => showPage('result'), 600);
+      }, 1500);
 
     } catch(err) {
       console.error('Pipeline error:', err);
       showToast('Error: ' + err.message, 'error');
+      finishAgents();
       setTimeout(() => showPage('upload'), 2000);
     }
   }
 
-  function animateAgents(callback) {
+  function resetAgents() {
     const agents = ['agent1','agent2','agent3','agent4'];
-    const delays = [0, 700, 1400, 2100];
-    for (let i = 0; i < agents.length; i++) {
+    agents.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.className = 'agent-card waiting';
+      el.querySelector('.agent-card-status').textContent = 'WAITING';
+      el.querySelector('.agent-card-progress-bar').style.width = '0%';
+    });
+    document.getElementById('processingStatusText').textContent = 'Starting...';
+  }
+
+  function animateAgents() {
+    const agents = ['agent1','agent2','agent3','agent4'];
+    const delays = [300, 1500, 3000, 4500];
+    const details = [
+      'Reading documents...',
+      'Scoring complexity...',
+      'Mapping to DRG...',
+      'Validating ethics...'
+    ];
+    
+    agents.forEach((id, i) => {
       setTimeout(() => {
-        const agent = document.getElementById(agents[i]);
-        if (!agent) return;
+        const el = document.getElementById(id);
+        if (!el) return;
         if (i > 0) {
           const prev = document.getElementById(agents[i-1]);
           if (prev) {
             prev.classList.remove('running'); prev.classList.add('done');
-            const s = prev.querySelector('.agent-card-status');
-            if (s) s.textContent = 'COMPLETE';
-            const b = prev.querySelector('.agent-card-progress-bar');
-            if (b) b.style.width = '100%';
+            prev.querySelector('.agent-card-status').textContent = 'COMPLETE';
+            prev.querySelector('.agent-card-progress-bar').style.width = '100%';
           }
         }
-        agent.classList.remove('waiting'); agent.classList.add('running');
-        if (i === agents.length - 1) {
-          setTimeout(() => {
-            agent.classList.remove('running'); agent.classList.add('done');
-            const s = agent.querySelector('.agent-card-status');
-            if (s) s.textContent = 'COMPLETE';
-            const b = agent.querySelector('.agent-card-progress-bar');
-            if (b) b.style.width = '100%';
-            callback();
-          }, 800);
-        }
+        el.classList.remove('waiting'); el.classList.add('running');
+        el.querySelector('.agent-card-details').textContent = details[i];
+        el.querySelector('.agent-card-progress-bar').style.width = '60%';
+        document.getElementById('processingStatusText').textContent = `Running · Agent ${i+1} of 4`;
       }, delays[i]);
-    }
+    });
+  }
+
+  function finishAgents() {
+    const agents = ['agent1','agent2','agent3','agent4'];
+    agents.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove('running', 'waiting');
+      el.classList.add('done');
+      el.querySelector('.agent-card-status').textContent = 'COMPLETE';
+      el.querySelector('.agent-card-progress-bar').style.width = '100%';
+    });
+    document.getElementById('processingStatusText').textContent = 'Complete · All agents finished';
   }
 
   // ── Render API result into result page ────────────────────────────────
@@ -2271,51 +2105,67 @@
     const pv = s.provenance    || {};
     const allFlags = [...(s.flags||[]), ...(data.kb_flags||[]).map(f=>f.message||f)];
 
-    // Patient demographics from episode store or suggestion
+    // Episode dict is CRITICAL for patient demographics
     const ep = data.episode_dict || {};
-    const patientName = ep.patient_name || data.patient_name || 'Ahmed Al-Rashid';
-    const patientAge  = ep.patient_age  || data.patient_age  || 58;
-    const patientSex  = ep.patient_sex  || data.patient_sex  || 'Male';
+    const patientName = ep.patient_name || data.patient_name || 'Unknown Patient';
+    const patientAge  = ep.patient_age  || data.patient_age  || 0;
+    const patientSex  = ep.patient_sex  || data.patient_sex  || 'Unknown';
     const specialty   = ep.specialty    || data.specialty    || 'General Surgery';
-    const los         = ep.los_days     || 12;
+    const los         = ep.los_days     || data.los_days     || 0;
 
     const sexSymbol = patientSex === 'Female' ? '&#9792;' : '&#9794;';
+    const avatar = patientSex === 'Female' ? '&#9792;' : '&#128104;';
 
+    // Patient Header Bar
     safeSet('patientName', patientName);
     const metaEl = document.getElementById('patientMeta');
     if (metaEl) metaEl.innerHTML = `<span>&#128197; ${patientAge} years</span><span>${sexSymbol} ${patientSex}</span><span>&#127973; ${los} days LOS</span>`;
+    
+    const avatarEl = document.querySelector('.patient-avatar');
+    if (avatarEl) avatarEl.innerHTML = avatar;
+    
     const specEl = document.getElementById('patientSpecialty');
     if (specEl) specEl.innerHTML = `&#9877; ${specialty} &middot; Acute`;
 
+    // Episode & DRG
     const drgCode = pc.ar_drg || '—';
     const drgDesc = pc.ar_drg_desc || '';
     safeSet('drgCode', drgCode);
     safeSet('drgDesc', drgDesc);
-    safeSet('resultEpisode', `${s.episode_id || currentEpisodeId} · ${gr.eccs !== undefined ? 'ECCS: '+gr.eccs.toFixed(2) : ''}`);
+    safeSet('resultEpisode', `${s.episode_id || currentEpisodeId || '—'} · ECCS: ${(gr.eccs||0).toFixed(2)}`);
     safeSet('suggestionId', `Suggestion ID: ${(s.suggestion_id||'').substring(0,8)}`);
 
+    // Metrics
     safeSet('eccsValue', (gr.eccs||0).toFixed(4));
+    safeSet('eccsSub', gr.eccs > 0 ? 'Complex case' : 'Stub DCL table · will update post-purchase');
     safeSet('acsScore', `${as.pdx_score||'—'} / 7`);
     const docs = (pv.ehr_documents_read||[]).length;
-    safeSet('confidence', `${Math.min(94, 60+docs*8)}%`);
+    const conf = Math.min(95, 50 + docs * 9);
+    safeSet('confidence', `${conf}%`);
+    safeSet('confidenceSub', `${docs} of 6 EHR docs read`);
 
+    // Codes chips
     const codesDiv = document.getElementById('resultCodes');
     if (codesDiv) {
-      let h = `<span style="font-size:11px;color:var(--muted);margin-right:4px;align-self:center">PDX</span>
-               <span class="code-chip pdx">${pc.pdx||'—'}</span>`;
+      let h = '';
+      if (pc.pdx) {
+        h += `<span style="font-size:11px;color:var(--muted);margin-right:4px;align-self:center">PDX</span>
+              <span class="code-chip pdx">${pc.pdx}</span>`;
+      }
       if (pc.adx?.length) {
         h += `<span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">ADX</span>`;
-        (pc.adx||[]).forEach(c => h += `<span class="code-chip">${c}</span>`);
+        pc.adx.forEach(c => h += `<span class="code-chip">${c}</span>`);
       }
       if (pc.achi?.length) {
         h += `<span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">ACHI</span>`;
-        (pc.achi||[]).forEach(c => h += `<span class="code-chip achi">${c}</span>`);
+        pc.achi.forEach(c => h += `<span class="code-chip achi">${c}</span>`);
       }
       h += `<span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">AR-DRG</span>
             <span class="code-chip" style="border-color:var(--accent);color:var(--accent)">${drgCode}</span>`;
       codesDiv.innerHTML = h;
     }
 
+    // Flags
     const flagsDiv = document.getElementById('flagsSection');
     if (flagsDiv) {
       let h = '<div class="flags-title">⚑ Intelligence Flags</div>';
@@ -2333,29 +2183,69 @@
       flagsDiv.innerHTML = h;
     }
 
+    // Trace log
     const traceDiv = document.getElementById('traceLog');
-    if (traceDiv && gr.step_trace?.length) {
-      traceDiv.innerHTML = gr.step_trace.map((t,i) =>
-        `<div class="trace-line step${(i%5)+1}">${t}</div>`
-      ).join('');
+    if (traceDiv) {
+      if (gr.step_trace?.length) {
+        traceDiv.innerHTML = gr.step_trace.map((t,i) =>
+          `<div class="trace-line step${(i%5)+1}">${t}</div>`
+        ).join('');
+      } else {
+        traceDiv.innerHTML = '<div style="color:var(--muted);font-style:italic;">No trace available.</div>';
+      }
     }
 
+    // Status pill
     const pill = document.getElementById('statusPill');
     if (pill) {
       if (data.blocked) {
         pill.textContent = 'BLOCKED'; pill.className = 'status-pill flagged';
+      } else if (data.demo_mode) {
+        pill.textContent = 'PENDING APPROVAL'; pill.className = 'status-pill pending';
       } else {
         pill.textContent = 'PENDING APPROVAL'; pill.className = 'status-pill pending';
       }
     }
 
+    // Code Summary
+    safeSet('summaryPdx', pc.pdx || '—');
+    safeSet('summaryPdxSub', _getDxDesc(pc.pdx));
+    safeSet('summaryAchi', (pc.achi && pc.achi[0]) ? pc.achi[0] : '—');
+    safeSet('summaryAchiSub', _getProcDesc(pc.achi));
+    safeSet('summaryDrg', drgCode);
+    safeSet('summaryDrgSub', drgDesc ? drgDesc.split('·')[0].trim() : '—');
+    safeSet('summaryLos', los + 'd');
+    safeSet('summaryLosSub', los <= 2 ? 'Short stay' : (los > 10 ? 'Extended stay' : 'Within expected range'));
+
+    // Right Panel updates
+    safeSet('rightEpisodeId', s.episode_id || currentEpisodeId || '—');
+    safeSet('rightPatientInfo', `${patientName} · ${patientAge}${patientSex==='Male'?'M':'F'} · Acute`);
+    safeSet('rightDrg', drgCode);
+    safeSet('rightDrgDesc', drgDesc || '—');
+
+    // Right Panel DCL
+    const dclDiv = document.getElementById('rightDclSection');
+    if (dclDiv) {
+      let h = '';
+      if (pc.pdx) {
+        h += `<div class="dcl-card"><div class="dcl-card-header"><span class="dcl-card-code">${pc.pdx}</span><span class="dcl-card-badge ok">PDX</span></div>
+              <div class="dcl-card-body"><span class="dcl-card-label">${_getDxDesc(pc.pdx)}</span><span class="dcl-card-value">DCL 0</span></div></div>`;
+      }
+      (pc.adx||[]).forEach(c => {
+        h += `<div class="dcl-card"><div class="dcl-card-header"><span class="dcl-card-code">${c}</span><span class="dcl-card-badge ok">ADX</span></div>
+              <div class="dcl-card-body"><span class="dcl-card-label">${_getDxDesc(c)}</span><span class="dcl-card-value">DCL 0</span></div></div>`;
+      });
+      dclDiv.innerHTML = h || '<div style="color:var(--muted);font-size:12px;">No DCL data.</div>';
+    }
+
+    // Reset buttons
     const btnA = document.getElementById('btnApprove');
     const btnR = document.getElementById('btnReject');
     if (btnA) { btnA.textContent = '✓ Approve & Submit'; btnA.classList.remove('approved'); btnA.style.display=''; }
     if (btnR) { btnR.textContent = '✕ Reject & Recode'; btnR.style.display=''; }
 
     if (data.demo_mode) {
-      showToast('Demo mode: Upload a JSON episode file for live coding', 'success');
+      showToast('Demo mode: Engine modules not loaded', 'success');
     }
   }
 
@@ -2364,13 +2254,36 @@
     if (el) el.textContent = val;
   }
 
+  function _getDxDesc(code) {
+    const map = {
+      'K35.8': 'Acute Appendicitis',
+      'C48.1': 'Malignant neoplasm of peritoneum',
+      'E11.9': 'Type 2 diabetes mellitus',
+      'I10': 'Essential hypertension',
+      'E61.1': 'Iron deficiency',
+      'Z59.0': 'Homelessness'
+    };
+    return map[code] || 'Clinical diagnosis';
+  }
+
+  function _getProcDesc(codes) {
+    if (!codes || !codes.length) return 'No procedure';
+    const map = {
+      '30515-00': 'Appendectomy',
+      '96211-00': 'Peritonectomy',
+      '35414-00': 'Endovascular procedure',
+      '38488-08': 'Neurosurgery'
+    };
+    return map[codes[0]] || 'Surgical procedure';
+  }
+
   function updateStepIndicator(step) {
     for (let i = 1; i <= 5; i++) {
       const el = document.getElementById('step' + i);
       if (!el) continue;
       if (i < step) {
         el.classList.add('done'); el.classList.remove('active');
-        el.querySelector('.step-num').textContent = '✓';
+        el.querySelector('.step-num').innerHTML = '&#10003;';
       } else if (i === step) {
         el.classList.add('active'); el.classList.remove('done');
         el.querySelector('.step-num').textContent = i;
@@ -2398,7 +2311,7 @@
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({physician_id: physicianId, action:'approve'}),
       });
-    } catch(e) { /* offline graceful */ }
+    } catch(e) {}
 
     btn.textContent = `✓ Approved — ${physicianId}`;
     btn.classList.add('approved'); btn.style.opacity = '1';
@@ -2417,7 +2330,7 @@
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({physician_id:'DR-KASSAB-001', action:'reject', reason}),
       });
-    } catch(e) { /* offline graceful */ }
+    } catch(e) {}
     pill.textContent = 'REJECTED'; pill.className = 'status-pill flagged';
     document.getElementById('btnApprove').style.display = 'none';
     document.getElementById('btnReject').textContent = '✕ Rejected — Sent for Recoding';
@@ -2439,12 +2352,19 @@
       const res  = await fetch(`${API}/api/queue`);
       const data = await res.json();
       renderQueue(data.queue || []);
-    } catch(e) { console.log('Queue offline'); }
+    } catch(e) { 
+      console.log('Queue offline'); 
+      renderQueue([]);
+    }
   }
 
   function renderQueue(items) {
-    const tbody = document.querySelector('.queue-table tbody');
-    if (!tbody || !items.length) return;
+    const tbody = document.getElementById('queueTableBody');
+    if (!tbody) return;
+    if (!items.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px;">No episodes in queue</td></tr>';
+      return;
+    }
     tbody.innerHTML = items.map(ep => `
       <tr onclick="loadEpisode('${ep.episode_id}')" style="cursor:pointer">
         <td><div style="font-weight:500">${ep.patient_name || 'Unknown'}</div>
@@ -2465,7 +2385,13 @@
       const res  = await fetch(`${API}/api/episode/${episodeId}`);
       const data = await res.json();
       if (data.suggestion) {
-        renderResult({suggestion: data.suggestion, kb_flags: data.kb_flags||[], blocked: data.status==='blocked', episode_dict: data.episode_dict||{}});
+        renderResult({
+          suggestion: data.suggestion, 
+          kb_flags: data.kb_flags||[], 
+          blocked: data.status==='blocked', 
+          episode_dict: data.episode_dict||{},
+          demo_mode: !data.suggestion?.engine_version || data.suggestion?.engine_version === 'V11.0'
+        });
         showPage('result');
       }
     } catch(e) { showPage('result'); }
@@ -2476,10 +2402,19 @@
     try {
       const res  = await fetch(`${API}/api/kb/status`);
       const data = await res.json();
-      const mode = data.engine_mode === 'live' ? '🟢 Live Engine' : '🟡 Demo Mode';
+      const mode = data.engine_mode === 'live' ? '🟢 Live' : '🟡 Demo';
       console.log(`[NOVIQ] ${mode} | KB: ${data.medical_logic_kb?.total||0} procedures`);
+      
+      const kbSection = document.getElementById('rightKbSection');
+      if (kbSection) {
+        kbSection.innerHTML = `
+          <div class="kb-health-item"><span class="kb-health-label">Engine</span><span class="kb-health-value ${data.engine_mode==='live'?'ok':'warn'}">${data.engine_mode==='live'?'Live':'Demo'}</span></div>
+          <div class="kb-health-item"><span class="kb-health-label">AR-DRG Ver</span><span class="kb-health-value ok">${data.ar_drg_version||'V11.0'}</span></div>
+          <div class="kb-health-item"><span class="kb-health-label">Procedures</span><span class="kb-health-value ok">${data.medical_logic_kb?.total||0}</span></div>
+        `;
+      }
     } catch(e) {
-      console.log('[NOVIQ] API offline — running in static mode');
+      console.log('[NOVIQ] API offline');
     }
   }
 
