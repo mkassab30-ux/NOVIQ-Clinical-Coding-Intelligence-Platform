@@ -482,8 +482,13 @@ def _step5_drg(episode: dict,
     )
 
     for end_class in end_classes:
-        threshold_obj = end_class.get("eccs_threshold") or {}
-        threshold_val = threshold_obj.get("value")
+threshold_obj = end_class.get("eccs_threshold", {})
+
+if not isinstance(threshold_obj, dict):
+    threshold_obj = {}
+
+threshold_val = threshold_obj.get("value")
+op = threshold_obj.get("operator", ">=")
 
         # Production gate — null threshold raises hard error
         # Fires for F25 until Definitions Manual is purchased
@@ -496,7 +501,8 @@ def _step5_drg(episode: dict,
                 f"NOVIQ Engine cannot assign {adrg_code} DRG until resolved."
             )
 
-        if threshold_val is not None and eccs >= threshold_val:
+if threshold_val is not None:
+    if op == ">=" and eccs >= threshold_val:
             drg_code = adrg_code + end_class["suffix"]
             return {
                 "drg_code":       drg_code,
