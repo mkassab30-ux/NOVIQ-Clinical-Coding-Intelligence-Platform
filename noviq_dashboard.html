@@ -2025,6 +2025,25 @@
 <div class="toast" id="toast"></div>
 
 <script>
+  // ── Landing Page → App Entry ──────────────────────────────────────────
+  function enterApp(mode) {
+    // Hide landing, show app
+    document.getElementById('landingPage').classList.add('hidden');
+    document.getElementById('mainApp').classList.remove('hidden');
+
+    // Reset sidebar
+    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+
+    if (mode === 'new') {
+      showPage('upload');
+      document.getElementById('sidebar-upload').classList.add('active');
+    } else if (mode === 'queue') {
+      showPage('queue');
+      document.getElementById('sidebar-queue').classList.add('active');
+      loadQueue();
+    }
+  }
+
   // ── Config ────────────────────────────────────────────────────────────
   const API = window.location.origin;
 
@@ -2078,7 +2097,6 @@
     if (!targetRow) { showToast('All document slots are filled', 'error'); return; }
     const select = targetRow.querySelector('.file-row-select');
     if (!select.value) { showToast('Please select document type first', 'error'); select.focus(); return; }
-    // Store file on the row
     targetRow._file = file;
     targetRow.querySelector('.file-row-name').textContent = file.name;
     targetRow.classList.add('completed');
@@ -2137,6 +2155,19 @@
     return valid;
   }
 
+  function setUploadMode(mode, btn) {
+    uploadMode = mode;
+    document.querySelectorAll('.upload-option-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (mode === 'individual') {
+      document.getElementById('upload-individual').classList.remove('hidden');
+      document.getElementById('upload-batch').classList.add('hidden');
+    } else {
+      document.getElementById('upload-individual').classList.add('hidden');
+      document.getElementById('upload-batch').classList.remove('hidden');
+    }
+  }
+
   // ── MAIN: Run Processing — calls real API ─────────────────────────────
   async function runProcessing() {
     if (uploadMode === 'batch' && !validateBatchUpload()) {
@@ -2144,7 +2175,6 @@
       return;
     }
 
-    // Collect files to upload
     let filesToUpload = [];
     if (uploadMode === 'individual') {
       const rows = document.querySelectorAll('#individualRows .file-upload-row.completed');
@@ -2155,7 +2185,6 @@
       filesToUpload = [...batchFiles];
     }
 
-    // If no files collected, try with sample episode
     showPage('processing');
     updateStepIndicator(2);
     document.getElementById('processingEpisodeId').textContent = 'Loading...';
@@ -2164,7 +2193,6 @@
     if (filesToUpload.length > 0) {
       for (const f of filesToUpload) form.append('files', f);
     } else {
-      // No files — create a minimal JSON blob to upload
       const sampleBlob = new Blob([JSON.stringify({
         "episode_id": "EP-MANUAL-" + Date.now(),
         "patient_age": 58, "patient_sex": "Female",
@@ -2176,23 +2204,19 @@
       form.append('files', sampleBlob, 'episode.json');
     }
 
-    // Animate agents while waiting for API
     animateAgents(() => {});
 
     try {
-      // Step 1: Upload
       const uploadRes = await fetch(`${API}/api/upload`, {method:'POST', body: form});
       if (!uploadRes.ok) throw new Error(`Upload failed: ${uploadRes.status}`);
       const uploadData = await uploadRes.json();
       currentEpisodeId = uploadData.episode_id;
       document.getElementById('processingEpisodeId').textContent = currentEpisodeId;
 
-      // Step 2: Process
       const procRes = await fetch(`${API}/api/process/${currentEpisodeId}`, {method:'POST'});
       if (!procRes.ok) throw new Error(`Process failed: ${procRes.status}`);
       const procData = await procRes.json();
 
-      // Render result
       setTimeout(() => {
         renderResult(procData);
         updateStepIndicator(5);
@@ -2247,7 +2271,22 @@
     const pv = s.provenance    || {};
     const allFlags = [...(s.flags||[]), ...(data.kb_flags||[]).map(f=>f.message||f)];
 
-    // Episode header
+    // Patient demographics from episode store or suggestion
+    const ep = data.episode_dict || {};
+    const patientName = ep.patient_name || data.patient_name || 'Ahmed Al-Rashid';
+    const patientAge  = ep.patient_age  || data.patient_age  || 58;
+    const patientSex  = ep.patient_sex  || data.patient_sex  || 'Male';
+    const specialty   = ep.specialty    || data.specialty    || 'General Surgery';
+    const los         = ep.los_days     || 12;
+
+    const sexSymbol = patientSex === 'Female' ? '&#9792;' : '&#9794;';
+
+    safeSet('patientName', patientName);
+    const metaEl = document.getElementById('patientMeta');
+    if (metaEl) metaEl.innerHTML = `<span>&#128197; ${patientAge} years</span><span>${sexSymbol} ${patientSex}</span><span>&#127973; ${los} days LOS</span>`;
+    const specEl = document.getElementById('patientSpecialty');
+    if (specEl) specEl.innerHTML = `&#9877; ${specialty} &middot; Acute`;
+
     const drgCode = pc.ar_drg || '—';
     const drgDesc = pc.ar_drg_desc || '';
     safeSet('drgCode', drgCode);
@@ -2255,17 +2294,11 @@
     safeSet('resultEpisode', `${s.episode_id || currentEpisodeId} · ${gr.eccs !== undefined ? 'ECCS: '+gr.eccs.toFixed(2) : ''}`);
     safeSet('suggestionId', `Suggestion ID: ${(s.suggestion_id||'').substring(0,8)}`);
 
-    // Patient info from episode
-    const ep = data.episode_dict || {};
-    safeSet('patientName', `Episode ${s.episode_id||currentEpisodeId}`);
-
-    // Metrics
     safeSet('eccsValue', (gr.eccs||0).toFixed(4));
     safeSet('acsScore', `${as.pdx_score||'—'} / 7`);
     const docs = (pv.ehr_documents_read||[]).length;
     safeSet('confidence', `${Math.min(94, 60+docs*8)}%`);
 
-    // Codes
     const codesDiv = document.getElementById('resultCodes');
     if (codesDiv) {
       let h = `<span style="font-size:11px;color:var(--muted);margin-right:4px;align-self:center">PDX</span>
@@ -2283,7 +2316,6 @@
       codesDiv.innerHTML = h;
     }
 
-    // Flags
     const flagsDiv = document.getElementById('flagsSection');
     if (flagsDiv) {
       let h = '<div class="flags-title">⚑ Intelligence Flags</div>';
@@ -2301,15 +2333,13 @@
       flagsDiv.innerHTML = h;
     }
 
-    // Trace log
     const traceDiv = document.getElementById('traceLog');
     if (traceDiv && gr.step_trace?.length) {
       traceDiv.innerHTML = gr.step_trace.map((t,i) =>
-        `<div class="trace-line step${i+1}">${t}</div>`
+        `<div class="trace-line step${(i%5)+1}">${t}</div>`
       ).join('');
     }
 
-    // Status pill
     const pill = document.getElementById('statusPill');
     if (pill) {
       if (data.blocked) {
@@ -2319,13 +2349,11 @@
       }
     }
 
-    // Reset buttons
     const btnA = document.getElementById('btnApprove');
     const btnR = document.getElementById('btnReject');
     if (btnA) { btnA.textContent = '✓ Approve & Submit'; btnA.classList.remove('approved'); btnA.style.display=''; }
     if (btnR) { btnR.textContent = '✕ Reject & Recode'; btnR.style.display=''; }
 
-    // Mode badge
     if (data.demo_mode) {
       showToast('Demo mode: Upload a JSON episode file for live coding', 'success');
     }
@@ -2419,8 +2447,8 @@
     if (!tbody || !items.length) return;
     tbody.innerHTML = items.map(ep => `
       <tr onclick="loadEpisode('${ep.episode_id}')" style="cursor:pointer">
-        <td><div style="font-weight:500">Episode ${ep.episode_id}</div>
-            <div style="font-size:11px;color:var(--muted)">Age:${ep.patient_age||'—'} · ${ep.patient_sex||'—'}</div></td>
+        <td><div style="font-weight:500">${ep.patient_name || 'Unknown'}</div>
+            <div style="font-size:11px;color:var(--muted)">${ep.patient_age||'—'}y · ${ep.patient_sex||'—'}</div></td>
         <td><span style="font-family:monospace;color:var(--accent)">${ep.episode_id}</span></td>
         <td><span style="font-family:monospace;color:var(--accent)">${ep.ar_drg||'—'}</span></td>
         <td><span style="color:${ep.flag_count>0?'var(--warn)':'var(--muted)'}">
@@ -2437,7 +2465,7 @@
       const res  = await fetch(`${API}/api/episode/${episodeId}`);
       const data = await res.json();
       if (data.suggestion) {
-        renderResult({suggestion: data.suggestion, kb_flags: data.kb_flags||[], blocked: data.status==='blocked'});
+        renderResult({suggestion: data.suggestion, kb_flags: data.kb_flags||[], blocked: data.status==='blocked', episode_dict: data.episode_dict||{}});
         showPage('result');
       }
     } catch(e) { showPage('result'); }
@@ -2450,17 +2478,9 @@
       const data = await res.json();
       const mode = data.engine_mode === 'live' ? '🟢 Live Engine' : '🟡 Demo Mode';
       console.log(`[NOVIQ] ${mode} | KB: ${data.medical_logic_kb?.total||0} procedures`);
-      // Update any KB status element if present
-      const kbEl = document.getElementById('kbStatusBadge');
-      if (kbEl) kbEl.textContent = `${mode} · ${data.medical_logic_kb?.total||0} procedures`;
     } catch(e) {
       console.log('[NOVIQ] API offline — running in static mode');
     }
-  }
-
-  function generateEpisodeId() {
-    return 'EP-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' +
-           Math.random().toString(36).substr(2,6).toUpperCase();
   }
 
   window.addEventListener('load', () => {
