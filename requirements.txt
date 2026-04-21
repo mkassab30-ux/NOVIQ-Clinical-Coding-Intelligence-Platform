@@ -1,27 +1,20 @@
-# NOVIQ Engine — Python Dependencies
-# pip install -r requirements.txt
+# NOVIQ Engine — Optimized for Railway (< 4GB)
 
-# Core AI
+# Core AI (API-based)
 anthropic>=0.25.0
-langgraph>=0.1.0
 langchain-core>=0.2.0
 
-# RAG
-llama-index>=0.10.0
-llama-index-vector-stores-qdrant>=0.2.0
-llama-index-retrievers-bm25>=0.1.0
+# RAG (lightweight)
+llama-index-core>=0.10.0
 qdrant-client>=1.9.0
-sentence-transformers>=2.7.0
 tiktoken>=0.7.0
 
 # EHR Integration
 fhir.resources>=7.0.0
-hl7>=0.4.5
 
-# Document Processing
+# Document Processing (light)
 pypdf>=4.2.0
 pdfplumber>=0.11.0
-pytesseract>=0.3.10
 Pillow>=10.3.0
 
 # Backend
@@ -30,7 +23,3 @@ uvicorn>=0.30.0
 pydantic>=2.7.0
 python-dotenv>=1.0.0
 httpx>=0.27.0
-
-# Testing
-pytest>=8.2.0
-pytest-asyncio>=0.23.0
