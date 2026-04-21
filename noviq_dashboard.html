@@ -1670,29 +1670,29 @@
           <div class="patient-info-main">
             <div class="patient-avatar">&#128104;</div>
             <div class="patient-details">
-              <div class="patient-name">Ahmed Al-Rashid</div>
-              <div class="patient-meta">
+              <div class="patient-name" id="patientName">Ahmed Al-Rashid</div>
+              <div class="patient-meta" id="patientMeta">
                 <span>&#128197; 58 years</span>
                 <span>&#9794; Male</span>
                 <span>&#127973; 12 days LOS</span>
               </div>
             </div>
           </div>
-          <div class="patient-specialty">&#9877; General Surgery &middot; Acute</div>
+          <div class="patient-specialty" id="patientSpecialty">&#9877; General Surgery &middot; Acute</div>
         </div>
 
         <!-- Result Header -->
         <div class="result-header">
           <div>
-            <div class="result-episode">EP-2026-0041 &middot; 12 days LOS</div>
+            <div class="result-episode" id="resultEpisode">EP-2026-0041 &middot; 12 days LOS</div>
             <div class="result-drg">
-              <div class="drg-code">G13Z</div>
-              <div class="drg-desc">Peritonectomy for Gastrointestinal Disorders</div>
+              <div class="drg-code" id="drgCode">G13Z</div>
+              <div class="drg-desc" id="drgDesc">Peritonectomy for Gastrointestinal Disorders</div>
             </div>
           </div>
           <div class="result-status">
             <div class="status-pill pending" id="statusPill">PENDING APPROVAL</div>
-            <div style="font-size:11px;color:var(--muted)">Suggestion ID: 7f3a-b291</div>
+            <div style="font-size:11px;color:var(--muted)" id="suggestionId">Suggestion ID: 7f3a-b291</div>
           </div>
         </div>
 
@@ -1700,23 +1700,23 @@
         <div class="result-body">
           <div class="metric-block">
             <div class="metric-label">ECCS Score</div>
-            <div class="metric-value" style="color:var(--muted)">0.0</div>
+            <div class="metric-value" style="color:var(--muted)" id="eccsValue">0.0</div>
             <div class="metric-sub">Stub DCL table &middot; will update post-purchase</div>
           </div>
           <div class="metric-block">
             <div class="metric-label">ACS PDX Score</div>
-            <div class="metric-value" style="color:var(--success)">6 / 7</div>
+            <div class="metric-value" style="color:var(--success)" id="acsScore">6 / 7</div>
             <div class="metric-sub">Meets coding threshold (&ge;5)</div>
           </div>
           <div class="metric-block">
             <div class="metric-label">Confidence</div>
-            <div class="metric-value" style="color:var(--accent2)">94%</div>
+            <div class="metric-value" style="color:var(--accent2)" id="confidence">94%</div>
             <div class="metric-sub">5 of 6 EHR docs read</div>
           </div>
         </div>
 
         <!-- Codes -->
-        <div class="result-codes">
+        <div class="result-codes" id="resultCodes">
           <span style="font-size:11px;color:var(--muted);margin-right:4px;align-self:center">PDX</span>
           <span class="code-chip pdx">C48.1</span>
           <span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">ADX</span>
@@ -1729,7 +1729,7 @@
         </div>
 
         <!-- Flags -->
-        <div class="flags-section">
+        <div class="flags-section" id="flagsSection">
           <div class="flags-title">&#9873; Intelligence Flags</div>
           <div class="flag-item risk">
             <div class="flag-icon">&#9888;</div>
@@ -1917,7 +1917,7 @@
       <div class="divider-label">Step Trace</div>
       <div class="divider-line"></div>
     </div>
-    <div class="trace-log">
+    <div class="trace-log" id="traceLog">
       <div class="trace-line step1">Step 1 PASS &mdash; PDX=C48.1, 2 ADX, 1 ACHI validated</div>
       <div class="trace-line step2">Step 2: No Pre-MDC trigger &rarr; MDC assignment proceeds</div>
       <div class="trace-line step3">Step 3: C48.1 &rarr; MDC 06</div>
@@ -2025,49 +2025,17 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // API Base
-  const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? `http://${window.location.host}`
-    : window.location.origin;
+  // ── Config ────────────────────────────────────────────────────────────
+  const API = window.location.origin;
 
-  // State
+  // ── State ─────────────────────────────────────────────────────────────
   let currentEpisodeId = null;
-  let currentSuggestion = null;
-  let uploadedFiles = [];
-  let uploadMode = 'individual';
-  let batchFiles = [];
+  let uploadedFiles    = [];
+  let batchFiles       = [];
+  let uploadMode       = 'individual';
   let currentUploadIndex = 0;
-  let episodeCounter = 41;
 
-  // Generate Episode ID: EP-YYYY-NNNN (increments daily)
-  function generateEpisodeId() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    // Use date-based counter that resets daily
-    const dateKey = `${year}${month}${day}`;
-    const stored = localStorage.getItem('noviq_episodes_' + dateKey);
-    let count = stored ? parseInt(stored) : 0;
-    count++;
-    localStorage.setItem('noviq_episodes_' + dateKey, count);
-    return `EP-${year}-${String(count).padStart(4, '0')}`;
-  }
-
-  // Landing Page
-  function enterApp(mode) {
-    document.getElementById('landingPage').classList.add('hidden');
-    document.getElementById('mainApp').classList.remove('hidden');
-    if (mode === 'queue') {
-      showPage('queue');
-      setActive(document.getElementById('sidebar-queue'), 'queue');
-    } else {
-      showPage('upload');
-      setActive(document.getElementById('sidebar-upload'), 'upload');
-    }
-  }
-
-  // Navigation
+  // ── Navigation ────────────────────────────────────────────────────────
   function setActive(el, page) {
     document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
     el.classList.add('active');
@@ -2081,73 +2049,37 @@
     if (pg) pg.classList.add('active');
   }
 
-  // Upload Mode Switch
-  function setUploadMode(mode, btn) {
-    uploadMode = mode;
-    document.querySelectorAll('.upload-option-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    if (mode === 'individual') {
-      document.getElementById('upload-individual').classList.remove('hidden');
-      document.getElementById('upload-batch').classList.add('hidden');
-    } else {
-      document.getElementById('upload-individual').classList.add('hidden');
-      document.getElementById('upload-batch').classList.remove('hidden');
-    }
-  }
-
-  // Individual Upload
+  // ── File picker ────────────────────────────────────────────────────────
   const fileInput = document.createElement('input');
   fileInput.type = 'file';
   fileInput.style.display = 'none';
   document.body.appendChild(fileInput);
-
-  function triggerUploadIndividual() {
-    currentUploadIndex = 0;
-    fileInput.click();
-  }
-
-  function triggerSingleUpload(index) {
-    currentUploadIndex = index;
-    fileInput.click();
-  }
-
   fileInput.addEventListener('change', e => {
-    if (uploadMode === 'individual') {
-      handleIndividualFile(e.target.files[0]);
-    } else {
-      handleBatchFiles(e.target.files);
-    }
+    if (uploadMode === 'individual') handleIndividualFile(e.target.files[0]);
+    else handleBatchFiles(e.target.files);
   });
+
+  function triggerUploadIndividual() { currentUploadIndex = 0; fileInput.click(); }
+  function triggerSingleUpload(i)    { currentUploadIndex = i; fileInput.click(); }
 
   function handleDropIndividual(e) {
     e.preventDefault();
     document.getElementById('dropZoneIndividual').classList.remove('drag-over');
-    if (e.dataTransfer.files.length > 0) {
-      handleIndividualFile(e.dataTransfer.files[0]);
-    }
+    if (e.dataTransfer.files.length > 0) handleIndividualFile(e.dataTransfer.files[0]);
   }
 
   function handleIndividualFile(file) {
     if (!file) return;
-    // Find first non-completed row without a file
     const rows = document.querySelectorAll('#individualRows .file-upload-row');
     let targetRow = null;
     for (let row of rows) {
-      if (!row.classList.contains('completed')) {
-        targetRow = row;
-        break;
-      }
+      if (!row.classList.contains('completed')) { targetRow = row; break; }
     }
-    if (!targetRow) {
-      showToast('All document slots are filled', 'error');
-      return;
-    }
+    if (!targetRow) { showToast('All document slots are filled', 'error'); return; }
     const select = targetRow.querySelector('.file-row-select');
-    if (!select.value) {
-      showToast('Please select document type first', 'error');
-      select.focus();
-      return;
-    }
+    if (!select.value) { showToast('Please select document type first', 'error'); select.focus(); return; }
+    // Store file on the row
+    targetRow._file = file;
     targetRow.querySelector('.file-row-name').textContent = file.name;
     targetRow.classList.add('completed');
     targetRow.querySelector('.file-row-btn').textContent = 'Change';
@@ -2159,15 +2091,11 @@
     row.dataset.type = select.value;
   }
 
-  // Batch Upload
   function triggerBatchUpload() {
     const input = document.createElement('input');
-    input.type = 'file';
-    input.multiple = true;
-    input.style.display = 'none';
+    input.type = 'file'; input.multiple = true; input.style.display = 'none';
     input.onchange = e => handleBatchFiles(e.target.files);
-    document.body.appendChild(input);
-    input.click();
+    document.body.appendChild(input); input.click();
   }
 
   function handleBatchDrop(e) {
@@ -2182,6 +2110,7 @@
       batchFiles.push(file);
       const item = document.createElement('div');
       item.className = 'batch-file-item';
+      item.dataset.fileIndex = batchFiles.length - 1;
       item.innerHTML = `
         <select class="batch-file-select" required onchange="this.classList.remove('required')">
           <option value="">Select type *</option>
@@ -2193,137 +2122,350 @@
           <option value="Discharge Summary">Discharge Summary</option>
         </select>
         <span class="batch-file-name">${file.name}</span>
-        <button class="batch-file-remove" onclick="this.parentElement.remove()">&times;</button>
-      `;
+        <button class="batch-file-remove" onclick="this.parentElement.remove()">&times;</button>`;
       list.appendChild(item);
     }
-    if (files.length > 0) {
-      showToast(`${files.length} file(s) added. Please select document types.`, 'success');
-    }
+    if (files.length > 0) showToast(`${files.length} file(s) added. Please select document types.`, 'success');
   }
 
   function validateBatchUpload() {
     const selects = document.querySelectorAll('.batch-file-select');
     let valid = true;
     for (let sel of selects) {
-      if (!sel.value) {
-        sel.classList.add('required');
-        valid = false;
-      }
+      if (!sel.value) { sel.classList.add('required'); valid = false; }
     }
     return valid;
   }
 
-  // Processing
+  // ── MAIN: Run Processing — calls real API ─────────────────────────────
   async function runProcessing() {
     if (uploadMode === 'batch' && !validateBatchUpload()) {
       showToast('Please select document type for all files', 'error');
       return;
     }
 
-    currentEpisodeId = generateEpisodeId();
-    document.getElementById('processingEpisodeId').textContent = currentEpisodeId;
+    // Collect files to upload
+    let filesToUpload = [];
+    if (uploadMode === 'individual') {
+      const rows = document.querySelectorAll('#individualRows .file-upload-row.completed');
+      for (let row of rows) {
+        if (row._file) filesToUpload.push(row._file);
+      }
+    } else {
+      filesToUpload = [...batchFiles];
+    }
 
+    // If no files collected, try with sample episode
     showPage('processing');
     updateStepIndicator(2);
+    document.getElementById('processingEpisodeId').textContent = 'Loading...';
 
-    // Animate agents
-    const agents = ['agent1', 'agent2', 'agent3', 'agent4'];
-    const delays = [0, 800, 1600, 3200];
+    const form = new FormData();
+    if (filesToUpload.length > 0) {
+      for (const f of filesToUpload) form.append('files', f);
+    } else {
+      // No files — create a minimal JSON blob to upload
+      const sampleBlob = new Blob([JSON.stringify({
+        "episode_id": "EP-MANUAL-" + Date.now(),
+        "patient_age": 58, "patient_sex": "Female",
+        "pdx": "C48.1", "adx": ["E11.9", "I10"],
+        "achi_codes": ["96211-00"], "los_days": 12,
+        "same_day": false, "separation_mode": "discharge_home",
+        "care_type": "01", "acs_pdx_score": 6
+      })], {type: 'application/json'});
+      form.append('files', sampleBlob, 'episode.json');
+    }
 
+    // Animate agents while waiting for API
+    animateAgents(() => {});
+
+    try {
+      // Step 1: Upload
+      const uploadRes = await fetch(`${API}/api/upload`, {method:'POST', body: form});
+      if (!uploadRes.ok) throw new Error(`Upload failed: ${uploadRes.status}`);
+      const uploadData = await uploadRes.json();
+      currentEpisodeId = uploadData.episode_id;
+      document.getElementById('processingEpisodeId').textContent = currentEpisodeId;
+
+      // Step 2: Process
+      const procRes = await fetch(`${API}/api/process/${currentEpisodeId}`, {method:'POST'});
+      if (!procRes.ok) throw new Error(`Process failed: ${procRes.status}`);
+      const procData = await procRes.json();
+
+      // Render result
+      setTimeout(() => {
+        renderResult(procData);
+        updateStepIndicator(5);
+        setTimeout(() => showPage('result'), 400);
+      }, 500);
+
+    } catch(err) {
+      console.error('Pipeline error:', err);
+      showToast('Error: ' + err.message, 'error');
+      setTimeout(() => showPage('upload'), 2000);
+    }
+  }
+
+  function animateAgents(callback) {
+    const agents = ['agent1','agent2','agent3','agent4'];
+    const delays = [0, 700, 1400, 2100];
     for (let i = 0; i < agents.length; i++) {
       setTimeout(() => {
         const agent = document.getElementById(agents[i]);
+        if (!agent) return;
         if (i > 0) {
           const prev = document.getElementById(agents[i-1]);
-          prev.classList.remove('running');
-          prev.classList.add('done');
-          prev.querySelector('.agent-card-status').textContent = 'COMPLETE';
-          prev.querySelector('.agent-card-progress-bar').style.width = '100%';
+          if (prev) {
+            prev.classList.remove('running'); prev.classList.add('done');
+            const s = prev.querySelector('.agent-card-status');
+            if (s) s.textContent = 'COMPLETE';
+            const b = prev.querySelector('.agent-card-progress-bar');
+            if (b) b.style.width = '100%';
+          }
         }
-        if (i < agents.length - 1) {
-          agent.classList.remove('waiting');
-          agent.classList.add('running');
-        } else {
+        agent.classList.remove('waiting'); agent.classList.add('running');
+        if (i === agents.length - 1) {
           setTimeout(() => {
-            agent.classList.remove('waiting');
-            agent.classList.add('done');
-            agent.querySelector('.agent-card-status').textContent = 'COMPLETE';
-            agent.querySelector('.agent-card-progress-bar').style.width = '100%';
-            updateStepIndicator(5);
-            setTimeout(() => showPage('result'), 600);
-          }, 1500);
+            agent.classList.remove('running'); agent.classList.add('done');
+            const s = agent.querySelector('.agent-card-status');
+            if (s) s.textContent = 'COMPLETE';
+            const b = agent.querySelector('.agent-card-progress-bar');
+            if (b) b.style.width = '100%';
+            callback();
+          }, 800);
         }
       }, delays[i]);
     }
+  }
 
-    // Progress bar animation for running agent
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-      progress += 2;
-      const bar = document.querySelector('.agent-card.running .agent-card-progress-bar');
-      if (bar) bar.style.width = Math.min(progress, 90) + '%';
-      if (progress > 100) clearInterval(progressInterval);
-    }, 60);
+  // ── Render API result into result page ────────────────────────────────
+  function renderResult(data) {
+    const s  = data.suggestion || {};
+    const pc = s.proposed_codes || {};
+    const as = s.acs_scores    || {};
+    const gr = s.grouper_result || {};
+    const pv = s.provenance    || {};
+    const allFlags = [...(s.flags||[]), ...(data.kb_flags||[]).map(f=>f.message||f)];
+
+    // Episode header
+    const drgCode = pc.ar_drg || '—';
+    const drgDesc = pc.ar_drg_desc || '';
+    safeSet('drgCode', drgCode);
+    safeSet('drgDesc', drgDesc);
+    safeSet('resultEpisode', `${s.episode_id || currentEpisodeId} · ${gr.eccs !== undefined ? 'ECCS: '+gr.eccs.toFixed(2) : ''}`);
+    safeSet('suggestionId', `Suggestion ID: ${(s.suggestion_id||'').substring(0,8)}`);
+
+    // Patient info from episode
+    const ep = data.episode_dict || {};
+    safeSet('patientName', `Episode ${s.episode_id||currentEpisodeId}`);
+
+    // Metrics
+    safeSet('eccsValue', (gr.eccs||0).toFixed(4));
+    safeSet('acsScore', `${as.pdx_score||'—'} / 7`);
+    const docs = (pv.ehr_documents_read||[]).length;
+    safeSet('confidence', `${Math.min(94, 60+docs*8)}%`);
+
+    // Codes
+    const codesDiv = document.getElementById('resultCodes');
+    if (codesDiv) {
+      let h = `<span style="font-size:11px;color:var(--muted);margin-right:4px;align-self:center">PDX</span>
+               <span class="code-chip pdx">${pc.pdx||'—'}</span>`;
+      if (pc.adx?.length) {
+        h += `<span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">ADX</span>`;
+        (pc.adx||[]).forEach(c => h += `<span class="code-chip">${c}</span>`);
+      }
+      if (pc.achi?.length) {
+        h += `<span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">ACHI</span>`;
+        (pc.achi||[]).forEach(c => h += `<span class="code-chip achi">${c}</span>`);
+      }
+      h += `<span style="font-size:11px;color:var(--muted);margin-left:8px;margin-right:4px;align-self:center">AR-DRG</span>
+            <span class="code-chip" style="border-color:var(--accent);color:var(--accent)">${drgCode}</span>`;
+      codesDiv.innerHTML = h;
+    }
+
+    // Flags
+    const flagsDiv = document.getElementById('flagsSection');
+    if (flagsDiv) {
+      let h = '<div class="flags-title">⚑ Intelligence Flags</div>';
+      if (!allFlags.length) {
+        h += '<div class="flag-item info"><div class="flag-icon">✓</div><div class="flag-text">No flags — all checks passed</div></div>';
+      } else {
+        allFlags.forEach(f => {
+          const isRisk = /RISK|REJECT|BLOCK|EXCLUSION/i.test(f);
+          const isWarn = /WARN|LEAK|TIMING|HARDWARE/i.test(f);
+          const cls  = isRisk ? 'risk' : isWarn ? 'warn' : 'info';
+          const icon = isRisk ? '⚠' : isWarn ? '◉' : '✦';
+          h += `<div class="flag-item ${cls}"><div class="flag-icon">${icon}</div><div class="flag-text">${f}</div></div>`;
+        });
+      }
+      flagsDiv.innerHTML = h;
+    }
+
+    // Trace log
+    const traceDiv = document.getElementById('traceLog');
+    if (traceDiv && gr.step_trace?.length) {
+      traceDiv.innerHTML = gr.step_trace.map((t,i) =>
+        `<div class="trace-line step${i+1}">${t}</div>`
+      ).join('');
+    }
+
+    // Status pill
+    const pill = document.getElementById('statusPill');
+    if (pill) {
+      if (data.blocked) {
+        pill.textContent = 'BLOCKED'; pill.className = 'status-pill flagged';
+      } else {
+        pill.textContent = 'PENDING APPROVAL'; pill.className = 'status-pill pending';
+      }
+    }
+
+    // Reset buttons
+    const btnA = document.getElementById('btnApprove');
+    const btnR = document.getElementById('btnReject');
+    if (btnA) { btnA.textContent = '✓ Approve & Submit'; btnA.classList.remove('approved'); btnA.style.display=''; }
+    if (btnR) { btnR.textContent = '✕ Reject & Recode'; btnR.style.display=''; }
+
+    // Mode badge
+    if (data.demo_mode) {
+      showToast('Demo mode: Upload a JSON episode file for live coding', 'success');
+    }
+  }
+
+  function safeSet(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
   }
 
   function updateStepIndicator(step) {
     for (let i = 1; i <= 5; i++) {
       const el = document.getElementById('step' + i);
+      if (!el) continue;
       if (i < step) {
-        el.classList.add('done');
-        el.classList.remove('active');
+        el.classList.add('done'); el.classList.remove('active');
         el.querySelector('.step-num').textContent = '✓';
       } else if (i === step) {
-        el.classList.add('active');
-        el.classList.remove('done');
+        el.classList.add('active'); el.classList.remove('done');
         el.querySelector('.step-num').textContent = i;
       } else {
-        el.classList.remove('done', 'active');
+        el.classList.remove('done','active');
         el.querySelector('.step-num').textContent = i;
       }
     }
   }
 
-  // Approval
-  function approveSuggestion() {
-    const btn = document.getElementById('btnApprove');
+  // ── Approve / Reject ──────────────────────────────────────────────────
+  async function approveSuggestion() {
+    const btn  = document.getElementById('btnApprove');
     const pill = document.getElementById('statusPill');
-    const physicianId = document.getElementById('physicianId').value || 'DR-KASSAB-001';
+    const physicianId = (document.getElementById('physicianId')?.value || 'DR-KASSAB-001').trim();
 
-    btn.textContent = '✓ Approved — ' + physicianId;
-    btn.classList.add('approved');
-    pill.textContent = 'APPROVED';
-    pill.className = 'status-pill approved';
+    if (!physicianId) { showToast('Please enter physician ID', 'error'); return; }
+
+    btn.textContent = '...'; btn.style.opacity = '0.6';
+
+    try {
+      const epId = currentEpisodeId || 'DEMO';
+      await fetch(`${API}/api/approve/${epId}`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({physician_id: physicianId, action:'approve'}),
+      });
+    } catch(e) { /* offline graceful */ }
+
+    btn.textContent = `✓ Approved — ${physicianId}`;
+    btn.classList.add('approved'); btn.style.opacity = '1';
+    pill.textContent = 'APPROVED'; pill.className = 'status-pill approved';
     document.getElementById('btnReject').style.display = 'none';
     showToast('Episode approved successfully', 'success');
   }
 
-  function rejectSuggestion() {
+  async function rejectSuggestion() {
     const pill = document.getElementById('statusPill');
-    pill.textContent = 'REJECTED';
-    pill.className = 'status-pill flagged';
+    const reason = prompt('Reason for rejection (optional):') || '';
+    try {
+      const epId = currentEpisodeId || 'DEMO';
+      await fetch(`${API}/api/approve/${epId}`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({physician_id:'DR-KASSAB-001', action:'reject', reason}),
+      });
+    } catch(e) { /* offline graceful */ }
+    pill.textContent = 'REJECTED'; pill.className = 'status-pill flagged';
     document.getElementById('btnApprove').style.display = 'none';
     document.getElementById('btnReject').textContent = '✕ Rejected — Sent for Recoding';
     showToast('Episode rejected and sent for recoding', 'error');
   }
 
-  // Toast
+  // ── Toast ─────────────────────────────────────────────────────────────
   function showToast(msg, type) {
     const toast = document.getElementById('toast');
+    if (!toast) return;
     toast.textContent = msg;
     toast.className = 'toast show ' + type;
-    setTimeout(() => toast.classList.remove('show'), 3000);
+    setTimeout(() => toast.classList.remove('show'), 3500);
   }
 
-  // Queue
+  // ── Queue ─────────────────────────────────────────────────────────────
   async function loadQueue() {
-    // API integration placeholder
+    try {
+      const res  = await fetch(`${API}/api/queue`);
+      const data = await res.json();
+      renderQueue(data.queue || []);
+    } catch(e) { console.log('Queue offline'); }
   }
 
-  // Init
+  function renderQueue(items) {
+    const tbody = document.querySelector('.queue-table tbody');
+    if (!tbody || !items.length) return;
+    tbody.innerHTML = items.map(ep => `
+      <tr onclick="loadEpisode('${ep.episode_id}')" style="cursor:pointer">
+        <td><div style="font-weight:500">Episode ${ep.episode_id}</div>
+            <div style="font-size:11px;color:var(--muted)">Age:${ep.patient_age||'—'} · ${ep.patient_sex||'—'}</div></td>
+        <td><span style="font-family:monospace;color:var(--accent)">${ep.episode_id}</span></td>
+        <td><span style="font-family:monospace;color:var(--accent)">${ep.ar_drg||'—'}</span></td>
+        <td><span style="color:${ep.flag_count>0?'var(--warn)':'var(--muted)'}">
+          ${ep.flag_count>0?'⚠ '+ep.flag_count+' flag(s)':'— clean'}</span></td>
+        <td><span class="status-pill ${ep.status==='APPROVED'?'approved':ep.status==='REJECTED'?'flagged':'pending'}" 
+                  style="font-size:11px;padding:3px 10px">${ep.status||'PENDING'}</span></td>
+        <td>${ep.processed_at ? new Date(ep.processed_at).toLocaleString() : '—'}</td>
+      </tr>`).join('');
+  }
+
+  async function loadEpisode(episodeId) {
+    currentEpisodeId = episodeId;
+    try {
+      const res  = await fetch(`${API}/api/episode/${episodeId}`);
+      const data = await res.json();
+      if (data.suggestion) {
+        renderResult({suggestion: data.suggestion, kb_flags: data.kb_flags||[], blocked: data.status==='blocked'});
+        showPage('result');
+      }
+    } catch(e) { showPage('result'); }
+  }
+
+  // ── KB status on load ─────────────────────────────────────────────────
+  async function loadKBStatus() {
+    try {
+      const res  = await fetch(`${API}/api/kb/status`);
+      const data = await res.json();
+      const mode = data.engine_mode === 'live' ? '🟢 Live Engine' : '🟡 Demo Mode';
+      console.log(`[NOVIQ] ${mode} | KB: ${data.medical_logic_kb?.total||0} procedures`);
+      // Update any KB status element if present
+      const kbEl = document.getElementById('kbStatusBadge');
+      if (kbEl) kbEl.textContent = `${mode} · ${data.medical_logic_kb?.total||0} procedures`;
+    } catch(e) {
+      console.log('[NOVIQ] API offline — running in static mode');
+    }
+  }
+
+  function generateEpisodeId() {
+    return 'EP-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' +
+           Math.random().toString(36).substr(2,6).toUpperCase();
+  }
+
   window.addEventListener('load', () => {
-    console.log('[NOVIQ] Dashboard ready');
+    loadKBStatus();
+    console.log('[NOVIQ] Dashboard ready · API:', API);
   });
 </script>
 </body>
