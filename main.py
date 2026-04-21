@@ -32,7 +32,6 @@ warnings.filterwarnings("ignore")
 # ── Import engine ──────────────────────────────────────────────────────────
 ENGINE_AVAILABLE = False
 try:
-    try:
     from engine.noviq_engine import NOVIQEngine
     from engine.models import APPROVAL_APPROVED, APPROVAL_PENDING, APPROVAL_REJECTED, CodingSuggestion
     from engine.validation_rules import KnowledgeBaseIncompleteError
@@ -41,9 +40,10 @@ try:
     print("[OK] Engine modules loaded")
 
 except Exception as e:
+    import traceback
+    traceback.print_exc()
     ENGINE_AVAILABLE = False
-    print(f"[WARN] Engine modules failed: {e} — running in Demo Mode")
-
+    print(f"[WARN] Engine failed: {e} — running in Demo Mode")
 # ── App ────────────────────────────────────────────────────────────────────
 app = FastAPI(title="NOVIQ Engine API", version="1.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
