@@ -116,7 +116,7 @@ class DCLExclusionKnowledgeBase:
                if not expanded_code:
                     continue
                    
-                expanded_code = str(expanded_code).strip().upper()
+               expanded_code = str(expanded_code).strip().upper()
                 
                 # 4. Map the data into the unconditional index
                 self._unconditional[expanded_code] = {
