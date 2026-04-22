@@ -113,7 +113,6 @@ class DCLExclusionKnowledgeBase:
             
             # 3. Safe Expansion: Fallback to [start] if expansion list is missing
             for expanded_code in range_entry.get("expansion", [start]):
-            for expanded_code in range_entry.get("expansion", [start]):
                if not expanded_code:
                     continue
                    
