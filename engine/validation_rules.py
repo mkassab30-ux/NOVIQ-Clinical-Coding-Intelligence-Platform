@@ -100,8 +100,7 @@ class DCLExclusionKnowledgeBase:
             self._unconditional[code] = entry
 
         # Expand range entries (e.g. Z14–Z16) into individual codes
-        for range_entry in section.get("code_ranges", []):
-            # 1. Safe access using .get() to prevent KeyError if keys are missing
+        # 1. Safe access using .get() to prevent KeyError if keys are missing
             start = range_entry.get("range_start")
             end   = range_entry.get("range_end")
             
@@ -114,7 +113,8 @@ class DCLExclusionKnowledgeBase:
             
             # 3. Safe Expansion: Fallback to [start] if expansion list is missing
             for expanded_code in range_entry.get("expansion", [start]):
-                if not expanded_code:
+            for expanded_code in range_entry.get("expansion", [start]):
+               if not expanded_code:
                     continue
                     
                 expanded_code = str(expanded_code).strip().upper()
