@@ -1,0 +1,11 @@
+{
+  "_comment": "Empirical DCL weights for NOVIQ LIVE Engine",
+  "weights": {
+    "K35.8": 0.45,
+    "A41.9": 0.95,
+    "J96.0": 0.90,
+    "N17.9": 0.70,
+    "I10": 0.15,
+    "E11.9": 0.20
+  }
+}
