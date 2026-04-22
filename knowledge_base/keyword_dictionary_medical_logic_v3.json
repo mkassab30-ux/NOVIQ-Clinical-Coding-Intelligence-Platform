@@ -31,7 +31,7 @@
       "total": 152
     },
     "logic_rule_sections": 6,
-    "intelligence_triggers": 17,
+    "intelligence_triggers": 18,
     "clinical_rule_sections": 2
   },
   "procedures": {
@@ -5209,6 +5209,15 @@
         "Extensor Tendon Repair"
       ],
       "action": "UPGRADE_CODING_TIER if >24h from injury"
+    },
+    "paediatric_thrombocytopenia_alert": {
+      "description": "Thrombocytopenia (D69.6) in paediatric patient — potential genetic/congenital condition, insurance exclusion risk",
+      "trigger_code": "D69.6",
+      "age_threshold": 16,
+      "condition": "patient_age < 16",
+      "rule": "In children, thrombocytopenia may be primary genetic condition (ITP, Bernard-Soulier, etc.) — insurance may classify as congenital exclusion. Flag for senior review before claim submission.",
+      "action": "FLAG_INSURANCE_EXCLUSION_RISK — verify age and cause. If patient_age < 16, require senior medical review before submission.",
+      "clinical_note": "In adults, D69.6 is almost always secondary to another chronic condition and always present in CBC as incidental finding — coded as ADX per ACS 0002."
     }
   },
   "clinical_rules": {
