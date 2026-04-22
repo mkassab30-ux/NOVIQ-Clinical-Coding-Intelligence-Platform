@@ -365,7 +365,7 @@ def _step5_drg(episode: dict,
                     "dcl_contributions": dcl_entries,
                     "threshold_used": threshold_val,
                     "trace": (
-                        f"Step 5: ECCS={eccs} >= threshold_val} "
+                        f"Step 5: ECCS={eccs} >= {threshold_val}"
                         f"→ {drg_code}"
                     )
                 }
