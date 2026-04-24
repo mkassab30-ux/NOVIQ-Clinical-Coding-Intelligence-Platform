@@ -95,35 +95,39 @@ class DCLExclusionKnowledgeBase:
     def _build_unconditional_index(self, raw: dict) -> None:
         section = raw.get("unconditional_exclusions", {})
 
-        for entry in section.get("codes", []):
-            code = entry["icd_code"].strip().upper()
-            self._unconditional[code] = entry
+        def _build_unconditional_index(self, raw: dict) -> None:
+    section = raw.get("unconditional_exclusions", {})
 
-        # Expand range entries (e.g. Z14–Z16) into individual codes
-        # 1. Safe access using .get() to prevent KeyError if keys are missing
-            start = range_entry.get("range_start")
-            end   = range_entry.get("range_end")
-            
-            # 2. Validation: If core range data is missing, skip this entry instead of crashing
-            if not start or not end:
+    # 1. Direct codes
+    for entry in section.get("codes", []):
+        code = entry["icd_code"].strip().upper()
+        self._unconditional[code] = entry
+
+    # 2. Range expansions (FIXED BLOCK)
+    for range_entry in section.get("code_ranges", []):
+
+        start = range_entry.get("range_start")
+        end   = range_entry.get("range_end")
+
+        if not start or not end:
+            continue
+
+        start = str(start).strip().upper()
+        end   = str(end).strip().upper()
+
+        # expansion fallback
+        for expanded_code in range_entry.get("expansion", [start]):
+
+            if not expanded_code:
                 continue
 
-            start = str(start).strip().upper()
-            end   = str(end).strip().upper()
-            
-            # 3. Safe Expansion: Fallback to [start] if expansion list is missing
-            for expanded_code in range_entry.get("expansion", [start]):
-               if not expanded_code:
-                    continue
-                   
-               expanded_code = str(expanded_code).strip().upper()
-                
-                # 4. Map the data into the unconditional index
-                self._unconditional[expanded_code] = {
-                    **range_entry,
-                    "icd_code": expanded_code,
-                    "_range_source": f"{start}–{end}"
-                }
+            expanded_code = str(expanded_code).strip().upper()
+
+            self._unconditional[expanded_code] = {
+                **range_entry,
+                "icd_code": expanded_code,
+                "_range_source": f"{start}–{end}"
+            }
     def _build_conditional_index(self, raw: dict) -> None:
         for entry in raw.get("conditional_exclusions", {}).get("codes", []):
             code = entry["icd_code"].strip().upper()
