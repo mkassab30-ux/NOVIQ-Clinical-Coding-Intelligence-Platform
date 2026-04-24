@@ -95,9 +95,6 @@ class DCLExclusionKnowledgeBase:
     def _build_unconditional_index(self, raw: dict) -> None:
         section = raw.get("unconditional_exclusions", {})
 
-        def _build_unconditional_index(self, raw: dict) -> None:
-    section = raw.get("unconditional_exclusions", {})
-
     # 1. Direct codes
     for entry in section.get("codes", []):
         code = entry["icd_code"].strip().upper()
