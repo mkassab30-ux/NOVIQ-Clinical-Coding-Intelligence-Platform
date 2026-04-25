@@ -838,6 +838,231 @@
         "K40",
         "K41"
       ]
+    },
+    "I03": {
+      "adrg_code": "I03",
+      "adrg_description": "Hip Replacement",
+      "mdc": "08",
+      "partition": "intervention",
+      "hierarchy": {
+        "position": 2
+      },
+      "trigger_codes": [
+        {
+          "achi_code": "49315-00",
+          "role": "trigger",
+          "description": "Total hip replacement"
+        },
+        {
+          "achi_code": "49318-00",
+          "role": "trigger",
+          "description": "Total hip replacement - revision"
+        },
+        {
+          "achi_code": "49324-00",
+          "role": "trigger",
+          "description": "Hemiarthroplasty hip"
+        },
+        {
+          "achi_code": "49321-00",
+          "role": "trigger",
+          "description": "Partial hip replacement"
+        }
+      ],
+      "split_profile": {
+        "profile": "A_B",
+        "end_classes": [
+          {
+            "drg_code": "I03A",
+            "drg_description": "Hip Replacement, Major Complexity",
+            "suffix": "A",
+            "eccs_threshold": {
+              "operator": ">=",
+              "value": 3.0
+            },
+            "cost_rank": 1
+          },
+          {
+            "drg_code": "I03B",
+            "drg_description": "Hip Replacement, Minor Complexity",
+            "suffix": "B",
+            "eccs_threshold": {
+              "operator": "<",
+              "value": 3.0
+            },
+            "cost_rank": 2
+          }
+        ]
+      },
+      "pdx_ranges": [
+        "M16",
+        "S72"
+      ]
+    },
+    "I04": {
+      "adrg_code": "I04",
+      "adrg_description": "Knee Replacement",
+      "mdc": "08",
+      "partition": "intervention",
+      "hierarchy": {
+        "position": 3
+      },
+      "trigger_codes": [
+        {
+          "achi_code": "49518-00",
+          "role": "trigger",
+          "description": "Total knee replacement"
+        },
+        {
+          "achi_code": "49521-00",
+          "role": "trigger",
+          "description": "Unicompartmental knee replacement"
+        },
+        {
+          "achi_code": "49524-00",
+          "role": "trigger",
+          "description": "Revision knee replacement"
+        }
+      ],
+      "split_profile": {
+        "profile": "A_B",
+        "end_classes": [
+          {
+            "drg_code": "I04A",
+            "drg_description": "Knee Replacement, Major Complexity",
+            "suffix": "A",
+            "eccs_threshold": {
+              "operator": ">=",
+              "value": 3.0
+            },
+            "cost_rank": 1
+          },
+          {
+            "drg_code": "I04B",
+            "drg_description": "Knee Replacement, Minor Complexity",
+            "suffix": "B",
+            "eccs_threshold": {
+              "operator": "<",
+              "value": 3.0
+            },
+            "cost_rank": 2
+          }
+        ]
+      },
+      "pdx_ranges": [
+        "M17"
+      ]
+    },
+    "I05": {
+      "adrg_code": "I05",
+      "adrg_description": "Amputation for Musculoskeletal and Connective Tissue Disorders",
+      "mdc": "08",
+      "partition": "intervention",
+      "hierarchy": {
+        "position": 8
+      },
+      "trigger_codes": [
+        {
+          "achi_code": "44350-00",
+          "role": "trigger",
+          "description": "Amputation above knee"
+        },
+        {
+          "achi_code": "44353-00",
+          "role": "trigger",
+          "description": "Amputation below knee"
+        },
+        {
+          "achi_code": "44356-00",
+          "role": "trigger",
+          "description": "Forefoot amputation"
+        }
+      ],
+      "split_profile": {
+        "profile": "A_B",
+        "end_classes": [
+          {
+            "drg_code": "I05A",
+            "drg_description": "Amputation, Major Complexity",
+            "suffix": "A",
+            "eccs_threshold": {
+              "operator": ">=",
+              "value": 4.0
+            },
+            "cost_rank": 1
+          },
+          {
+            "drg_code": "I05B",
+            "drg_description": "Amputation, Minor Complexity",
+            "suffix": "B",
+            "eccs_threshold": {
+              "operator": "<",
+              "value": 4.0
+            },
+            "cost_rank": 2
+          }
+        ]
+      },
+      "pdx_ranges": [
+        "M86",
+        "E10",
+        "E11"
+      ]
+    },
+    "I08": {
+      "adrg_code": "I08",
+      "adrg_description": "Other Hip and Femur Procedures",
+      "mdc": "08",
+      "partition": "intervention",
+      "hierarchy": {
+        "position": 4
+      },
+      "trigger_codes": [
+        {
+          "achi_code": "47381-00",
+          "role": "trigger",
+          "description": "Dynamic hip screw (DHS)"
+        },
+        {
+          "achi_code": "47381-01",
+          "role": "trigger",
+          "description": "Intramedullary nail femur"
+        },
+        {
+          "achi_code": "47390-00",
+          "role": "trigger",
+          "description": "ORIF femur"
+        }
+      ],
+      "split_profile": {
+        "profile": "A_B",
+        "end_classes": [
+          {
+            "drg_code": "I08A",
+            "drg_description": "Other Hip and Femur, Major Complexity",
+            "suffix": "A",
+            "eccs_threshold": {
+              "operator": ">=",
+              "value": 3.0
+            },
+            "cost_rank": 1
+          },
+          {
+            "drg_code": "I08B",
+            "drg_description": "Other Hip and Femur, Minor Complexity",
+            "suffix": "B",
+            "eccs_threshold": {
+              "operator": "<",
+              "value": 3.0
+            },
+            "cost_rank": 2
+          }
+        ]
+      },
+      "pdx_ranges": [
+        "S72",
+        "M84"
+      ]
     }
   },
   "global_v11_flags": {
@@ -1289,6 +1514,36 @@
     "K50.1": "06",
     "K50.9": "06",
     "K51.0": "06",
-    "K51.9": "06"
+    "K51.9": "06",
+    "S72.0": "08",
+    "S72.1": "08",
+    "S72.2": "08",
+    "S72.3": "08",
+    "S72.4": "08",
+    "S82.0": "08",
+    "S82.1": "08",
+    "M86.9": "08",
+    "M80.9": "08",
+    "M51.1": "08",
+    "L97.9": "09",
+    "T79.3": "09",
+    "N81.9": "13",
+    "N83.9": "13",
+    "E66.01": "06",
+    "E66.09": "06",
+    "E66.9": "06",
+    "S62.0": "08",
+    "S62.00": "08",
+    "S62.2": "08",
+    "S66.0": "08",
+    "S66.1": "08",
+    "G56.0": "08",
+    "E04.1": "09",
+    "E04.2": "09",
+    "E04.9": "09",
+    "C73": "09",
+    "E03.9": "09",
+    "Z42.1": "09",
+    "Z41.1": "09"
   }
 }
