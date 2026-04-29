@@ -103,18 +103,47 @@ def _save(store: dict):
 STORE: dict = _load()
 
 # ── Medical Logic KB ─────────────────────────────────────────────────────
+# ── Load Medical Logic KB — v4 + v3 merged, v4 takes priority ──────────
 ML_KB: dict = {}
-for _n in ["keyword_dictionary_medical_logic_v3.json",
-           "keyword_dictionary_medical_logic_v2.json",
-           "keyword_dictionary_medical_logic_v1.json"]:
-    _p = KB_DIR / _n
-    if _p.exists():
-        ML_KB = json.loads(_p.read_text(encoding="utf-8"))
-        m = ML_KB.get("_meta", {})
-        print(f"[OK] KB {m.get('version','?')} — "
-              f"{m.get('procedure_counts',{}).get('total',0)} procs "
-              f"| {m.get('intelligence_triggers',0)} triggers")
-        break
+
+def _load_kb_merged(kb_dir: Path) -> dict:
+    """Load v4 (Excel-built) merged with v3 (logic + triggers). v4 wins on conflict."""
+    result = {}
+
+    # Try v3 first as base (has intelligence_triggers + medical_logic)
+    for vname in ["keyword_dictionary_medical_logic_v3.json",
+                  "keyword_dictionary_medical_logic_v2.json",
+                  "keyword_dictionary_medical_logic_v1.json"]:
+        p = kb_dir / vname
+        if p.exists():
+            result = json.loads(p.read_text(encoding="utf-8"))
+            print(f"[OK] Base KB loaded: {vname}")
+            break
+
+    # Overlay v4 (Excel-built) — richer procedure data + EHR extraction protocol
+    v4_path = kb_dir / "keyword_dictionary_medical_logic_v4.json"
+    if v4_path.exists():
+        v4 = json.loads(v4_path.read_text(encoding="utf-8"))
+        # Merge: v4 procedures_by_specialty overrides v3 procedures
+        if "procedures_by_specialty" in v4:
+            result["procedures_by_specialty"] = v4["procedures_by_specialty"]
+            result["procedure_index"] = v4.get("procedure_index", {})
+        if "ehr_extraction_protocol" in v4:
+            result["ehr_extraction_protocol"] = v4["ehr_extraction_protocol"]
+        if "coding_integrity_rules" in v4:
+            result["coding_integrity_rules"] = v4["coding_integrity_rules"]
+        # Keep v3 intelligence_triggers and medical_logic (not in v4)
+        print(f"[OK] v4 overlay applied: {len(v4.get('procedure_index',{}))} procedures + EHR protocol")
+
+    return result
+
+ML_KB = _load_kb_merged(KB_DIR)
+_m = ML_KB.get("_meta", {})
+_total = (_m.get("procedure_counts",{}).get("total",0)
+          or len(ML_KB.get("procedure_index",{})))
+print(f"[OK] Medical Logic KB ready — {_total} procedures | "
+      f"{len(ML_KB.get('intelligence_triggers',{}))} triggers | "
+      f"EHR protocol: {'yes' if 'ehr_extraction_protocol' in ML_KB else 'no'}")
 
 # ── Engine singleton ──────────────────────────────────────────────────────
 _engine = None
