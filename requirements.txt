@@ -1,28 +1,18 @@
-# NOVIQ Engine — Optimized for Railway Deployment
+# NOVIQ Engine — Python Dependencies
+# ====================================
 
-# Core AI (API-based, lightweight)
-anthropic>=0.25.0
-langchain-core>=0.2.0
+# Core FastAPI Backend
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+aiofiles>=23.2.1
 
-# RAG (lightweight only)
-llama-index-core>=0.10.0
-qdrant-client>=1.9.0
-tiktoken>=0.7.0
+# PDF Text Extraction
+pdfplumber>=0.10.3
 
-# EHR Integration
-fhir.resources>=7.0.0
+# Optional: Intent Agent (NLP Extraction)
+# Uncomment or set ANTHROPIC_API_KEY to enable
+anthropic>=0.43.0
 
-# Document Processing (no heavy OCR)
-pypdf>=4.2.0
-pdfplumber>=0.11.0
-Pillow>=10.3.0
-
-# Backend
-fastapi>=0.111.0
-uvicorn>=0.30.0
-pydantic>=2.7.0
-python-dotenv>=1.0.0
-httpx>=0.27.0
-
-# Required for file uploads (IMPORTANT FIX)
-python-multipart>=0.0.9
+# Data Processing
+python-dateutil>=2.8.2
