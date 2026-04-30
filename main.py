@@ -1,21 +1,27 @@
 """
-NOVIQ Engine — FastAPI Backend v3
+NOVIQ Engine — FastAPI Backend v4
 ===================================
-Fixes in this version:
-  1. Correct import path: adds engine/ to sys.path BEFORE importing
-  2. engine/__init__.py no longer needed
-  3. DEFAULT paths in noviq_engine.py look for KB in engine/ parent = knowledge_base/
-     → we pass explicit paths to override
-  4. Episode sequence counter (EP-0001, EP-0002...)
-  5. episode_dict returned in /process so dashboard renders patient info
-  6. PDF text extraction with pdfplumber
-  7. Persistent store to JSON file (survives worker restarts)
-  8. /api/health returns full diagnostic
+Phase 5 Enhancement — Intent Agent (Optional Mode)
+
+New Features:
+  1. Intent Agent (optional) — uses Claude API if ANTHROPIC_API_KEY is set
+  2. Enhanced regex extraction — uses KB v4 EHR protocol as fallback
+  3. Auto ACS scoring from Progress Notes
+  4. Document sequence protocol enforced
+  5. ACHI code assembly (Base + Modifier detection)
+  6. Medical Logic KB v4 + v3 merged intelligence
+
+Environment Variables (optional):
+  ANTHROPIC_API_KEY — if set, enables Intent Agent for NLP extraction
+  
+Fallback Mode:
+  If no API key → uses enhanced regex + KB v4 keyword matching
 """
 from __future__ import annotations
 import json, os, sys, uuid, warnings, re
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any, Optional
 
 # ── Paths ─────────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).parent
@@ -48,6 +54,22 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 warnings.filterwarnings("ignore")
 
+# ── Intent Agent (Optional) ───────────────────────────────────────────────
+INTENT_AGENT_AVAILABLE = False
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+
+if ANTHROPIC_API_KEY:
+    try:
+        from anthropic import Anthropic
+        _anthropic_client = Anthropic(api_key=ANTHROPIC_API_KEY)
+        INTENT_AGENT_AVAILABLE = True
+        print("[OK] Intent Agent ENABLED — Claude API available")
+    except Exception as e:
+        print(f"[WARN] Claude API import failed: {e}")
+        print("[INFO] Falling back to regex extraction")
+else:
+    print("[INFO] ANTHROPIC_API_KEY not set — using regex extraction")
+
 # ── Engine import ─────────────────────────────────────────────────────────
 ENGINE_AVAILABLE = False
 ENGINE_ERROR = None
@@ -68,7 +90,7 @@ except Exception as e:
     traceback.print_exc()
 
 # ── App ───────────────────────────────────────────────────────────────────
-app = FastAPI(title="NOVIQ Engine API", version="3.0.0")
+app = FastAPI(title="NOVIQ Engine API", version="4.0.0")
 app.add_middleware(
     CORSMiddleware, allow_origins=["*"],
     allow_methods=["*"], allow_headers=["*"]
@@ -103,7 +125,6 @@ def _save(store: dict):
 STORE: dict = _load()
 
 # ── Medical Logic KB ─────────────────────────────────────────────────────
-# ── Load Medical Logic KB — v4 + v3 merged, v4 takes priority ──────────
 ML_KB: dict = {}
 
 def _load_kb_merged(kb_dir: Path) -> dict:
@@ -156,7 +177,6 @@ def get_engine():
                 kb_path   = KB_DIR / "ar_drg_kb_seed_v11_new_adrgs.json",
                 excl_path = KB_DIR / "dcl_exclusions.json",
             )
-            # DCL table auto-loaded by grouper from knowledge_base/dcl_table_empirical.json
             print("[OK] NOVIQEngine initialised")
         except Exception as e:
             print(f"[WARN] Engine init error: {e}")
@@ -167,8 +187,8 @@ def get_engine():
 async def _startup():
     get_engine()
     mode = "LIVE" if get_engine() else "DEMO"
-    print(f"[OK] NOVIQ v3 ready — {mode} | KB={KB_DIR} | "
-          f"Engine src={_ENGINE_SRC}")
+    extract_mode = "NLP (Claude API)" if INTENT_AGENT_AVAILABLE else "Regex + KB"
+    print(f"[OK] NOVIQ v4 ready — {mode} | Extraction: {extract_mode} | KB={KB_DIR}")
 
 # ── Dashboard ─────────────────────────────────────────────────────────────
 @app.get("/", response_class=HTMLResponse)
@@ -178,45 +198,390 @@ async def root():
         if p.exists():
             return HTMLResponse(p.read_text(encoding="utf-8"))
     return HTMLResponse(
-        "<h1>NOVIQ Engine v3</h1>"
+        "<h1>NOVIQ Engine v4</h1>"
         "<p>Dashboard HTML not found. Push noviq_dashboard.html to repo root.</p>"
     )
 
-# ── Upload ────────────────────────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════════
+# INTENT AGENT — NLP Extraction (Optional)
+# ══════════════════════════════════════════════════════════════════════════
+
+def _extract_with_intent_agent(text: str, doc_type: str, ep: dict) -> dict:
+    """
+    Use Claude API to extract structured medical data from free text.
+    Returns updated episode dict with extracted codes and scores.
+    """
+    if not INTENT_AGENT_AVAILABLE:
+        return ep  # Fallback handled by caller
+    
+    # Build prompt based on document type
+    protocol = ML_KB.get("ehr_extraction_protocol", {}).get("document_types", {}).get(doc_type, {})
+    extraction_targets = protocol.get("extraction_targets", [])
+    
+    prompt = f"""You are a medical coding expert extracting clinical data from Australian hospital EHR documents.
+
+Document Type: {doc_type}
+Extraction Targets: {', '.join(extraction_targets) if extraction_targets else 'All available clinical data'}
+
+Extract the following from this document:
+1. Patient demographics (age, sex)
+2. ICD-10-AM diagnosis codes (format: A00.0)
+3. ACHI procedure codes (format: 00000-00)
+4. Clinical evidence for ACS 0002 scoring (therapeutic treatment, diagnostic procedures, increased clinical care)
+5. Length of stay information
+6. Any documented complications or comorbidities
+
+Document Text:
+{text[:8000]}
+
+Return ONLY a JSON object with this structure (no markdown, no explanation):
+{{
+  "patient_age": null or integer,
+  "patient_sex": "Male" or "Female" or "Unknown",
+  "pdx": "A00.0" or null,
+  "adx": ["A00.1", "A00.2"],
+  "achi_codes": ["00000-00"],
+  "acs_evidence": {{
+    "therapeutic_treatment": ["evidence 1", "evidence 2"],
+    "diagnostic_procedures": ["evidence 1"],
+    "increased_clinical_care": ["evidence 1"]
+  }},
+  "los_days": null or integer,
+  "complications": ["text description"]
+}}"""
+
+    try:
+        response = _anthropic_client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=2000,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        
+        # Parse response
+        result_text = response.content[0].text.strip()
+        # Remove markdown code blocks if present
+        if result_text.startswith("```"):
+            result_text = result_text.split("```")[1]
+            if result_text.startswith("json"):
+                result_text = result_text[4:]
+            result_text = result_text.strip()
+        
+        extracted = json.loads(result_text)
+        
+        # Merge into episode
+        if extracted.get("patient_age") and not ep.get("patient_age"):
+            ep["patient_age"] = extracted["patient_age"]
+        if extracted.get("patient_sex") != "Unknown" and ep.get("patient_sex") == "Unknown":
+            ep["patient_sex"] = extracted["patient_sex"]
+        if extracted.get("pdx") and not ep.get("pdx"):
+            ep["pdx"] = extracted["pdx"]
+        for code in extracted.get("adx", []):
+            if code and code not in ep["adx"] and code != ep.get("pdx"):
+                ep["adx"].append(code)
+        for code in extracted.get("achi_codes", []):
+            if code and code not in ep["achi_codes"]:
+                ep["achi_codes"].append(code)
+        if extracted.get("los_days") and not ep.get("los_days"):
+            ep["los_days"] = extracted["los_days"]
+        
+        # Store ACS evidence for later scoring
+        if extracted.get("acs_evidence"):
+            ep.setdefault("_acs_evidence", {})
+            for key, values in extracted["acs_evidence"].items():
+                ep["_acs_evidence"].setdefault(key, []).extend(values)
+        
+        return ep
+        
+    except Exception as e:
+        print(f"[WARN] Intent Agent extraction failed: {e}")
+        return ep  # Caller will use regex fallback
+
+# ══════════════════════════════════════════════════════════════════════════
+# ENHANCED REGEX EXTRACTION — Uses KB v4 Protocol
+# ══════════════════════════════════════════════════════════════════════════
+
+def _extract_with_regex(ep: dict, text: str, doc_type: str) -> None:
+    """Enhanced regex extraction using KB v4 EHR protocol."""
+    
+    # Patient Name
+    m = re.search(r'Patient\s*(?:Name)?:\s*([A-Z][a-zA-Z\s]{2,40})', text)
+    if m and not ep.get("patient_name"):
+        ep["patient_name"] = m.group(1).strip()
+
+    # Age
+    m = re.search(r'(\d{1,3})\s*(?:year[s]?\s*old|y/?o\b|Y\.O\.|years)', text, re.I)
+    if m and not ep.get("patient_age"):
+        ep["patient_age"] = int(m.group(1))
+
+    # Sex
+    if ep.get("patient_sex") == "Unknown":
+        if re.search(r'\b(female|woman|she\b|her\b)\b', text, re.I):
+            ep["patient_sex"] = "Female"
+        elif re.search(r'\b(male|man|he\b|his\b)\b', text, re.I):
+            ep["patient_sex"] = "Male"
+
+    # ICD-10-AM codes
+    icds = re.findall(r'\b([A-Z][0-9]{2}(?:\.[0-9A-Z]{1,2})?)\b', text)
+    if icds and not ep["pdx"] and doc_type in (
+            "Initial Medical Report", "Admission Report", "Discharge Summary"):
+        ep["pdx"] = icds[0]
+    for c in icds[1:]:
+        if c not in ep["adx"] and c != ep["pdx"]:
+            ep["adx"].append(c)
+
+    # ACHI codes — look for both complete and partial
+    for c in re.findall(r'\b(\d{5}-\d{2})\b', text):
+        if c not in ep["achi_codes"]:
+            ep["achi_codes"].append(c)
+    
+    # ACHI base codes (without modifier) — match with KB
+    base_codes = re.findall(r'\b(\d{5})\b', text)
+    if base_codes and doc_type == "Operation Notes":
+        # Try to match with procedure index
+        proc_index = ML_KB.get("procedure_index", {})
+        for base in base_codes:
+            # Look for keywords around the base code to determine modifier
+            context = text[max(0, text.find(base)-200):text.find(base)+200].lower()
+            
+            # Search procedure index for this base code
+            for proc_name, proc_data in proc_index.items():
+                if not isinstance(proc_data, dict):
+                    continue
+                achi_list = proc_data.get("achi_codes", [])
+                if not isinstance(achi_list, list):
+                    continue
+                    
+                for achi_full in achi_list:
+                    if achi_full.startswith(base):
+                        # Check if keywords match
+                        keywords = proc_data.get("primary_keywords", [])
+                        exclusions = proc_data.get("exclusion_keywords", [])
+                        
+                        # If primary keyword found and no exclusions
+                        has_primary = any(kw.lower() in context for kw in keywords) if keywords else False
+                        has_exclusion = any(ex.lower() in context for ex in exclusions) if exclusions else False
+                        
+                        if has_primary and not has_exclusion:
+                            if achi_full not in ep["achi_codes"]:
+                                ep["achi_codes"].append(achi_full)
+                            break
+
+    # LOS from dates
+    if not ep.get("los_days"):
+        adm = re.search(r'Admission\s*Date[:\s]+(\d{1,2}[-/]\d{1,2}[-/]\d{4})', text, re.I)
+        dis = re.search(r'Discharge\s*Date[:\s]+(\d{1,2}[-/]\d{1,2}[-/]\d{4})', text, re.I)
+        if adm and dis:
+            try:
+                for fmt in ["%d-%m-%Y", "%d/%m/%Y", "%m-%d-%Y", "%m/%d/%Y"]:
+                    try:
+                        d1 = datetime.strptime(adm.group(1), fmt)
+                        d2 = datetime.strptime(dis.group(1), fmt)
+                        ep["los_days"] = max(1, (d2 - d1).days)
+                        break
+                    except: pass
+            except: pass
+        # LOS in text
+        m = re.search(r'(?:LOS|length of stay)[:\s]*(\d+)\s*day', text, re.I)
+        if m: ep["los_days"] = int(m.group(1))
+
+    # ACS evidence detection for Progress Notes
+    if doc_type == "Progress Notes":
+        ep.setdefault("_acs_evidence", {})
+        
+        # C1: Therapeutic treatment altered (3 points)
+        therapeutic_patterns = [
+            r'(?:commenced|started|initiated|added)\s+(?:on\s+)?(\w+)',  # New medication
+            r'(?:increased|decreased|adjusted)\s+(?:dose|dosage)',       # Dose change
+            r'(?:changed|switched)\s+(?:to|from)',                       # Treatment change
+            r'insulin\s+(?:sliding\s+scale|infusion)',                   # Insulin management
+            r'(?:iv|intravenous)\s+(?:fluids|antibiotics)',             # IV therapy
+        ]
+        for pattern in therapeutic_patterns:
+            matches = re.findall(pattern, text, re.I)
+            if matches:
+                ep["_acs_evidence"].setdefault("therapeutic_treatment", []).extend(
+                    [f"Treatment altered: {m}" if isinstance(m, str) else f"Treatment altered" for m in matches[:2]]
+                )
+        
+        # C2: Diagnostic procedure (3 points)
+        diagnostic_patterns = [
+            r'(?:ct|mri|ultrasound|xray|x-ray)\s+(?:scan|performed|ordered)',
+            r'(?:blood|lab)\s+(?:test|results|investigation)',
+            r'(?:ecg|echo|ekg)\s+(?:performed|shows|ordered)',
+            r'(?:biopsy|culture|pathology)\s+(?:sent|taken|performed)',
+        ]
+        for pattern in diagnostic_patterns:
+            matches = re.findall(pattern, text, re.I)
+            if matches:
+                ep["_acs_evidence"].setdefault("diagnostic_procedures", []).extend(
+                    [f"Investigation: {m}" if isinstance(m, str) else f"Investigation performed" for m in matches[:2]]
+                )
+        
+        # C3: Increased clinical care (2 points)
+        care_patterns = [
+            r'(?:icu|intensive\s+care)\s+(?:admission|transfer)',
+            r'(?:increased|frequent|continuous)\s+(?:monitoring|observations)',
+            r'(?:hourly|q1h|q2h)\s+(?:obs|observations|vitals)',
+        ]
+        for pattern in care_patterns:
+            if re.search(pattern, text, re.I):
+                ep["_acs_evidence"].setdefault("increased_clinical_care", []).append(
+                    "Increased level of clinical care documented"
+                )
+                break
+
+# ══════════════════════════════════════════════════════════════════════════
+# AUTO ACS SCORING — From collected evidence
+# ══════════════════════════════════════════════════════════════════════════
+
+def _auto_score_acs(ep: dict) -> None:
+    """
+    Auto-score ACS 0002 based on collected evidence.
+    ACS 0001 (PDX) assumed scored if PDX present.
+    """
+    # PDX score (assume 5+ if PDX is documented)
+    if ep.get("pdx") and not ep.get("acs_pdx_score"):
+        ep["acs_pdx_score"] = 5  # Minimum for coding
+    
+    # ADX scoring from evidence
+    evidence = ep.get("_acs_evidence", {})
+    if not evidence:
+        return
+    
+    # Score each additional diagnosis that has evidence
+    for adx_code in ep.get("adx", []):
+        # Check if this ADX already has a score
+        existing = next((s for s in ep.get("acs_adx_scores", []) 
+                        if s.get("code") == adx_code), None)
+        if existing:
+            continue
+        
+        # Calculate score
+        score = 0
+        breakdown = {}
+        justification_parts = []
+        
+        # C1: Therapeutic treatment (3 points)
+        if evidence.get("therapeutic_treatment"):
+            score += 3
+            breakdown["therapeutic_treatment"] = 3
+            justification_parts.append("therapeutic treatment altered")
+        
+        # C2: Diagnostic procedure (3 points)
+        if evidence.get("diagnostic_procedures"):
+            score += 3
+            breakdown["diagnostic_procedure"] = 3
+            justification_parts.append("diagnostic investigation performed")
+        
+        # C3: Increased clinical care (2 points)
+        if evidence.get("increased_clinical_care"):
+            score += 2
+            breakdown["increased_clinical_care"] = 2
+            justification_parts.append("increased level of care")
+        
+        # Determine action
+        if score >= 5:
+            action = "code"
+        elif score >= 3:
+            action = "review"
+        else:
+            action = "do_not_code"
+        
+        # Add to episode
+        ep.setdefault("acs_adx_scores", []).append({
+            "code": adx_code,
+            "score": score,
+            "is_principal": False,
+            "action": action,
+            "justification": f"ACS 0002 score {score}/8 — {', '.join(justification_parts)}" if justification_parts else f"Score {score}/8",
+            "score_breakdown": breakdown,
+        })
+
+# ══════════════════════════════════════════════════════════════════════════
+# UPLOAD ENDPOINT — Enhanced with Intent Agent
+# ══════════════════════════════════════════════════════════════════════════
+
 @app.post("/api/upload")
 async def upload(files: list[UploadFile] = File(...)):
     episode_id = _next_episode_id()
     ep = _empty(episode_id)
     docs, warns = [], []
-
+    
+    # Document sequence for proper reading order
+    doc_sequence = {
+        "Initial Medical Report": 1,
+        "Admission Report": 2,
+        "Progress Notes": 3,
+        "Operation Notes": 4,
+        "Nursing Notes": 5,
+        "Discharge Summary": 6,
+    }
+    
+    # Collect all files with metadata
+    file_data = []
     for f in files:
-        raw      = await f.read()
+        raw = await f.read()
         filename = f.filename or ""
-        ext      = Path(filename).suffix.lower()
-        dtype    = _doc_type(filename)
+        ext = Path(filename).suffix.lower()
+        dtype = _doc_type(filename)
+        file_data.append({
+            "raw": raw,
+            "filename": filename,
+            "ext": ext,
+            "doc_type": dtype,
+            "sequence": doc_sequence.get(dtype, 99),
+        })
         docs.append({"filename": filename, "doc_type": dtype,
                       "size_kb": round(len(raw)/1024, 1)})
+    
+    # Sort by document sequence
+    file_data.sort(key=lambda x: x["sequence"])
+    
+    # Process in sequence
+    for fd in file_data:
         try:
-            if ext == ".json":
-                ep = _merge(ep, json.loads(raw.decode("utf-8")))
-            elif ext == ".pdf":
-                ep = _merge(ep, _extract_pdf(raw, ep, dtype))
-            elif ext == ".hl7":
-                _parse_hl7(ep, raw.decode("utf-8", errors="ignore"))
-            elif ext == ".xml":
-                _parse_fhir_xml(ep, raw.decode("utf-8", errors="ignore"))
-            else:  # .txt .text .csv and anything else
-                _extract_text(ep, raw.decode("utf-8", errors="ignore"), dtype)
+            text = None
+            
+            # Extract text based on file type
+            if fd["ext"] == ".json":
+                ep = _merge(ep, json.loads(fd["raw"].decode("utf-8")))
+                continue
+            elif fd["ext"] == ".pdf":
+                text = _extract_pdf_text(fd["raw"])
+            elif fd["ext"] == ".hl7":
+                _parse_hl7(ep, fd["raw"].decode("utf-8", errors="ignore"))
+                continue
+            elif fd["ext"] == ".xml":
+                _parse_fhir_xml(ep, fd["raw"].decode("utf-8", errors="ignore"))
+                continue
+            else:  # .txt .text .csv
+                text = fd["raw"].decode("utf-8", errors="ignore")
+            
+            # Extract using Intent Agent if available, fallback to regex
+            if text and INTENT_AGENT_AVAILABLE:
+                ep = _extract_with_intent_agent(text, fd["doc_type"], ep)
+            
+            # Always run regex as backup/supplement
+            if text:
+                _extract_with_regex(ep, text, fd["doc_type"])
+                
         except Exception as e:
-            warns.append(f"{filename}: {e}")
+            warns.append(f"{fd['filename']}: {e}")
+            import traceback
+            traceback.print_exc()
 
+    # Auto-score ACS if evidence was collected
+    _auto_score_acs(ep)
+    
+    # Finalize
     ep["ehr_documents"] = [d["doc_type"] for d in docs]
     if not ep.get("los_days"):
         ep["los_days"] = 1
 
     STORE[episode_id] = {
         "episode_dict": ep, "status": "uploaded",
-        "docs_read": docs, "created_at": _now()
+        "docs_read": docs, "created_at": _now(),
+        "extraction_mode": "NLP" if INTENT_AGENT_AVAILABLE else "Regex+KB"
     }
     _save(STORE)
 
@@ -227,11 +592,14 @@ async def upload(files: list[UploadFile] = File(...)):
         "warnings":         warns,
         "ready_to_process": bool(ep.get("pdx")),
         "engine_mode":      "live" if ENGINE_AVAILABLE else "demo",
+        "extraction_mode":  "NLP (Claude API)" if INTENT_AGENT_AVAILABLE else "Regex + KB",
     }
 
-# ── Process ───────────────────────────────────────────────────────────────
+# ── Continue with existing endpoints (process, approve, queue, etc.) ──────
+
 @app.post("/api/process/{episode_id}")
 async def process(episode_id: str, request: Request):
+    """Process episode through NOVIQ Engine pipeline."""
     body = {}
     try: body = await request.json()
     except: pass
@@ -298,133 +666,147 @@ async def process(episode_id: str, request: Request):
     })
     _save(STORE)
     res["episode_dict"] = ep
+    res["episode_id"] = episode_id
+    res["engine_mode"] = "demo"
     return res
 
-# ── Approve ───────────────────────────────────────────────────────────────
 @app.post("/api/approve/{episode_id}")
 async def approve(episode_id: str, request: Request):
-    store = _load()
-    if episode_id not in store:
-        raise HTTPException(404, "Episode not found")
-    body = await request.json()
-    pid    = body.get("physician_id","").strip()
-    action = body.get("action","approve")
-    reason = body.get("reason","")
-    if not pid:
-        raise HTTPException(400, "physician_id required")
-    if action == "approve":
-        store[episode_id].update({
-            "status":"APPROVED","approved_by":pid,"approved_at":_now()})
-    else:
-        store[episode_id].update({
-            "status":"REJECTED","approved_by":pid,
-            "rejected_at":_now(),"reject_reason":reason})
-    _save(store); STORE.update(store)
-    return {"episode_id":episode_id,"status":store[episode_id]["status"],"approved_by":pid}
+    """Physician approval gate."""
+    if episode_id not in STORE:
+        raise HTTPException(404, f"Episode {episode_id} not found")
 
-# ── Queue ─────────────────────────────────────────────────────────────────
+    body = await request.json()
+    physician_id = body.get("physician_id", "").strip()
+    action = body.get("action", "approve")
+    reason = body.get("reason", "")
+
+    if not physician_id:
+        raise HTTPException(400, "physician_id is required")
+
+    if action == "approve":
+        STORE[episode_id]["status"] = "APPROVED"
+        STORE[episode_id]["approved_by"] = physician_id
+        STORE[episode_id]["approved_at"] = _now()
+        _save(STORE)
+        return {
+            "episode_id": episode_id,
+            "status": "APPROVED",
+            "approved_by": physician_id,
+            "message": "Claim approved. Ready for submission.",
+        }
+    elif action == "reject":
+        STORE[episode_id]["status"] = "REJECTED"
+        STORE[episode_id]["rejected_by"] = physician_id
+        STORE[episode_id]["rejected_at"] = _now()
+        STORE[episode_id]["reject_reason"] = reason
+        _save(STORE)
+        return {
+            "episode_id": episode_id,
+            "status": "REJECTED",
+            "reason": reason,
+            "message": "Suggestion rejected. Returned for recoding.",
+        }
+    raise HTTPException(400, "action must be 'approve' or 'reject'")
+
 @app.get("/api/queue")
-async def queue():
-    store = _load()
-    rows = []
-    for eid, d in store.items():
-        ep = d.get("episode_dict", {})
-        s  = d.get("suggestion", {})
-        rows.append({
-            "episode_id":   eid,
-            "patient_name": ep.get("patient_name","—"),
-            "patient_age":  ep.get("patient_age"),
-            "patient_sex":  ep.get("patient_sex"),
-            "pdx":          ep.get("pdx"),
-            "ar_drg":       s.get("proposed_codes",{}).get("ar_drg","—") if isinstance(s,dict) else "—",
-            "status":       d.get("status","PENDING"),
-            "approved_by":  d.get("approved_by"),
-            "flag_count":   len(d.get("kb_flags",[])),
-            "processed_at": d.get("processed_at"),
+async def get_queue():
+    """Return all episodes with status."""
+    queue = []
+    for ep_id, data in STORE.items():
+        ep = data.get("episode_dict", {})
+        sug = data.get("suggestion", {})
+        queue.append({
+            "episode_id": ep_id,
+            "patient_age": ep.get("patient_age"),
+            "patient_sex": ep.get("patient_sex"),
+            "pdx": ep.get("pdx"),
+            "ar_drg": sug.get("proposed_codes", {}).get("ar_drg", "—"),
+            "status": data.get("status", "uploaded"),
+            "approved_by": data.get("approved_by"),
+            "flag_count": len(data.get("kb_flags", [])),
+            "processed_at": data.get("processed_at"),
+            "extraction_mode": data.get("extraction_mode", "unknown"),
         })
-    rows.sort(key=lambda x: x.get("processed_at") or "", reverse=True)
-    return {"queue": rows, "total": len(rows)}
+    queue.sort(key=lambda x: x.get("processed_at") or "", reverse=True)
+    return {"queue": queue, "total": len(queue)}
 
 @app.get("/api/episode/{episode_id}")
-async def get_ep(episode_id: str):
-    store = _load()
-    if episode_id not in store:
-        raise HTTPException(404)
-    return store[episode_id]
-
-@app.get("/api/kb/search")
-async def kb_search(q: str = "", specialty: str = ""):
-    q = q.lower(); res = []
-    for sp, procs in ML_KB.get("procedures",{}).items():
-        if specialty and specialty.lower() not in sp.lower(): continue
-        for p in procs:
-            if not q or q in p.get("procedure","").lower() or \
-               any(q in k.lower() for k in p.get("keywords",[])):
-                res.append(p)
-    return {"query":q,"results":res[:50],"total":len(res)}
+async def get_episode(episode_id: str):
+    """Return full episode detail."""
+    if episode_id not in STORE:
+        raise HTTPException(404, f"Episode {episode_id} not found")
+    return STORE[episode_id]
 
 @app.get("/api/kb/status")
 async def kb_status():
-    ar = {}
-    ar_path = KB_DIR / "ar_drg_kb_seed_v11_new_adrgs.json"
-    if ar_path.exists():
-        ar = json.loads(ar_path.read_text(encoding="utf-8"))
-    adrgs = ar.get("adrgs",{})
-    f25_t = None
-    if "F25" in adrgs:
-        ec = adrgs["F25"].get("split_profile",{}).get("end_classes",[])
-        if ec: f25_t = ec[0].get("eccs_threshold",{}).get("value")
-    ml = ML_KB.get("_meta",{}).get("procedure_counts",{})
+    """Return KB health status."""
+    ar_kb_path = KB_DIR / "ar_drg_kb_seed_v11_new_adrgs.json"
+    ar_kb = {}
+    if ar_kb_path.exists():
+        with open(ar_kb_path) as f:
+            ar_kb = json.load(f)
+
+    adrgs = ar_kb.get("adrgs", {})
+    
     return {
-        "ar_drg_version": ar.get("_meta",{}).get("versioning",{}).get("ar_drg_version","V11.0"),
-        "engine_available": ENGINE_AVAILABLE,
-        "engine_mode": "live" if ENGINE_AVAILABLE else "demo",
-        "engine_src": str(_ENGINE_SRC),
-        "kb_dir": str(KB_DIR),
+        "ar_drg_version": ar_kb.get("_meta", {}).get("versioning", {}).get("ar_drg_version", "V11.0"),
         "adrgs_seeded": list(adrgs.keys()),
-        "f25_blocked": f25_t is None,
         "medical_logic_kb": {
-            "version": ML_KB.get("_meta",{}).get("version","unknown"),
-            "total":   ml.get("total",0),
-            "intelligence_triggers": len(ML_KB.get("intelligence_triggers",{})),
-            **{k: ml.get(k,0) for k in
-               ["general_surgery","hand_surgery","bariatric","breast","plastic","orthopaedic"]},
+            "version": ML_KB.get("_meta", {}).get("version", "v4"),
+            "total_procedures": len(ML_KB.get("procedure_index", {})),
+            "intelligence_triggers": len(ML_KB.get("intelligence_triggers", {})),
+            "ehr_protocol": "yes" if ML_KB.get("ehr_extraction_protocol") else "no",
         },
+        "engine_available": ENGINE_AVAILABLE,
+        "intent_agent": "enabled" if INTENT_AGENT_AVAILABLE else "disabled (using regex)",
     }
 
 @app.get("/api/health")
 async def health():
+    """Diagnostic endpoint."""
     return {
-        "status":         "ok",
-        "engine":         ENGINE_AVAILABLE,
-        "engine_src":     str(_ENGINE_SRC),
-        "engine_error":   ENGINE_ERROR,
-        "kb_dir":         str(KB_DIR),
-        "episodes_stored": len(_load()),
-        "time":           _now(),
+        "status": "ok",
+        "engine": "available" if ENGINE_AVAILABLE else f"unavailable: {ENGINE_ERROR}",
+        "intent_agent": "enabled" if INTENT_AGENT_AVAILABLE else "disabled",
+        "kb_dir": str(KB_DIR),
+        "episodes_in_store": len(STORE),
     }
 
-# ── Helpers ───────────────────────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════════
+# HELPER FUNCTIONS
+# ══════════════════════════════════════════════════════════════════════════
+
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
-def _empty(eid: str) -> dict:
+def _empty(episode_id: str) -> dict:
     return {
-        "episode_id": eid, "patient_name": "", "patient_age": 0,
-        "patient_sex": "Unknown", "pdx": "", "adx": [], "achi_codes": [],
-        "los_days": 0, "same_day": False, "separation_mode": "discharge_home",
-        "admission_weight": None, "hours_mech_vent": None, "care_type": "01",
-        "acs_pdx_score": 0, "acs_adx_scores": [], "ehr_documents": [],
+        "episode_id": episode_id,
+        "patient_age": 0,
+        "patient_sex": "Unknown",
+        "pdx": "",
+        "adx": [],
+        "achi_codes": [],
+        "los_days": 0,
+        "same_day": False,
+        "separation_mode": "discharge_home",
+        "admission_weight": None,
+        "hours_mech_vent": None,
+        "care_type": "01",
+        "acs_pdx_score": 0,
+        "acs_adx_scores": [],
+        "ehr_documents": [],
     }
 
-def _doc_type(fn: str) -> str:
-    f = fn.lower()
-    if "initial" in f or "er" in f:       return "Initial Medical Report"
-    if "admission" in f or "admit" in f:   return "Admission Report"
-    if "progress" in f or "daily" in f:    return "Progress Notes"
-    if "operation" in f or "op" in f or "surg" in f: return "Operation Notes"
-    if "nursing" in f or "nurse" in f:     return "Nursing Notes"
-    if "discharge" in f or "summary" in f: return "Discharge Summary"
+def _doc_type(filename: str) -> str:
+    f = filename.lower()
+    if "initial" in f or "er" in f: return "Initial Medical Report"
+    if "admission" in f or "admit" in f: return "Admission Report"
+    if "progress" in f or "daily" in f: return "Progress Notes"
+    if "operation" in f or "op" in f or "surgical" in f: return "Operation Notes"
+    if "nursing" in f or "nurse" in f: return "Nursing Notes"
+    if "discharge" in f or "dc" in f or "summary" in f: return "Discharge Summary"
     return "EHR Document"
 
 def _merge(base: dict, incoming: dict) -> dict:
@@ -436,72 +818,14 @@ def _merge(base: dict, incoming: dict) -> dict:
         base[k] = v
     return base
 
-def _extract_pdf(raw: bytes, ep: dict, doc_type: str) -> dict:
-    """Extract text from PDF using pdfplumber, fall back to raw decode."""
-    text = ""
+def _extract_pdf_text(raw: bytes) -> str:
+    """Extract text from PDF using pdfplumber."""
     try:
         import pdfplumber, io
         with pdfplumber.open(io.BytesIO(raw)) as pdf:
-            text = "\n".join(p.extract_text() or "" for p in pdf.pages)
+            return "\n".join(p.extract_text() or "" for p in pdf.pages)
     except Exception:
-        text = raw.decode("utf-8", errors="ignore")
-    _extract_text(ep, text, doc_type)
-    return ep
-
-def _extract_text(ep: dict, text: str, doc_type: str) -> None:
-    # Patient Name
-    m = re.search(r'Patient\s*(?:Name)?:\s*([A-Z][a-zA-Z\s]{2,40})', text)
-    if m and not ep.get("patient_name"):
-        ep["patient_name"] = m.group(1).strip()
-
-    # Age
-    m = re.search(r'(\d{1,3})\s*(?:year[s]?\s*old|y/?o\b|Y\.O\.|years)', text, re.I)
-    if m and not ep.get("patient_age"):
-        ep["patient_age"] = int(m.group(1))
-
-    # Sex
-    if ep.get("patient_sex") == "Unknown":
-        if re.search(r'\b(female|woman|she\b|her\b)\b', text, re.I):
-            ep["patient_sex"] = "Female"
-        elif re.search(r'\b(male|man|he\b|his\b)\b', text, re.I):
-            ep["patient_sex"] = "Male"
-
-    # ICD-10-AM codes
-    icds = re.findall(r'\b([A-Z][0-9]{2}(?:\.[0-9A-Z]{1,2})?)\b', text)
-    if icds and not ep["pdx"] and doc_type in (
-            "Initial Medical Report", "Admission Report", "Discharge Summary"):
-        ep["pdx"] = icds[0]
-    for c in icds[1:]:
-        if c not in ep["adx"] and c != ep["pdx"]:
-            ep["adx"].append(c)
-
-    # ACHI codes
-    for c in re.findall(r'\b(\d{5}-\d{2})\b', text):
-        if c not in ep["achi_codes"]:
-            ep["achi_codes"].append(c)
-
-    # LOS from dates
-    if not ep.get("los_days"):
-        adm = re.search(r'Admission\s*Date[:\s]+(\d{1,2}[-/]\d{1,2}[-/]\d{4})', text, re.I)
-        dis = re.search(r'Discharge\s*Date[:\s]+(\d{1,2}[-/]\d{1,2}[-/]\d{4})', text, re.I)
-        if adm and dis:
-            try:
-                for fmt in ["%d-%m-%Y", "%d/%m/%Y", "%m-%d-%Y", "%m/%d/%Y"]:
-                    try:
-                        d1 = datetime.strptime(adm.group(1), fmt)
-                        d2 = datetime.strptime(dis.group(1), fmt)
-                        ep["los_days"] = max(1, (d2 - d1).days)
-                        break
-                    except: pass
-            except: pass
-        # LOS in text
-        m = re.search(r'(?:LOS|length of stay)[:\s]*(\d+)\s*day', text, re.I)
-        if m: ep["los_days"] = int(m.group(1))
-
-    # ACS score from text
-    m = re.search(r'ACS.*?score[:\s]*(\d)', text, re.I)
-    if m and not ep.get("acs_pdx_score"):
-        ep["acs_pdx_score"] = int(m.group(1))
+        return raw.decode("utf-8", errors="ignore")
 
 def _parse_hl7(ep: dict, text: str) -> None:
     for line in text.splitlines():
@@ -527,98 +851,90 @@ def _parse_fhir_xml(ep: dict, text: str) -> None:
         elif c not in ep["adx"]: ep["adx"].append(c)
 
 def _triggers(ep: dict, sug: dict) -> list:
+    """Apply intelligence triggers from KB v3."""
     flags = []
-    t = ML_KB.get("intelligence_triggers", {})
-    txt = " ".join([ep.get("pdx",""), " ".join(ep.get("adx",[])),
-                    " ".join(ep.get("ehr_documents",[]))]).lower()
-    for kw in t.get("exclusion_hunter",{}).get("keywords",[]):
-        if kw.lower() in txt:
-            flags.append({"trigger":"exclusion_hunter","severity":"critical",
-                          "message":f"EXCLUSION HUNTER: '{kw}' detected — verify Mode of Injury."})
+    triggers = ML_KB.get("intelligence_triggers", {})
+    
+    all_text = " ".join([
+        str(ep.get("pdx", "")),
+        " ".join(ep.get("adx", [])),
+        " ".join(ep.get("ehr_documents", [])),
+    ]).lower()
+    
+    # Exclusion Hunter
+    excl = triggers.get("exclusion_hunter", {})
+    for kw in excl.get("keywords", []):
+        if kw.lower() in all_text:
+            flags.append({
+                "trigger": "exclusion_hunter",
+                "severity": "critical",
+                "action": excl.get("action", "flag"),
+                "message": f"EXCLUSION HUNTER: keyword '{kw}' detected — policy exclusion risk.",
+            })
             break
-    achi = set(sug.get("proposed_codes",{}).get("achi") or [])
-    if achi & {"90645-00","90644-00","90643-00"}:
-        flags.append({"trigger":"ncv_matcher","severity":"high",
-                      "message":"NCV MATCHER: CTS surgery — verify NCV/EMG report attached."})
-    if achi & {"47360-00","47330-00","47321-00","47480-00"}:
-        if "comminuted" not in txt and "complex" not in txt:
-            flags.append({"trigger":"hardware_auditor","severity":"medium",
-                          "message":"HARDWARE AUDITOR: Plate & Screws — verify fracture is comminuted/complex."})
-    if achi & {"48624-00","48624-01","48600-00","48603-00"}:
-        flags.append({"trigger":"timing_checker","severity":"medium",
-                      "message":"TIMING CHECKER: Tendon repair — verify time of injury. >24h = Delayed Repair."})
+    
+    # NCV Matcher
+    ncv = triggers.get("ncv_matcher", {})
+    proposed_achi = sug.get("proposed_codes", {}).get("achi", [])
+    cts_achi = {"90645-00", "90644-00", "90643-00"}
+    if any(a in cts_achi for a in proposed_achi):
+        flags.append({
+            "trigger": "ncv_matcher",
+            "severity": "high",
+            "action": ncv.get("action", "verify"),
+            "message": "NCV MATCHER: Carpal Tunnel surgery. Verify NCV/EMG Test attached.",
+        })
+    
+    # Hardware Auditor
+    hw = triggers.get("hardware_auditor", {})
+    hw_achi = {"47360-00", "47330-00", "47321-00", "47480-00"}
+    if any(a in hw_achi for a in proposed_achi):
+        if "comminuted" not in all_text and "complex" not in all_text:
+            flags.append({
+                "trigger": "hardware_auditor",
+                "severity": "medium",
+                "action": hw.get("action", "verify"),
+                "message": "HARDWARE AUDITOR: Plate fixation detected. Verify fracture complexity.",
+            })
+    
     return flags
 
 def _demo(episode_id: str, ep: dict) -> dict:
-    pdx  = ep.get("pdx","")
-    achi = ep.get("achi_codes",[])
-    # Map codes to DRG
-    drg, desc = "960Z", "Ungroupable — no PDX or ACHI matched"
-    if "96211-00" in achi or pdx == "C48.1":
-        drg, desc = "G13Z", "Peritonectomy for Gastrointestinal Disorders"
-    elif "35414-00" in achi:
-        drg, desc = "B08B", "Endovascular Clot Retrieval, Minor Complexity"
-    elif "38488-08" in achi or "38488-09" in achi:
-        drg, desc = "F25—", "BLOCKED — F25 threshold requires Definitions Manual"
-    elif "30515-00" in achi or pdx in ("K35.2","K35.8","K35.9"):
-        drg, desc = "G01A", "Appendectomy, Minor Complexity"
-    elif pdx.startswith("C") or pdx.startswith("D"):
-        drg, desc = "G77Z", "Other Digestive System — Malignancy"
-    elif pdx:
-        drg, desc = "Y99Z", "Unclassified — PDX recognised but no ACHI matched"
-
+    """Demo result when engine unavailable."""
     return {
-        "episode_id": episode_id, "blocked": False, "demo_mode": True,
+        "episode_id": episode_id,
         "suggestion": {
-            "episode_id":      episode_id,
-            "suggestion_id":   str(uuid.uuid4()),
+            "episode_id": episode_id,
+            "suggestion_id": str(uuid.uuid4()),
             "approval_status": "PENDING",
-            "proposed_codes":  {
-                "pdx": pdx, "adx": ep.get("adx",[]),
-                "achi": achi, "ar_drg": drg, "ar_drg_desc": desc,
+            "proposed_codes": {
+                "pdx": ep.get("pdx", "—"),
+                "adx": ep.get("adx", []),
+                "achi": ep.get("achi_codes", []),
+                "ar_drg": "DEMO",
+                "ar_drg_desc": "Demo mode — engine not available",
             },
             "acs_scores": {
-                "pdx_score": ep.get("acs_pdx_score",5),
-                "coding_justification": (
-                    f"DEMO MODE — engine modules not loaded. "
-                    f"PDX={pdx} → {drg}. "
-                    f"Place engine .py files in engine/ folder for live coding."
-                ),
+                "pdx_score": ep.get("acs_pdx_score", 0),
+                "adx_scores": ep.get("acs_adx_scores", []),
             },
-            "grouper_result": {
-                "ar_drg_code": drg, "eccs": 0.0,
-                "step_trace": [
-                    f"[DEMO] Step 1: PDX={pdx or 'none'} | ACHI={achi}",
-                    "[DEMO] Step 2: No Pre-MDC trigger",
-                    "[DEMO] Step 3: MDC lookup — demo mode",
-                    f"[DEMO] Step 4: Code mapping → {drg}",
-                    "[DEMO] Step 5: Engine modules not loaded — place files in engine/",
-                ],
-            },
-            "validation_result": {"summary":{"total_excluded":0,"upcoding_risk_count":0}},
-            "provenance": {
-                "ehr_documents_read": ep.get("ehr_documents",[]),
-                "dcl_excluded_count": 0,
-                "upcoding_risk_count": 0,
-                "achi_trigger": f"ACHI {achi[0]} → {drg}" if achi else "No ACHI",
-            },
-            "flags": [f"⚠ DEMO MODE: Place noviq_engine.py, grouper.py, models.py, "
-                      f"validation_rules.py, statistical_simulation.py in engine/ folder "
-                      f"for live AR-DRG grouping."],
-            "engine_version": "V11.0-DEMO",
+            "flags": ["Demo mode: NOVIQ engine not loaded"],
+            "engine_version": "V11.0",
         },
-        "kb_flags": [],
     }
 
 def _blocked(episode_id: str, ep: dict, error: str) -> dict:
+    """Blocked result for KB gates."""
     return {
-        "episode_id":      episode_id,
-        "suggestion_id":   str(uuid.uuid4()),
+        "episode_id": episode_id,
+        "suggestion_id": str(uuid.uuid4()),
         "approval_status": "BLOCKED",
-        "proposed_codes":  {
-            "pdx": ep.get("pdx",""), "adx": ep.get("adx",[]),
-            "achi": ep.get("achi_codes",[]),
-            "ar_drg": "BLOCKED", "ar_drg_desc": "KB Incomplete — see flags",
+        "proposed_codes": {
+            "pdx": ep.get("pdx", ""),
+            "adx": ep.get("adx", []),
+            "achi": ep.get("achi_codes", []),
+            "ar_drg": "BLOCKED",
+            "ar_drg_desc": "Knowledge Base Incomplete",
         },
         "flags": [f"KB_BLOCKED: {error}"],
         "engine_version": "V11.0",
