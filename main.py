@@ -749,12 +749,16 @@ async def kb_status():
 
     adrgs = ar_kb.get("adrgs", {})
     
+    procedure_count = len(ML_KB.get("procedure_index", {}))
+    
     return {
         "ar_drg_version": ar_kb.get("_meta", {}).get("versioning", {}).get("ar_drg_version", "V11.0"),
         "adrgs_seeded": list(adrgs.keys()),
+        "engine_mode": "live" if ENGINE_AVAILABLE else "demo",
         "medical_logic_kb": {
             "version": ML_KB.get("_meta", {}).get("version", "v4"),
-            "total_procedures": len(ML_KB.get("procedure_index", {})),
+            "total_procedures": procedure_count,
+            "total": procedure_count,  # Dashboard compatibility
             "intelligence_triggers": len(ML_KB.get("intelligence_triggers", {})),
             "ehr_protocol": "yes" if ML_KB.get("ehr_extraction_protocol") else "no",
         },
