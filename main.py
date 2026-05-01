@@ -764,13 +764,47 @@ async def kb_status():
 
 @app.get("/api/health")
 async def health():
-    """Diagnostic endpoint."""
+    """Diagnostic endpoint with full environment info."""
+    # Check KB files
+    kb_files_status = {}
+    critical_files = [
+        "ar_drg_kb_seed_v11_new_adrgs.json",
+        "dcl_exclusions.json",
+        "keyword_dictionary_medical_logic_v3.json",
+        "keyword_dictionary_medical_logic_v4.json",
+    ]
+    for fname in critical_files:
+        fpath = KB_DIR / fname
+        kb_files_status[fname] = {
+            "exists": fpath.exists(),
+            "size_kb": round(fpath.stat().st_size / 1024, 1) if fpath.exists() else 0,
+        }
+    
+    # Check engine files
+    engine_files = {}
+    for fname in ["noviq_engine.py", "models.py", "validation_rules.py", "grouper.py"]:
+        fpath = _ENGINE_SRC / fname
+        engine_files[fname] = fpath.exists()
+    
     return {
         "status": "ok",
-        "engine": "available" if ENGINE_AVAILABLE else f"unavailable: {ENGINE_ERROR}",
+        "base_dir": str(BASE_DIR.absolute()),
+        "kb_dir": str(KB_DIR.absolute()),
+        "kb_files": kb_files_status,
+        "engine": {
+            "available": ENGINE_AVAILABLE,
+            "error": ENGINE_ERROR if not ENGINE_AVAILABLE else None,
+            "source": str(_ENGINE_SRC.absolute()),
+            "files": engine_files,
+        },
         "intent_agent": "enabled" if INTENT_AGENT_AVAILABLE else "disabled",
-        "kb_dir": str(KB_DIR),
+        "medical_logic_kb": {
+            "loaded": bool(ML_KB),
+            "procedures": len(ML_KB.get("procedure_index", {})),
+            "triggers": len(ML_KB.get("intelligence_triggers", {})),
+        },
         "episodes_in_store": len(STORE),
+        "data_dir_exists": DATA_DIR.exists(),
     }
 
 # ══════════════════════════════════════════════════════════════════════════
