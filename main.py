@@ -748,7 +748,7 @@ async def kb_status():
             ar_kb = json.load(f)
 
     adrgs = ar_kb.get("adrgs", {})
-    
+
     procedure_count = len(ML_KB.get("procedure_index", {}))
     
     return {
@@ -783,13 +783,13 @@ async def health():
             "exists": fpath.exists(),
             "size_kb": round(fpath.stat().st_size / 1024, 1) if fpath.exists() else 0,
         }
-    
+
     # Check engine files
     engine_files = {}
     for fname in ["noviq_engine.py", "models.py", "validation_rules.py", "grouper.py"]:
         fpath = _ENGINE_SRC / fname
         engine_files[fname] = fpath.exists()
-    
+
     return {
         "status": "ok",
         "base_dir": str(BASE_DIR.absolute()),
@@ -892,13 +892,13 @@ def _triggers(ep: dict, sug: dict) -> list:
     """Apply intelligence triggers from KB v3."""
     flags = []
     triggers = ML_KB.get("intelligence_triggers", {})
-    
+
     all_text = " ".join([
         str(ep.get("pdx", "")),
         " ".join(ep.get("adx", [])),
         " ".join(ep.get("ehr_documents", [])),
     ]).lower()
-    
+
     # Exclusion Hunter
     excl = triggers.get("exclusion_hunter", {})
     for kw in excl.get("keywords", []):
@@ -910,7 +910,7 @@ def _triggers(ep: dict, sug: dict) -> list:
                 "message": f"EXCLUSION HUNTER: keyword '{kw}' detected — policy exclusion risk.",
             })
             break
-    
+
     # NCV Matcher
     ncv = triggers.get("ncv_matcher", {})
     proposed_achi = sug.get("proposed_codes", {}).get("achi", [])
@@ -922,7 +922,7 @@ def _triggers(ep: dict, sug: dict) -> list:
             "action": ncv.get("action", "verify"),
             "message": "NCV MATCHER: Carpal Tunnel surgery. Verify NCV/EMG Test attached.",
         })
-    
+
     # Hardware Auditor
     hw = triggers.get("hardware_auditor", {})
     hw_achi = {"47360-00", "47330-00", "47321-00", "47480-00"}
@@ -934,7 +934,7 @@ def _triggers(ep: dict, sug: dict) -> list:
                 "action": hw.get("action", "verify"),
                 "message": "HARDWARE AUDITOR: Plate fixation detected. Verify fracture complexity.",
             })
-    
+
     return flags
 
 def _demo(episode_id: str, ep: dict) -> dict:
