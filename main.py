@@ -206,95 +206,256 @@ async def root():
 # INTENT AGENT — NLP Extraction (Optional)
 # ══════════════════════════════════════════════════════════════════════════
 
-def _extract_with_intent_agent(text: str, doc_type: str, ep: dict) -> dict:
+def _build_intent_prompt(text: str, doc_type: str, ep: dict) -> str:
     """
-    Use Claude API to extract structured medical data from free text.
-    Returns updated episode dict with extracted codes and scores.
+    Build a document-specific extraction prompt using KB v4 EHR protocol.
+    Each document type has its own extraction targets and audit flags.
     """
-    if not INTENT_AGENT_AVAILABLE:
-        return ep  # Fallback handled by caller
-    
-    # Build prompt based on document type
-    protocol = ML_KB.get("ehr_extraction_protocol", {}).get("document_types", {}).get(doc_type, {})
-    extraction_targets = protocol.get("extraction_targets", [])
-    
-    prompt = f"""You are a medical coding expert extracting clinical data from Australian hospital EHR documents.
+    # Pull per-document rules from KB v4
+    ehr_proto  = ML_KB.get("ehr_extraction_protocol", {})
+    doc_rules  = ehr_proto.get("extraction_by_document", {}).get(doc_type, {})
+    extract    = doc_rules.get("extract", [])
+    targets    = doc_rules.get("coding_targets", [])
+    audit      = doc_rules.get("audit_flags", [])
+    hint       = doc_rules.get("ai_prompt_hint", "")
 
-Document Type: {doc_type}
-Extraction Targets: {', '.join(extraction_targets) if extraction_targets else 'All available clinical data'}
+    # Build procedure keyword context from KB v4
+    proc_context = ""
+    if doc_type == "Operation Notes":
+        # Flatten all primary keywords from all specialties for matching
+        all_procs = []
+        for sp, procs in ML_KB.get("procedures_by_specialty", {}).items():
+            for p in procs:
+                kws  = p.get("primary_keywords", [])
+                excl = p.get("exclusion_keywords", [])
+                hint_p = p.get("coding_hint", "")
+                all_procs.append(
+                    f"  • {p['procedure']} → ACHI hint: {hint_p} | "
+                    f"Keywords: {', '.join(kws[:3])} | "
+                    f"Exclusions: {', '.join(excl[:2])}"
+                )
+        proc_context = "Known Procedure Library (match against document):\n" + "\n".join(all_procs[:60])
 
-Extract the following from this document:
-1. Patient demographics (age, sex)
-2. ICD-10-AM diagnosis codes (format: A00.0)
-3. ACHI procedure codes (format: 00000-00)
-4. Clinical evidence for ACS 0002 scoring (therapeutic treatment, diagnostic procedures, increased clinical care)
-5. Length of stay information
-6. Any documented complications or comorbidities
+    # Build ACS scoring context from KB for Progress Notes
+    acs_context = ""
+    if doc_type == "Progress Notes":
+        acs_context = """ACS 0002 Scoring Rules — apply per diagnosis found:
+  C1 (+3 pts): Therapeutic treatment altered (new medication, dose change, IV therapy, insulin sliding scale)
+  C2 (+3 pts): Diagnostic procedure performed (CT, MRI, blood tests, ECG, biopsy, culture)
+  C3 (+2 pts): Increased level of clinical care (ICU transfer, hourly obs, continuous monitoring)
+  
+  Score per diagnosis:
+  ≥ 5 → action: "code"
+  3-4 → action: "review"  
+  < 3 → action: "do_not_code"
+  
+  IMPORTANT: Score EACH diagnosis separately based on its OWN evidence in this document."""
 
-Document Text:
-{text[:8000]}
+    # Build PDX context for Initial/Admission/Discharge
+    pdx_context = ""
+    if doc_type in ("Initial Medical Report", "Admission Report", "Discharge Summary"):
+        pdx_context = """PDX Selection Rules (ACS 0001):
+  - PDX = the condition established AFTER study to be chiefly responsible for admission
+  - NOT the presenting complaint if a different condition is found to be the cause
+  - NOT a symptom if an underlying condition is found
+  - If multiple conditions: select the one that consumed most resources"""
 
-Return ONLY a JSON object with this structure (no markdown, no explanation):
+    # Already extracted data context (avoid duplication)
+    existing = []
+    if ep.get("pdx"): existing.append(f"PDX already found: {ep['pdx']}")
+    if ep.get("adx"): existing.append(f"ADX already found: {', '.join(ep['adx'])}")
+    if ep.get("achi_codes"): existing.append(f"ACHI already found: {', '.join(ep['achi_codes'])}")
+    existing_ctx = "\n".join(existing) if existing else "None yet"
+
+    prompt = f"""You are an expert Australian hospital clinical coder using ICD-10-AM (11th Ed), ACHI (12th Ed), and AR-DRG V11.0.
+
+=== DOCUMENT TYPE: {doc_type} ===
+{hint}
+
+=== WHAT TO EXTRACT FROM THIS DOCUMENT ===
+{chr(10).join(f"  • {e}" for e in extract) if extract else "  • All clinically relevant information"}
+
+=== CODING TARGETS ===
+{chr(10).join(f"  • {t}" for t in targets) if targets else "  • Apply standard ICD-10-AM coding rules"}
+
+=== AUDIT FLAGS — Check These ===
+{chr(10).join(f"  ⚠ {a}" for a in audit) if audit else "  • Standard audit"}
+
+{pdx_context}
+{acs_context}
+{proc_context}
+
+=== PREVIOUSLY EXTRACTED (do not duplicate) ===
+{existing_ctx}
+
+=== DOCUMENT TEXT ===
+{text[:10000]}
+
+=== OUTPUT INSTRUCTIONS ===
+Return ONLY a valid JSON object. No markdown, no explanation, no preamble.
+
+For "acs_adx_scores": score EACH additional diagnosis INDIVIDUALLY based on its own evidence.
+For "achi_codes": format must be "00000-00" (5 digits, dash, 2 digits).
+For ICD-10-AM codes: format "A00.0" — verify the code matches the documented diagnosis.
+If a field has no evidence, use null or [].
+
 {{
-  "patient_age": null or integer,
-  "patient_sex": "Male" or "Female" or "Unknown",
-  "pdx": "A00.0" or null,
-  "adx": ["A00.1", "A00.2"],
-  "achi_codes": ["00000-00"],
-  "acs_evidence": {{
-    "therapeutic_treatment": ["evidence 1", "evidence 2"],
-    "diagnostic_procedures": ["evidence 1"],
-    "increased_clinical_care": ["evidence 1"]
-  }},
-  "los_days": null or integer,
-  "complications": ["text description"]
+  "patient_age": null,
+  "patient_sex": "Unknown",
+  "pdx": null,
+  "pdx_justification": "why this is the PDX",
+  "adx": [],
+  "achi_codes": [],
+  "achi_assembly": [
+    {{
+      "procedure_name": "Laparoscopic Cholecystectomy",
+      "approach": "laparoscopic",
+      "base_code": "30455",
+      "modifier": "00",
+      "full_code": "30455-00",
+      "justification": "documented in OT notes as laparoscopic approach"
+    }}
+  ],
+  "acs_adx_scores": [
+    {{
+      "code": "E11.9",
+      "diagnosis_name": "Type 2 Diabetes",
+      "score": 5,
+      "action": "code",
+      "c1_therapeutic": "insulin sliding scale commenced",
+      "c2_diagnostic": "HbA1c ordered",
+      "c3_care": null,
+      "justification": "ACS 0002: C1(3) + C2(2) = 5 — code as ADX"
+    }}
+  ],
+  "los_days": null,
+  "separation_mode": null,
+  "complications": [],
+  "audit_flags": [],
+  "extraction_confidence": "high"
 }}"""
 
+    return prompt
+
+
+def _extract_with_intent_agent(text: str, doc_type: str, ep: dict) -> dict:
+    """
+    Use Claude API to extract structured medical data from EHR documents.
+    Uses KB v4 document-specific extraction protocol.
+    Falls back gracefully on any error.
+    """
+    if not INTENT_AGENT_AVAILABLE:
+        return ep
+
     try:
+        prompt = _build_intent_prompt(text, doc_type, ep)
+
         response = _anthropic_client.messages.create(
             model="claude-sonnet-4-20250514",
-            max_tokens=2000,
+            max_tokens=3000,
             messages=[{"role": "user", "content": prompt}]
         )
-        
-        # Parse response
-        result_text = response.content[0].text.strip()
-        # Remove markdown code blocks if present
-        if result_text.startswith("```"):
-            result_text = result_text.split("```")[1]
-            if result_text.startswith("json"):
-                result_text = result_text[4:]
-            result_text = result_text.strip()
-        
-        extracted = json.loads(result_text)
-        
-        # Merge into episode
+
+        raw = response.content[0].text.strip()
+
+        # Strip markdown fences if present
+        if raw.startswith("```"):
+            parts = raw.split("```")
+            raw = parts[1] if len(parts) > 1 else raw
+            if raw.startswith("json"):
+                raw = raw[4:].strip()
+
+        extracted = json.loads(raw)
+
+        # ── Merge demographics (only if not yet found) ───────────────
         if extracted.get("patient_age") and not ep.get("patient_age"):
             ep["patient_age"] = extracted["patient_age"]
-        if extracted.get("patient_sex") != "Unknown" and ep.get("patient_sex") == "Unknown":
-            ep["patient_sex"] = extracted["patient_sex"]
+        sex = extracted.get("patient_sex", "Unknown")
+        if sex != "Unknown" and ep.get("patient_sex") == "Unknown":
+            ep["patient_sex"] = sex
+
+        # ── PDX (only set from authoritative documents) ───────────────
+        authoritative = ("Admission Report", "Discharge Summary", "Initial Medical Report")
         if extracted.get("pdx") and not ep.get("pdx"):
             ep["pdx"] = extracted["pdx"]
+        elif extracted.get("pdx") and doc_type in authoritative:
+            # Discharge Summary overrides earlier documents
+            if doc_type == "Discharge Summary":
+                ep["pdx"] = extracted["pdx"]
+        if extracted.get("pdx_justification"):
+            ep["_pdx_justification"] = extracted["pdx_justification"]
+
+        # ── ADX — merge avoiding duplicates ───────────────────────────
         for code in extracted.get("adx", []):
             if code and code not in ep["adx"] and code != ep.get("pdx"):
                 ep["adx"].append(code)
+
+        # ── ACHI — prefer assembled codes, fallback to raw list ───────
+        for asm in extracted.get("achi_assembly", []):
+            full = asm.get("full_code", "")
+            if full and re.match(r'\d{5}-\d{2}', full) and full not in ep["achi_codes"]:
+                ep["achi_codes"].append(full)
+                # Store assembly provenance
+                ep.setdefault("_achi_assembly", []).append(asm)
+
         for code in extracted.get("achi_codes", []):
-            if code and code not in ep["achi_codes"]:
+            if code and re.match(r'\d{5}-\d{2}', code) and code not in ep["achi_codes"]:
                 ep["achi_codes"].append(code)
+
+        # ── ACS Scores — per diagnosis ─────────────────────────────────
+        for score_entry in extracted.get("acs_adx_scores", []):
+            code = score_entry.get("code", "")
+            if not code:
+                continue
+            # Add to ADX if not already there
+            if code != ep.get("pdx") and code not in ep["adx"]:
+                ep["adx"].append(code)
+            # Check if already scored
+            existing = next((s for s in ep.get("acs_adx_scores", [])
+                             if s.get("code") == code), None)
+            if not existing:
+                ep.setdefault("acs_adx_scores", []).append({
+                    "code":           code,
+                    "score":          score_entry.get("score", 0),
+                    "is_principal":   False,
+                    "action":         score_entry.get("action", "review"),
+                    "justification":  score_entry.get("justification", ""),
+                    "score_breakdown": {
+                        "therapeutic_treatment": 3 if score_entry.get("c1_therapeutic") else 0,
+                        "diagnostic_procedure":  2 if score_entry.get("c2_diagnostic")  else 0,
+                        "increased_clinical_care": 2 if score_entry.get("c3_care")       else 0,
+                    },
+                    "c1_evidence": score_entry.get("c1_therapeutic"),
+                    "c2_evidence": score_entry.get("c2_diagnostic"),
+                    "c3_evidence": score_entry.get("c3_care"),
+                })
+
+        # ── LOS and separation ─────────────────────────────────────────
         if extracted.get("los_days") and not ep.get("los_days"):
             ep["los_days"] = extracted["los_days"]
-        
-        # Store ACS evidence for later scoring
-        if extracted.get("acs_evidence"):
-            ep.setdefault("_acs_evidence", {})
-            for key, values in extracted["acs_evidence"].items():
-                ep["_acs_evidence"].setdefault(key, []).extend(values)
-        
+        if extracted.get("separation_mode") and not ep.get("separation_mode"):
+            ep["separation_mode"] = extracted["separation_mode"]
+
+        # ── Audit flags ────────────────────────────────────────────────
+        for flag in extracted.get("audit_flags", []):
+            ep.setdefault("_audit_flags", []).append({
+                "source_doc": doc_type,
+                "flag": flag,
+            })
+
+        print(f"[Intent Agent] {doc_type} → PDX:{extracted.get('pdx')} "
+              f"ADX:{len(extracted.get('adx',[]))} "
+              f"ACHI:{len(extracted.get('achi_codes',[]))} "
+              f"ACS:{len(extracted.get('acs_adx_scores',[]))}")
+
         return ep
-        
+
+    except json.JSONDecodeError as e:
+        print(f"[WARN] Intent Agent JSON parse error ({doc_type}): {e}")
+        return ep
     except Exception as e:
-        print(f"[WARN] Intent Agent extraction failed: {e}")
-        return ep  # Caller will use regex fallback
+        print(f"[WARN] Intent Agent failed ({doc_type}): {e}")
+        return ep
 
 # ══════════════════════════════════════════════════════════════════════════
 # ENHANCED REGEX EXTRACTION — Uses KB v4 Protocol
@@ -436,64 +597,49 @@ def _extract_with_regex(ep: dict, text: str, doc_type: str) -> None:
 
 def _auto_score_acs(ep: dict) -> None:
     """
-    Auto-score ACS 0002 based on collected evidence.
-    ACS 0001 (PDX) assumed scored if PDX present.
+    Finalise ACS scoring after all documents are processed.
+    - PDX: set acs_pdx_score if not already set
+    - ADX: any ADX without a score gets scored from global evidence (regex fallback)
+    - Intent Agent scores (per-diagnosis) take priority
     """
-    # PDX score (assume 5+ if PDX is documented)
+    # PDX
     if ep.get("pdx") and not ep.get("acs_pdx_score"):
-        ep["acs_pdx_score"] = 5  # Minimum for coding
-    
-    # ADX scoring from evidence
-    evidence = ep.get("_acs_evidence", {})
-    if not evidence:
-        return
-    
-    # Score each additional diagnosis that has evidence
+        ep["acs_pdx_score"] = 5
+
+    # ADX — only score those without an existing score
+    global_evidence = ep.get("_acs_evidence", {})
+    scored_codes = {s["code"] for s in ep.get("acs_adx_scores", [])}
+
     for adx_code in ep.get("adx", []):
-        # Check if this ADX already has a score
-        existing = next((s for s in ep.get("acs_adx_scores", []) 
-                        if s.get("code") == adx_code), None)
-        if existing:
-            continue
-        
-        # Calculate score
-        score = 0
-        breakdown = {}
-        justification_parts = []
-        
-        # C1: Therapeutic treatment (3 points)
-        if evidence.get("therapeutic_treatment"):
+        if adx_code in scored_codes:
+            continue  # Intent Agent already scored this
+
+        # Fallback: score from global regex evidence
+        score, breakdown, parts = 0, {}, []
+
+        if global_evidence.get("therapeutic_treatment"):
             score += 3
             breakdown["therapeutic_treatment"] = 3
-            justification_parts.append("therapeutic treatment altered")
-        
-        # C2: Diagnostic procedure (3 points)
-        if evidence.get("diagnostic_procedures"):
-            score += 3
-            breakdown["diagnostic_procedure"] = 3
-            justification_parts.append("diagnostic investigation performed")
-        
-        # C3: Increased clinical care (2 points)
-        if evidence.get("increased_clinical_care"):
+            parts.append("therapeutic treatment altered")
+        if global_evidence.get("diagnostic_procedures"):
+            score += 2
+            breakdown["diagnostic_procedure"] = 2
+            parts.append("diagnostic investigation performed")
+        if global_evidence.get("increased_clinical_care"):
             score += 2
             breakdown["increased_clinical_care"] = 2
-            justification_parts.append("increased level of care")
-        
-        # Determine action
-        if score >= 5:
-            action = "code"
-        elif score >= 3:
-            action = "review"
-        else:
-            action = "do_not_code"
-        
-        # Add to episode
+            parts.append("increased level of care")
+
+        if score >= 5:   action = "code"
+        elif score >= 3: action = "review"
+        else:            action = "do_not_code"
+
         ep.setdefault("acs_adx_scores", []).append({
-            "code": adx_code,
-            "score": score,
-            "is_principal": False,
-            "action": action,
-            "justification": f"ACS 0002 score {score}/8 — {', '.join(justification_parts)}" if justification_parts else f"Score {score}/8",
+            "code":           adx_code,
+            "score":          score,
+            "is_principal":   False,
+            "action":         action,
+            "justification":  f"ACS 0002 (regex fallback) score {score}/8 — {', '.join(parts)}" if parts else f"Score {score}/8 — insufficient evidence",
             "score_breakdown": breakdown,
         })
 
@@ -748,7 +894,7 @@ async def kb_status():
             ar_kb = json.load(f)
 
     adrgs = ar_kb.get("adrgs", {})
-
+    
     procedure_count = len(ML_KB.get("procedure_index", {}))
     
     return {
@@ -783,13 +929,13 @@ async def health():
             "exists": fpath.exists(),
             "size_kb": round(fpath.stat().st_size / 1024, 1) if fpath.exists() else 0,
         }
-
+    
     # Check engine files
     engine_files = {}
     for fname in ["noviq_engine.py", "models.py", "validation_rules.py", "grouper.py"]:
         fpath = _ENGINE_SRC / fname
         engine_files[fname] = fpath.exists()
-
+    
     return {
         "status": "ok",
         "base_dir": str(BASE_DIR.absolute()),
@@ -892,13 +1038,13 @@ def _triggers(ep: dict, sug: dict) -> list:
     """Apply intelligence triggers from KB v3."""
     flags = []
     triggers = ML_KB.get("intelligence_triggers", {})
-
+    
     all_text = " ".join([
         str(ep.get("pdx", "")),
         " ".join(ep.get("adx", [])),
         " ".join(ep.get("ehr_documents", [])),
     ]).lower()
-
+    
     # Exclusion Hunter
     excl = triggers.get("exclusion_hunter", {})
     for kw in excl.get("keywords", []):
@@ -910,7 +1056,7 @@ def _triggers(ep: dict, sug: dict) -> list:
                 "message": f"EXCLUSION HUNTER: keyword '{kw}' detected — policy exclusion risk.",
             })
             break
-
+    
     # NCV Matcher
     ncv = triggers.get("ncv_matcher", {})
     proposed_achi = sug.get("proposed_codes", {}).get("achi", [])
@@ -922,7 +1068,7 @@ def _triggers(ep: dict, sug: dict) -> list:
             "action": ncv.get("action", "verify"),
             "message": "NCV MATCHER: Carpal Tunnel surgery. Verify NCV/EMG Test attached.",
         })
-
+    
     # Hardware Auditor
     hw = triggers.get("hardware_auditor", {})
     hw_achi = {"47360-00", "47330-00", "47321-00", "47480-00"}
@@ -934,7 +1080,7 @@ def _triggers(ep: dict, sug: dict) -> list:
                 "action": hw.get("action", "verify"),
                 "message": "HARDWARE AUDITOR: Plate fixation detected. Verify fracture complexity.",
             })
-
+    
     return flags
 
 def _demo(episode_id: str, ep: dict) -> dict:
