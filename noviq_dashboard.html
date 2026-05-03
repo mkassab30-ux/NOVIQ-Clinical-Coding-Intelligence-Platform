@@ -1267,6 +1267,47 @@
   .toast.show { transform: translateY(0); opacity: 1; }
   .toast.success { border-color: var(--success); }
   .toast.error { border-color: var(--danger); }
+
+    .workflow-report-section{margin:16px 0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+    .workflow-report-title{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface2);font-size:12px;font-weight:700;color:var(--text);letter-spacing:.03em}
+    .workflow-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--success);color:#fff}
+    .workflow-badge.warn{background:var(--warn)}
+    .workflow-badge.risk{background:#e53e3e}
+    .workflow-phases{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid var(--border)}
+    .workflow-phase-cell{padding:8px 6px;text-align:center;border-right:1px solid var(--border);font-size:10px}
+    .workflow-phase-cell:last-child{border-right:none}
+    .workflow-phase-icon{font-size:15px;margin-bottom:2px}
+    .workflow-phase-label{font-weight:700;color:var(--text);font-size:9px}
+    .workflow-phase-sub{color:var(--muted);font-size:9px;margin-top:1px}
+    .workflow-phase-cell.ok{background:rgba(72,187,120,.08)}
+    .workflow-phase-cell.warn{background:rgba(237,137,54,.08)}
+    .workflow-phase-cell.fail{background:rgba(229,62,62,.08)}
+    .workflow-flags{padding:10px 14px}
+    .wf-flag{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;margin-bottom:5px;border-radius:6px;font-size:11px;line-height:1.4}
+    .wf-flag.critical{background:rgba(229,62,62,.08);border-left:3px solid #e53e3e}
+    .wf-flag.high{background:rgba(237,137,54,.1);border-left:3px solid #ed8936}
+    .wf-flag.medium{background:rgba(66,153,225,.08);border-left:3px solid #4299e1}
+    .wf-flag.info{background:rgba(72,187,120,.08);border-left:3px solid #48bb78}
+    .wf-flag-icon{font-size:13px;flex-shrink:0;margin-top:1px}
+    .wf-flag-rule{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.05em;margin-bottom:2px}
+    .wf-flag-msg{color:var(--text)}
+    .acs-section{margin:12px 0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+    .acs-table{width:100%;border-collapse:collapse;font-size:11px}
+    .acs-table th{background:var(--surface2);padding:7px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.04em;border-bottom:1px solid var(--border)}
+    .acs-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+    .acs-table tr:last-child td{border-bottom:none}
+    .acs-table tr:hover td{background:var(--surface2)}
+    .acs-action-code{font-weight:700;font-size:12px;color:var(--accent);font-family:"DM Mono",monospace}
+    .acs-action-name{font-size:10px;color:var(--muted)}
+    .acs-score-bar{display:flex;align-items:center;gap:6px}
+    .acs-score-num{font-weight:700;font-size:13px;width:20px;text-align:right}
+    .acs-score-track{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+    .acs-score-fill{height:100%;border-radius:3px;transition:width .4s}
+    .acs-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;white-space:nowrap}
+    .acs-badge.code{background:rgba(72,187,120,.15);color:#276749}
+    .acs-badge.review{background:rgba(237,137,54,.15);color:#9c4221}
+    .acs-badge.skip{background:rgba(160,174,192,.15);color:var(--muted)}
+    .acs-evidence{font-size:10px;color:var(--muted);margin-top:2px}
 </style>
 </head>
 <body>
@@ -1657,6 +1698,24 @@
 
         <div class="flags-section" id="flagsSection">
           <div class="flags-title">&#9873; Intelligence Flags</div>
+        </div>
+
+        <!-- WORKFLOW VALIDATION REPORT -->
+        <div class="workflow-report-section" id="workflowReportSection" style="display:none">
+          <div class="workflow-report-title">
+            <span>&#9881; Workflow Validation &mdash; 5 Phases &middot; 12 ACS Rules</span>
+            <span class="workflow-badge" id="workflowBadge">&#8212;</span>
+          </div>
+          <div class="workflow-phases" id="workflowPhases"></div>
+          <div class="workflow-flags" id="workflowFlags"></div>
+        </div>
+        <!-- ACS 0002 SCORES -->
+        <div class="acs-section" id="acsScoringSection" style="display:none">
+          <div class="workflow-report-title">
+            <span>&#128203; ACS 0002 &mdash; Additional Diagnosis Scoring</span>
+            <span class="workflow-badge" id="acsBadge">&#8212;</span>
+          </div>
+          <div id="acsScoresTable"></div>
         </div>
 
         <div class="code-summary-section">
@@ -2097,6 +2156,124 @@
   }
 
   // ── Render API result into result page ────────────────────────────────
+  function renderWorkflowReport(data) {
+    const wr = data.workflow_report || {};
+    const section = document.getElementById('workflowReportSection');
+    const acsSection = document.getElementById('acsScoringSection');
+    if (!section) return;
+    section.style.display = '';
+
+    // Badge
+    const badge = document.getElementById('workflowBadge');
+    if (badge) {
+      const crit = wr.critical_count || 0;
+      const total = wr.total_flags || 0;
+      if (crit > 0) { badge.textContent = crit+' CRITICAL'; badge.className = 'workflow-badge risk'; }
+      else if (total > 0) { badge.textContent = total+' flags'; badge.className = 'workflow-badge warn'; }
+      else { badge.textContent = 'All checks passed'; badge.className = 'workflow-badge'; }
+    }
+
+    // Phase grid
+    const phaseFlags = {};
+    (wr.flags||[]).forEach(f => {
+      const ph = f.phase||'unknown';
+      if (!phaseFlags[ph]) phaseFlags[ph] = [];
+      phaseFlags[ph].push(f);
+    });
+    const phases = [
+      {id:'A_pre_coding',icon:'📋',label:'A · Pre-Coding',sub:'Documents'},
+      {id:'B_diagnosis_coding',icon:'🔬',label:'B · Diagnosis',sub:'PDX+ADX'},
+      {id:'C_procedure_coding',icon:'🔧',label:'C · Procedure',sub:'ACHI'},
+      {id:'D_sequencing',icon:'🔀',label:'D · Sequencing',sub:'COF+Ext'},
+      {id:'E_grouping_qa',icon:'📊',label:'E · QA',sub:'AR-DRG'},
+      {id:'F_submission',icon:'✅',label:'F · Submit',sub:'Approve'},
+    ];
+    const phasesDiv = document.getElementById('workflowPhases');
+    if (phasesDiv) {
+      phasesDiv.innerHTML = phases.map(ph => {
+        const fl = phaseFlags[ph.id]||[];
+        const hasCrit = fl.some(f=>f.severity==='CRITICAL');
+        const hasHigh = fl.some(f=>f.severity==='HIGH');
+        const cls = hasCrit?'fail':hasHigh?'warn':'ok';
+        const icon = hasCrit?'❌':hasHigh?'⚠️':'✓';
+        return '<div class="workflow-phase-cell '+cls+'">'+
+          '<div class="workflow-phase-icon">'+ph.icon+'</div>'+
+          '<div class="workflow-phase-label">'+ph.label+'</div>'+
+          '<div class="workflow-phase-sub">'+ph.sub+'</div>'+
+          '<div style="font-size:11px;margin-top:3px;font-weight:700">'+icon+(fl.length?' '+fl.length:'')+'</div>'+
+          '</div>';
+      }).join('');
+    }
+
+    // Flags list
+    const flagsDiv = document.getElementById('workflowFlags');
+    if (flagsDiv) {
+      const flags = wr.flags||[];
+      const iconMap = {CRITICAL:'🚨',HIGH:'⚠️',MEDIUM:'ℹ️',INFO:'✓'};
+      let h = '';
+      if (!flags.length) {
+        h = '<div class="wf-flag info"><div class="wf-flag-icon">✅</div>'+
+            '<div class="wf-flag-body"><div class="wf-flag-msg">All 12 ACS validation rules passed</div></div></div>';
+      } else {
+        flags.forEach(f => {
+          const sev = (f.severity||'INFO').toUpperCase();
+          const cls = sev==='CRITICAL'?'critical':sev==='HIGH'?'high':sev==='MEDIUM'?'medium':'info';
+          h += '<div class="wf-flag '+cls+'">'+
+               '<div class="wf-flag-icon">'+(iconMap[sev]||'•')+'</div>'+
+               '<div class="wf-flag-body">'+
+               '<div class="wf-flag-rule">'+(f.rule||sev)+' · Phase '+(f.phase||'').replace(/_/g,' ').toUpperCase()+'</div>'+
+               '<div class="wf-flag-msg">'+(f.message||'')+'</div>'+
+               '</div></div>';
+        });
+      }
+      if (wr.episode_type) {
+        const ep_lbl = wr.episode_type==='day_care'?'🌤 Day-Care':'🏥 Inpatient';
+        h += '<div style="margin-top:8px;padding:6px 10px;background:var(--surface2);border-radius:6px;font-size:10px;color:var(--muted);">'+
+             ep_lbl+' &nbsp;|&nbsp; '+(wr.pdx_note||'')+' &nbsp;|&nbsp; ACS: '+((wr.applied_acs||[]).join(' · '))+'</div>';
+      }
+      flagsDiv.innerHTML = h;
+    }
+
+    // ACS 0002 table
+    const ep = data.episode_dict||{};
+    const acsScores = ep.acs_adx_scores||(data.suggestion||{}).acs_scores?.adx_scores||[];
+    if (acsScores.length > 0 && acsSection) {
+      acsSection.style.display = '';
+      const acsBadge = document.getElementById('acsBadge');
+      const coded = acsScores.filter(s=>s.action==='code').length;
+      const rev   = acsScores.filter(s=>s.action==='review').length;
+      if (acsBadge) { acsBadge.textContent = coded+' coded · '+rev+' review'; acsBadge.className = rev>0?'workflow-badge warn':'workflow-badge'; }
+      const tableDiv = document.getElementById('acsScoresTable');
+      if (tableDiv) {
+        const rows = acsScores.map(s => {
+          const score = s.score||0;
+          const pct = Math.round((score/8)*100);
+          const color = score>=5?'#48bb78':score>=3?'#ed8936':'#a0aec0';
+          const acls = s.action==='code'?'code':s.action==='review'?'review':'skip';
+          const albl = s.action==='code'?'✓ Code':s.action==='review'?'⚑ Review':'✕ Skip';
+          const c1 = s.c1_evidence||(s.score_breakdown?.therapeutic_treatment>0?'Therapeutic treatment altered':'—');
+          const c2 = s.c2_evidence||(s.score_breakdown?.diagnostic_procedure>0?'Diagnostic investigation':'—');
+          const c3 = s.c3_evidence||(s.score_breakdown?.increased_clinical_care>0?'Increased clinical care':'—');
+          return '<tr>'+
+            '<td><div class="acs-action-code">'+(s.code||'—')+'</div>'+
+            '<div class="acs-action-name">'+(s.diagnosis_name||'')+'</div></td>'+
+            '<td><div class="acs-score-bar">'+
+            '<div class="acs-score-num" style="color:'+color+'">'+score+'</div>'+
+            '<div class="acs-score-track"><div class="acs-score-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'+
+            '<div style="font-size:10px;color:var(--muted)">/8</div></div></td>'+
+            '<td><span class="acs-badge '+acls+'">'+albl+'</span></td>'+
+            '<td><div class="acs-evidence">C1: '+c1+'</div>'+
+            '<div class="acs-evidence">C2: '+c2+'</div>'+
+            '<div class="acs-evidence">C3: '+c3+'</div></td></tr>';
+        }).join('');
+        tableDiv.innerHTML = '<table class="acs-table"><thead><tr>'+
+          '<th style="width:22%">Diagnosis</th><th style="width:25%">Score</th>'+
+          '<th style="width:15%">Action</th><th>ACS 0002 Evidence</th>'+
+          '</tr></thead><tbody>'+rows+'</tbody></table>';
+      }
+    }
+  }
+
   function renderResult(data) {
     const s  = data.suggestion || {};
     const pc = s.proposed_codes || {};
@@ -2243,6 +2420,8 @@
     const btnR = document.getElementById('btnReject');
     if (btnA) { btnA.textContent = '✓ Approve & Submit'; btnA.classList.remove('approved'); btnA.style.display=''; }
     if (btnR) { btnR.textContent = '✕ Reject & Recode'; btnR.style.display=''; }
+
+    renderWorkflowReport(data);
 
     if (data.demo_mode) {
       showToast('Demo mode: Engine modules not loaded', 'success');

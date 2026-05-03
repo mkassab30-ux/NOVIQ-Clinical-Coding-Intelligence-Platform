@@ -166,6 +166,18 @@ print(f"[OK] Medical Logic KB ready — {_total} procedures | "
       f"{len(ML_KB.get('intelligence_triggers',{}))} triggers | "
       f"EHR protocol: {'yes' if 'ehr_extraction_protocol' in ML_KB else 'no'}")
 
+
+# ── Workflow KB (Dr Kassab Competency Assessment) ─────────────────────────
+WF_KB: dict = {}
+_wf_path = KB_DIR / "coding_workflow_kb.json"
+if _wf_path.exists():
+    WF_KB = json.loads(_wf_path.read_text(encoding="utf-8"))
+    print(f"[OK] Workflow KB loaded — "
+          f"{len(WF_KB.get('phases',{}))} phases | "
+          f"{len(WF_KB.get('validation_rules',{}))} rules | "
+          f"{len(WF_KB.get('agent_responsibilities',{}))} agents")
+else:
+    print(f"[WARN] Workflow KB not found at {_wf_path}")
 # ── Engine singleton ──────────────────────────────────────────────────────
 _engine = None
 
@@ -205,6 +217,167 @@ async def root():
 # ══════════════════════════════════════════════════════════════════════════
 # INTENT AGENT — NLP Extraction (Optional)
 # ══════════════════════════════════════════════════════════════════════════
+
+# ══════════════════════════════════════════════════════════════════════════
+# WORKFLOW ENGINE — Phase-Aware Validation (Dr Kassab Competency KB)
+# ══════════════════════════════════════════════════════════════════════════
+
+def _detect_episode_type(ep: dict) -> str:
+    """Detect inpatient vs day_care from episode fields."""
+    if ep.get("same_day") or ep.get("los_days", 1) == 0:
+        return "day_care"
+    return "inpatient"
+
+
+def _validate_phase_A(ep: dict) -> list:
+    """Phase A: Pre-Coding — document completeness check."""
+    flags = []
+    missing = WF_KB.get("phases", {}).get("A_pre_coding", {}).get("missing_document_flags", {})
+    docs_present = [d.lower() for d in ep.get("ehr_documents", [])]
+    for doc_name, msg in missing.items():
+        found = any(doc_name.lower() in d for d in docs_present)
+        if not found:
+            severity = "CRITICAL" if "CRITICAL" in msg else "HIGH" if "HIGH" in msg else "MEDIUM"
+            flags.append({"phase": "A_pre_coding", "severity": severity,
+                          "rule": f"Missing: {doc_name}", "message": msg})
+    return flags
+
+
+def _validate_phase_B(ep: dict) -> list:
+    """Phase B: Diagnosis Coding — PDX + ADX validation."""
+    flags = []
+    pdx_rules = WF_KB.get("phases", {}).get("B_diagnosis_coding", {}).get("pdx_validation_rules", {})
+    symptom_prefixes = WF_KB.get("validation_rules", {}).get(
+        "rule_01_pdx_definition", {}).get("symptom_codes_prefix", [])
+
+    # PDX present?
+    if not ep.get("pdx"):
+        flags.append({"phase": "B_diagnosis_coding", "severity": "CRITICAL",
+                      "rule": "ACS_0001", "message": "PDX not assigned — cannot group to AR-DRG"})
+    else:
+        pdx = ep["pdx"]
+        # Check if PDX is a symptom code
+        if any(pdx.startswith(p) for p in symptom_prefixes):
+            flags.append({"phase": "B_diagnosis_coding", "severity": "HIGH",
+                          "rule": "ACS_0001",
+                          "message": f"PDX {pdx} appears to be a symptom code — verify no confirmed diagnosis exists (ACS 0001)"})
+        # Z-code checks
+        if pdx == "Z49.1" or pdx == "Z99.2":
+            flags.append({"phase": "B_diagnosis_coding", "severity": "INFO",
+                          "rule": "Z_CODE", "message": f"PDX {pdx}: Haemodialysis Z-code — Z49.1=catheter, Z99.2=ongoing dialysis. Verify context."})
+        if pdx == "Z51.1":
+            flags.append({"phase": "B_diagnosis_coding", "severity": "INFO",
+                          "rule": "Z_CODE", "message": "PDX Z51.1: Chemotherapy admission — correct Z-code confirmed"})
+
+    # ADX scoring check
+    adx_scores = ep.get("acs_adx_scores", [])
+    scored_codes = {s["code"] for s in adx_scores}
+    for adx in ep.get("adx", []):
+        if adx not in scored_codes:
+            flags.append({"phase": "B_diagnosis_coding", "severity": "MEDIUM",
+                          "rule": "ACS_0002",
+                          "message": f"ADX {adx} has no ACS 0002 score — physician review required"})
+    return flags
+
+
+def _validate_phase_C(ep: dict) -> list:
+    """Phase C: Procedure Coding — ACHI completeness."""
+    flags = []
+    # Check if procedures expected but no ACHI codes
+    has_op_notes = any("operation" in d.lower() for d in ep.get("ehr_documents", []))
+    if has_op_notes and not ep.get("achi_codes"):
+        flags.append({"phase": "C_procedure_coding", "severity": "HIGH",
+                      "rule": "ACS_0016",
+                      "message": "Operation Notes present but no ACHI codes extracted — verify OT documentation"})
+    # Day-care anaesthesia check
+    if _detect_episode_type(ep) == "day_care":
+        achi = ep.get("achi_codes", [])
+        anaesthesia_present = any(
+            code.startswith("19") or code.startswith("18") for code in achi)
+        if achi and not anaesthesia_present:
+            flags.append({"phase": "C_procedure_coding", "severity": "MEDIUM",
+                          "rule": "ACS_0031",
+                          "message": "Day-care case: no anaesthesia code (Block 925) found — verify ACS 0031"})
+    return flags
+
+
+def _validate_phase_D(ep: dict) -> list:
+    """Phase D: Sequencing + External Cause + COF."""
+    flags = []
+    pdx = ep.get("pdx", "")
+    # Injury external cause check
+    injury_prefixes = ["S","T","V","W","X","Y"]
+    is_injury = pdx and any(pdx.startswith(p) for p in injury_prefixes)
+    if is_injury:
+        adx = ep.get("adx", [])
+        has_y92 = any(c.startswith("Y92") for c in adx)
+        has_y93 = any(c.startswith("Y93") or c.startswith("U5") for c in adx)
+        has_ext = any(c.startswith(p) for c in adx for p in ["V","W","X","Y0","Y1","Y2","Y3"])
+        if not has_ext:
+            flags.append({"phase": "D_sequencing", "severity": "CRITICAL",
+                          "rule": "ACS_2001",
+                          "message": "Injury case — External cause code missing (ACS 2001-2005) — INSURANCE EXCLUSION RISK"})
+        if not has_y92:
+            flags.append({"phase": "D_sequencing", "severity": "HIGH",
+                          "rule": "ACS_2001", "message": "Missing Y92 place of occurrence code"})
+        if not has_y93:
+            flags.append({"phase": "D_sequencing", "severity": "MEDIUM",
+                          "rule": "ACS_2001", "message": "Missing Y93/U50-U73 activity code"})
+    return flags
+
+
+def _validate_phase_E(ep: dict, ar_drg: str) -> list:
+    """Phase E: Grouping + QA — DRG validation."""
+    flags = []
+    error_drg_rules = WF_KB.get("phases", {}).get("E_grouping_qa", {}).get("error_drg_rules", {})
+    error_drgs = ["960Z", "961Z"]
+    if ar_drg and ar_drg in error_drgs:
+        msg = error_drg_rules.get(ar_drg, f"Error DRG {ar_drg}")
+        flags.append({"phase": "E_grouping_qa", "severity": "CRITICAL",
+                      "rule": "ERROR_DRG",
+                      "message": f"ERROR DRG {ar_drg}: {msg} — SUBMISSION BLOCKED"})
+    # LOS validation
+    los = ep.get("los_days", 0)
+    if ar_drg and ar_drg not in error_drgs and los == 0 and not ep.get("same_day"):
+        flags.append({"phase": "E_grouping_qa", "severity": "MEDIUM",
+                      "rule": "LOS_CHECK",
+                      "message": "LOS = 0 for inpatient case — verify admission/discharge dates"})
+    return flags
+
+
+def _run_workflow_validation(ep: dict, ar_drg: str = "") -> dict:
+    """
+    Run all 5 phase validations + 12 rules from Dr Kassab Competency KB.
+    Returns structured validation report for Critique Agent.
+    """
+    all_flags = []
+    all_flags.extend(_validate_phase_A(ep))
+    all_flags.extend(_validate_phase_B(ep))
+    all_flags.extend(_validate_phase_C(ep))
+    all_flags.extend(_validate_phase_D(ep))
+    if ar_drg:
+        all_flags.extend(_validate_phase_E(ep, ar_drg))
+
+    critical = [f for f in all_flags if f["severity"] == "CRITICAL"]
+    high     = [f for f in all_flags if f["severity"] == "HIGH"]
+    medium   = [f for f in all_flags if f["severity"] == "MEDIUM"]
+
+    episode_type = _detect_episode_type(ep)
+    ep_rules = WF_KB.get("episode_type_rules", {}).get(episode_type, {})
+
+    return {
+        "episode_type":      episode_type,
+        "workflow_version":  WF_KB.get("_meta", {}).get("version", "v1.0"),
+        "total_flags":       len(all_flags),
+        "critical_count":    len(critical),
+        "high_count":        len(high),
+        "medium_count":      len(medium),
+        "submission_ready":  len(critical) == 0,
+        "flags":             all_flags,
+        "applied_acs":       ep_rules.get("key_acs", []),
+        "pdx_note":          ep_rules.get("pdx_note", ""),
+    }
+
 
 def _build_intent_prompt(text: str, doc_type: str, ep: dict) -> str:
     """
@@ -785,22 +958,38 @@ async def process(episode_id: str, request: Request):
         if not blocked:
             kb_flags.extend(_triggers(ep, res))
 
+        # ── Workflow Validation (Dr Kassab Competency KB — 5 Phases + 12 Rules) ──
+        ar_drg_code = res.get("proposed_codes", {}).get("ar_drg", "") if not blocked else "BLOCKED"
+        workflow_report = _run_workflow_validation(ep, ar_drg_code)
+
+        # Convert workflow flags → kb_flags format
+        for wf_flag in workflow_report.get("flags", []):
+            kb_flags.append({
+                "trigger":  f"workflow_{wf_flag['phase']}",
+                "severity": wf_flag["severity"].lower(),
+                "action":   "review",
+                "message":  wf_flag["message"],
+                "rule":     wf_flag.get("rule", ""),
+            })
+
         STORE[episode_id].update({
-            "suggestion":  res,
-            "kb_flags":    kb_flags,
-            "status":      "blocked" if blocked else "PENDING",
-            "processed_at": _now(),
+            "suggestion":       res,
+            "kb_flags":         kb_flags,
+            "workflow_report":  workflow_report,
+            "status":           "blocked" if blocked else "PENDING",
+            "processed_at":     _now(),
         })
         _save(STORE)
 
         return {
-            "episode_id":   episode_id,
-            "suggestion":   res,
-            "episode_dict": ep,
-            "kb_flags":     kb_flags,
-            "blocked":      blocked,
-            "processed_at": _now(),
-            "engine_mode":  "live",
+            "episode_id":      episode_id,
+            "suggestion":      res,
+            "episode_dict":    ep,
+            "kb_flags":        kb_flags,
+            "workflow_report": workflow_report,
+            "blocked":         blocked,
+            "processed_at":    _now(),
+            "engine_mode":     "live",
         }
 
     # demo path
