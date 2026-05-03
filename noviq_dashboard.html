@@ -2196,12 +2196,12 @@
 
   // ── Clinician Query Renderer ───────────────────────────────────────────
   let _currentEpisodeId = null;
-  let _queryResponses = {};
+  let _queryResponses   = {};
 
   function renderClinicianQueries(data) {
     const queries = data.clinician_queries || [];
     _currentEpisodeId = data.episode_id;
-    _queryResponses = {};
+    _queryResponses   = {};
 
     const section = document.getElementById('queriesSection');
     const list    = document.getElementById('queriesList');
@@ -2209,104 +2209,103 @@
     const btn     = document.getElementById('queriesSubmitBtn');
     if (!section) return;
 
-    if (!queries.length) {
-      section.style.display = 'none';
-      return;
-    }
+    if (!queries.length) { section.style.display = 'none'; return; }
 
     section.style.display = '';
-    const pending = queries.filter(q => q.status === 'pending').length;
+    const pending = queries.filter(function(q){ return q.status === 'pending'; }).length;
     if (badge) {
       badge.textContent = pending + ' pending';
-      badge.className = pending > 0 ? 'workflow-badge warn' : 'workflow-badge';
+      badge.className   = pending > 0 ? 'workflow-badge warn' : 'workflow-badge';
     }
 
-    const sevIcon = {HIGH:'⚠️', MEDIUM:'ℹ️', LOW:'💬'};
-    list.innerHTML = queries.map(q => {
-      if (q.status === 'answered') {
-        return '<div class="query-card">' +
-          '<div class="query-card-header">' +
-          '<span class="query-id">' + q.query_id + '</span>' +
-          '<span class="query-title">' + q.title + '</span>' +
-          '</div>' +
-          '<div class="query-answered">✅ Answered: ' + (q.physician_response||'') + '</div>' +
-          '</div>';
-      }
-      const opts = (q.options||[]).map((opt,i) =>
-        '<label class="query-option" id="opt_' + q.query_id + '_' + i + '">' +
-        '<input type="radio" name="q_' + q.query_id + '" value="' + opt + '" ' +
-        'onchange="selectOption('' + q.query_id + '',this.value,'' + q.query_id + '_' + i + '')">' +
-        opt + '</label>'
-      ).join('');
-      return '<div class="query-card">' +
-        '<div class="query-card-header">' +
-        '<span class="query-id">' + q.query_id + '</span>' +
-        '<span class="query-sev ' + (q.severity||'MEDIUM') + '">' + (sevIcon[q.severity]||'') + ' ' + (q.severity||'') + '</span>' +
-        '<span class="query-acs">' + (q.acs||'') + '</span>' +
-        '</div>' +
-        '<div class="query-title">' + q.title + '</div>' +
-        '<div class="query-body">' + (q.body||'') + '</div>' +
-        '<div class="query-options">' + opts + '</div>' +
-        '<div class="query-impact">💡 Coding Impact: ' + (q.coding_impact||'') + '</div>' +
-        '</div>';
-    }).join('');
+    const sevIcon = { HIGH: '⚠️', MEDIUM: 'ℹ️', LOW: '💬' };
 
-    if (btn) btn.disabled = true;
+    function buildCard(q) {
+      if (q.status === 'answered') {
+        return '<div class="query-card">'
+          + '<div class="query-card-header">'
+          + '<span class="query-id">' + q.query_id + '</span>'
+          + '<span class="query-title">' + (q.title||'') + '</span>'
+          + '</div>'
+          + '<div class="query-answered">✅ Answered: ' + (q.physician_response||'') + '</div>'
+          + '</div>';
+      }
+
+      // Build options using template literals safely via array join
+      var optHtml = (q.options || []).map(function(opt, i) {
+        var inputId  = 'opt_' + q.query_id + '_' + i;
+        var qName    = 'q_' + q.query_id;
+        var safeOpt  = opt.replace(/"/g, '&quot;');
+        var safeQid  = q.query_id;
+        var safeIdx  = String(i);
+        return '<label class="query-option" id="' + inputId + '">'
+          + '<input type="radio" name="' + qName + '" value="' + safeOpt + '" '
+          + 'onchange="selectOption(\'' + safeQid + '\',this.value,\'' + safeQid + '_' + safeIdx + '\')">'
+          + opt
+          + '</label>';
+      }).join('');
+
+      var sev = q.severity || 'MEDIUM';
+      return '<div class="query-card">'
+        + '<div class="query-card-header">'
+        + '<span class="query-id">'  + q.query_id + '</span>'
+        + '<span class="query-sev ' + sev + '">' + (sevIcon[sev]||'') + ' ' + sev + '</span>'
+        + '<span class="query-acs">' + (q.acs||'') + '</span>'
+        + '</div>'
+        + '<div class="query-title">' + (q.title||'') + '</div>'
+        + '<div class="query-body">'  + (q.body||'').replace(/\n/g,'<br>') + '</div>'
+        + '<div class="query-options">' + optHtml + '</div>'
+        + '<div class="query-impact">💡 Coding Impact: ' + (q.coding_impact||'') + '</div>'
+        + '</div>';
+    }
+
+    if (list) list.innerHTML = queries.map(buildCard).join('');
+    if (btn)  btn.disabled   = true;
   }
 
   function selectOption(queryId, value, optId) {
     _queryResponses[queryId] = value;
-    // Highlight selected option
-    document.querySelectorAll('[id^="opt_' + queryId + '_"]').forEach(el => {
+    document.querySelectorAll('[id^="opt_' + queryId + '_"]').forEach(function(el){
       el.classList.remove('selected');
     });
-    const allOpts = document.querySelectorAll('input[name="q_' + queryId + '"]');
-    allOpts.forEach(inp => {
+    document.querySelectorAll('input[name="q_' + queryId + '"]').forEach(function(inp){
       if (inp.value === value) inp.parentElement.classList.add('selected');
     });
-    // Enable submit if all pending queries answered
-    const btn = document.getElementById('queriesSubmitBtn');
-    const list = document.getElementById('queriesList');
-    if (!list || !btn) return;
-    const pending = list.querySelectorAll('input[type=radio]');
-    const names   = new Set([...pending].map(i => i.name));
-    const answered = Object.keys(_queryResponses).length;
-    btn.disabled = (answered < names.size);
+    var btn    = document.getElementById('queriesSubmitBtn');
+    var list   = document.getElementById('queriesList');
+    if (!btn || !list) return;
+    var names  = new Set(Array.from(list.querySelectorAll('input[type=radio]')).map(function(i){ return i.name; }));
+    btn.disabled = (Object.keys(_queryResponses).length < names.size);
   }
 
   async function submitQueryResponses() {
     if (!_currentEpisodeId) return;
-    const btn = document.getElementById('queriesSubmitBtn');
+    var btn = document.getElementById('queriesSubmitBtn');
     if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
-
-    const responses = Object.entries(_queryResponses).map(([qid, resp]) => ({
-      query_id: qid, response: resp
-    }));
-
+    var responses = Object.entries(_queryResponses).map(function(entry){
+      return { query_id: entry[0], response: entry[1] };
+    });
     try {
-      const r = await fetch(API + '/api/query/' + _currentEpisodeId + '/respond', {
+      var r = await fetch(API + '/api/query/' + _currentEpisodeId + '/respond', {
         method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({responses})
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ responses: responses })
       });
-      const data = await r.json();
-      showToast('Responses submitted — re-processing episode...', 'success');
-
-      // Auto re-process
-      setTimeout(async () => {
-        const r2 = await fetch(API + '/api/process/' + _currentEpisodeId, {
+      var data = await r.json();
+      showToast('Responses submitted — re-processing...', 'success');
+      setTimeout(async function() {
+        var r2 = await fetch(API + '/api/process/' + _currentEpisodeId, {
           method: 'POST',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({episode_dict: data.updated_episode})
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ episode_dict: data.updated_episode })
         });
-        const result = await r2.json();
+        var result = await r2.json();
         renderResult(result);
         showToast('Episode re-processed with physician responses', 'success');
       }, 800);
-
     } catch(e) {
       showToast('Submit failed: ' + e.message, 'error');
-      if (btn) { btn.disabled = false; btn.textContent = 'Submit Responses → Re-process Episode'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Submit Responses \u2192 Re-process Episode'; }
     }
   }
 
