@@ -1,0 +1,807 @@
+{
+  "_meta": {
+    "version": "v1.0",
+    "title": "NOVIQ Clinical Coding Workflow Knowledge Base",
+    "source": "Dr. Mohamed Kassab — Clinical Coder Competency Assessment",
+    "authority": "11-year surgical + coding audit experience",
+    "episode_types": [
+      "inpatient",
+      "day_care"
+    ],
+    "total_steps": 18,
+    "total_validation_rules": 12,
+    "acs_standards_covered": [
+      "ACS 0001",
+      "ACS 0002",
+      "ACS 0003",
+      "ACS 0008",
+      "ACS 0010",
+      "ACS 0011",
+      "ACS 0016",
+      "ACS 0017",
+      "ACS 0019",
+      "ACS 0020",
+      "ACS 0023",
+      "ACS 0031",
+      "ACS 0042",
+      "ACS 0048",
+      "ACS 0050",
+      "ACS 2001",
+      "ACS 2002",
+      "ACS 2003",
+      "ACS 2004",
+      "ACS 2005"
+    ]
+  },
+  "phases": {
+    "A_pre_coding": {
+      "label": "Pre-Coding",
+      "order": 1,
+      "agent": "intent_agent",
+      "objective": "Validate episode eligibility and ensure documentation completeness before any coding begins",
+      "inpatient_steps": [
+        {
+          "step": 1,
+          "action": "Confirm inpatient episode eligibility — admission status, LOS, admission source (ER or OP Clinics)",
+          "acs": [
+            "ACS 0010",
+            "AR-DRG classification specifications",
+            "Admitted Patient Care NMDS"
+          ],
+          "output": "Valid inpatient case confirmed",
+          "engine_check": "episode_type == inpatient AND los_days >= 1 AND admission_source documented"
+        },
+        {
+          "step": 2,
+          "action": "Retrieve complete medical record — EHR, notes, labs, imaging, OT notes — all documented, valid and verified",
+          "acs": [
+            "ACS 0010"
+          ],
+          "output": "Full documentation set confirmed",
+          "engine_check": "ehr_documents includes: Initial Medical Report, Admission Report, Progress Notes, Operation Notes, Discharge Summary"
+        },
+        {
+          "step": 3,
+          "action": "Review full record chronologically — admission to discharge — understand medical journey through daily progress notes and management",
+          "acs": [
+            "ACS 0010"
+          ],
+          "output": "Clinical understanding established",
+          "engine_check": "documents_read_in_sequence == True"
+        }
+      ],
+      "day_care_steps": [
+        {
+          "step": 1,
+          "action": "Review case complexity — multi-diagnosis, ICU, procedures",
+          "acs": [
+            "ACS 0010"
+          ],
+          "output": "Case complexity identified",
+          "engine_check": "same_day == True AND complexity_assessed == True"
+        },
+        {
+          "step": 2,
+          "action": "Check documentation completeness — identify missing notes, unclear diagnoses",
+          "acs": [
+            "ACS 0010"
+          ],
+          "output": "Documentation gaps identified",
+          "engine_check": "documentation_gaps == []"
+        },
+        {
+          "step": 3,
+          "action": "Prioritize high-impact cases — DRG weight, LOS outliers, complications",
+          "acs": [
+            "Facility policy"
+          ],
+          "output": "Priority case list",
+          "engine_check": "drg_weight_assessed == True"
+        }
+      ],
+      "missing_document_flags": {
+        "Operation Notes": "CRITICAL — Cannot assign ACHI codes without OT Notes",
+        "Discharge Summary": "CRITICAL — Cannot confirm PDX without Discharge Summary",
+        "Progress Notes": "HIGH — Cannot score ACS 0002 without Progress Notes",
+        "Admission Report": "HIGH — Cannot validate PDX selection without Admission Report",
+        "Initial Medical Report": "MEDIUM — Mode of injury and external cause may be missed"
+      }
+    },
+    "B_diagnosis_coding": {
+      "label": "Diagnosis Coding",
+      "order": 2,
+      "agent": "intent_agent + medical_logic_agent",
+      "objective": "Assign accurate PDX (ACS 0001) and ADX (ACS 0002) based on full clinical picture",
+      "inpatient_steps": [
+        {
+          "step": 4,
+          "action": "Assign Principal Diagnosis — condition chiefly responsible after study, per ACS 0001 — source: Admission + Discharge Report",
+          "acs": [
+            "ACS 0001",
+            "ACS 0011",
+            "ACS 0008",
+            "ACS 0050"
+          ],
+          "output": "Principal Diagnosis code",
+          "engine_check": "pdx is not null AND pdx_source in [Admission Report, Discharge Summary]"
+        },
+        {
+          "step": 5,
+          "action": "Validate PDX — NOT a symptom unless no confirmed diagnosis. Signs/symptoms at admission may evolve to confirmed PDX after initial management",
+          "acs": [
+            "ACS 0001",
+            "ACS 0011"
+          ],
+          "output": "Validated PDX",
+          "engine_check": "pdx_is_not_symptom_code == True OR symptom_with_no_confirmed_dx_documented == True",
+          "upcoding_check": "If symptom coded as PDX when underlying condition confirmed → DOWNCODE",
+          "leakage_check": "If confirmed condition not coded as PDX → REVENUE LEAKAGE"
+        },
+        {
+          "step": 6,
+          "action": "Identify Additional Diagnoses impacting care — must be scored per ACS 0002 criteria",
+          "acs": [
+            "ACS 0002"
+          ],
+          "output": "ADX list with ACS 0002 scores",
+          "engine_check": "all adx have acs_adx_score with action in [code, review, do_not_code]"
+        },
+        {
+          "step": 7,
+          "action": "Apply significance criteria — filter ADX to code only those with genuine clinical impact. Use Medical Data Adjudication",
+          "acs": [
+            "ACS 0002",
+            "ACS 0003"
+          ],
+          "output": "Refined ADX list",
+          "engine_check": "adx with action=do_not_code are excluded from final submission",
+          "upcoding_check": "Incidental findings with no treatment impact must NOT be coded",
+          "leakage_check": "Comorbidities altering perioperative management MUST be coded"
+        }
+      ],
+      "day_care_steps": [
+        {
+          "step": 4,
+          "action": "Analyze competing diagnoses for PDX selection",
+          "acs": [
+            "ACS 0001"
+          ],
+          "output": "Potential PDX options evaluated",
+          "engine_check": "pdx_candidates_evaluated == True"
+        },
+        {
+          "step": 5,
+          "action": "Apply ACS 0001 rules to confirm correct PDX — etiology vs manifestation distinction",
+          "acs": [
+            "ACS 0001",
+            "ICD-10-AM rules"
+          ],
+          "output": "Final PDX selected",
+          "day_care_note": "In day-care, PDX is almost always the condition that brought patient to operating list — wrong PDX misallocates entire MDC",
+          "engine_check": "pdx confirmed from clinical indication for procedure"
+        },
+        {
+          "step": 6,
+          "action": "Identify all comorbidities and complications — assess CC/MCC impact on DRG",
+          "acs": [
+            "ACS 0002"
+          ],
+          "output": "ADX with DRG impact assessed",
+          "engine_check": "cc_mcc_impact_assessed == True"
+        },
+        {
+          "step": 7,
+          "action": "Differentiate pre-existing vs hospital-acquired conditions — assign Condition Onset Flag",
+          "acs": [
+            "ACS 0048"
+          ],
+          "output": "Accurate condition timing",
+          "engine_check": "cof_assigned for each adx"
+        }
+      ],
+      "pdx_validation_rules": {
+        "rule_1": "PDX = condition established AFTER study, chiefly responsible for admission",
+        "rule_2": "NOT a presenting symptom if an underlying condition is confirmed",
+        "rule_3": "NOT a manifestation if the etiology is documented",
+        "rule_4": "If multiple conditions compete — select the one consuming most resources",
+        "rule_5": "Day-care: PDX = clinical indication for the procedure",
+        "rule_6": "Haemodialysis admission: Z49.1 (catheter) or Z99.2 (ongoing dialysis)",
+        "rule_7": "Chemotherapy admission: Z51.1"
+      },
+      "adx_acs0002_scoring": {
+        "c1_therapeutic_treatment": {
+          "points": 3,
+          "criteria": "Commencement or alteration of therapeutic treatment",
+          "examples": [
+            "New medication started",
+            "Dose adjusted",
+            "IV antibiotics commenced",
+            "Insulin sliding scale",
+            "Treatment plan changed"
+          ]
+        },
+        "c2_diagnostic_investigation": {
+          "points": 2,
+          "criteria": "Diagnostic investigation or procedure performed for the condition",
+          "examples": [
+            "CT ordered for this condition",
+            "Blood tests specific to condition",
+            "ECG ordered",
+            "Biopsy taken",
+            "Culture sent"
+          ]
+        },
+        "c3_increased_clinical_care": {
+          "points": 2,
+          "criteria": "Increased level of clinical care or monitoring",
+          "examples": [
+            "ICU transfer",
+            "Hourly observations",
+            "Continuous monitoring",
+            "Step-down care"
+          ]
+        },
+        "thresholds": {
+          "code": "score >= 5 → Code as ADX",
+          "review": "score 3-4 → Physician review required",
+          "do_not_code": "score < 3 → Do NOT code (incidental/not impacting care)"
+        },
+        "dr_kassab_insight": "Hardest distinction: true comorbidity altering perioperative management vs incidental finding in record. Apply strict ACS 0002 criteria, not clinical instinct"
+      }
+    },
+    "C_procedure_coding": {
+      "label": "Procedure Coding",
+      "order": 3,
+      "agent": "intent_agent + ar_drg_engine",
+      "objective": "Assign accurate ACHI codes — correct block, site, technique, approach",
+      "inpatient_steps": [
+        {
+          "step": 8,
+          "action": "Identify all procedures — primary source: OT Notes + Discharge Summary",
+          "acs": [
+            "ACS 0042"
+          ],
+          "output": "Complete procedure list",
+          "engine_check": "achi_codes extracted from Operation Notes AND Discharge Summary"
+        },
+        {
+          "step": 9,
+          "action": "Assign ACHI codes — correct block, site, technique. Calculate ECCS Score per formula and DCL Score for exact AR-DRG weight",
+          "acs": [
+            "ACHI Vol 3 & 4",
+            "ACS 0016",
+            "ACS 0019",
+            "ACS 0020",
+            "ACS 0023",
+            "ACS 0031"
+          ],
+          "output": "ACHI codes with ECCS contribution",
+          "engine_check": "each achi_code has: base_code + modifier + approach_documented"
+        }
+      ],
+      "day_care_steps": [
+        {
+          "step": 8,
+          "action": "Identify principal procedure — most resource-intensive",
+          "acs": [
+            "ACS 0016"
+          ],
+          "output": "Key procedure identified",
+          "engine_check": "principal_achi_code assigned"
+        },
+        {
+          "step": 9,
+          "action": "Capture all significant procedures affecting DRG grouping",
+          "acs": [
+            "ACS 0042"
+          ],
+          "output": "Full ACHI list",
+          "day_care_note": "Anaesthesia codes (Block 925, ACS 0031) mandatory for day-care",
+          "engine_check": "anaesthesia_code in achi_codes if procedure performed"
+        }
+      ],
+      "achi_assembly_rules": {
+        "rule_1": "Base code from ACHI Volume 3 (Alphabetic Index)",
+        "rule_2": "Modifier determined by: approach (lap/open/robotic) + site (bilateral/unilateral) + technique",
+        "rule_3": "Anaesthesia = Block 925 (codes 1909-1911) — governed by ACS 0031",
+        "rule_4": "Abandoned procedure = ACS 0019",
+        "rule_5": "ECCS = sum of complexity contributions per ACHI code",
+        "rule_6": "DCL = Diagnosis Complexity Level — combined with ECCS for AR-DRG split"
+      },
+      "procedures_not_coded": {
+        "acs": "ACS 0042",
+        "examples": [
+          "Routine vital signs",
+          "Standard IV cannulation",
+          "Routine wound dressing",
+          "Standard pre-op prep"
+        ]
+      }
+    },
+    "D_sequencing_external_cause": {
+      "label": "Sequencing & External Cause",
+      "order": 4,
+      "agent": "medical_logic_agent + critique_agent",
+      "objective": "Correct code sequencing and complete external cause + COF assignment",
+      "inpatient_steps": [
+        {
+          "step": 10,
+          "action": "Sequence procedures by resource significance — decide if procedure is standalone or part of main procedure",
+          "acs": [
+            "ACS 0016",
+            "ACS 0019"
+          ],
+          "output": "Ordered procedure list",
+          "engine_check": "achi_codes ordered by clinical significance"
+        },
+        {
+          "step": 11,
+          "action": "Assign External Cause codes for injury/poisoning — Mode of trauma in ER cases — Insurance exclusion check",
+          "acs": [
+            "ACS 2001",
+            "ACS 2002",
+            "ACS 2003",
+            "ACS 2004",
+            "ACS 2005"
+          ],
+          "output": "External cause codes assigned",
+          "engine_check": "if injury_case: external_cause + Y92_place + Y93_activity all present",
+          "insurance_flag": "Mode of injury determines policy exclusion — CRITICAL for claim approval"
+        },
+        {
+          "step": 12,
+          "action": "Assign Condition Onset Flag — POA vs hospital-acquired. Impacts case mortality rate and complication coding",
+          "acs": [
+            "ACS 0048"
+          ],
+          "output": "COF assigned to each diagnosis",
+          "engine_check": "each adx has cof: 1=hospital_acquired OR 2=present_on_admission"
+        }
+      ],
+      "day_care_steps": [
+        {
+          "step": 10,
+          "action": "Sequence diagnoses correctly — PDX first, then ADX by clinical impact hierarchy",
+          "acs": [
+            "ICD-10-AM sequencing rules"
+          ],
+          "output": "Correct diagnosis sequence",
+          "engine_check": "pdx is first, adx ordered by impact"
+        },
+        {
+          "step": 11,
+          "action": "Sequence procedures by clinical significance",
+          "acs": [
+            "ACS 0016"
+          ],
+          "output": "Ordered procedure list"
+        },
+        {
+          "step": 12,
+          "action": "Assign external cause codes with full detail — activity + place",
+          "acs": [
+            "ACS 2001-2005"
+          ],
+          "output": "Complete external cause coding",
+          "engine_check": "external_cause + Y92 + Y93 all present if injury"
+        }
+      ],
+      "cof_rules": {
+        "cof_1": "Hospital-acquired condition — arose DURING this admission",
+        "cof_2": "Present on admission — documented before or at time of admission",
+        "engine_logic": "If condition appears only in Progress Notes (not Admission Report) → likely COF 1"
+      },
+      "external_cause_mandatory_trio": {
+        "code_1": "External cause code — cause and intent of injury",
+        "code_2": "Y92.— — Place of occurrence",
+        "code_3": "Y93.— or U50-U73 — Activity at time of injury",
+        "insurance_exclusions": [
+          "Self-inflicted injury",
+          "Assault",
+          "War injuries",
+          "Certain sporting injuries — verify policy"
+        ]
+      }
+    },
+    "E_grouping_qa": {
+      "label": "Grouping & QA",
+      "order": 5,
+      "agent": "ar_drg_engine + critique_agent",
+      "objective": "Validate AR-DRG assignment and ensure coding integrity before submission",
+      "inpatient_steps": [
+        {
+          "step": 13,
+          "action": "Validate all codes against documentation — DCL contribution, ECCS score, Appendix C, F25 rules",
+          "acs": [
+            "ICD-10-AM conventions"
+          ],
+          "output": "Validated coding set",
+          "engine_check": "dcl_validated AND eccs_calculated AND appendix_c_checked AND f25_gate_checked"
+        },
+        {
+          "step": 14,
+          "action": "Apply relevant ACS for common cases — sepsis, diabetes, post-op complications",
+          "acs": [
+            "All relevant ACS"
+          ],
+          "output": "ACS standards applied",
+          "common_cases": {
+            "sepsis": "ACS 0002 + underlying source",
+            "diabetes": "E11.9 — only if treatment altered",
+            "post_op_complication": "ACS 0017 + COF 1",
+            "anaemia": "Only if transfusion given or iron therapy commenced"
+          }
+        },
+        {
+          "step": 15,
+          "action": "Run AR-DRG grouper — get exact code weight transformed into procedure value and cost",
+          "acs": [
+            "AR-DRG V11.0/V12.0",
+            "IHPA"
+          ],
+          "output": "AR-DRG assigned with weight",
+          "engine_check": "ar_drg != ERROR_DRG AND ar_drg != 960Z AND ar_drg != 961Z"
+        },
+        {
+          "step": 16,
+          "action": "Validate DRG vs clinical scenario — LOS alignment, CC/MCC check, admission scenario consistency",
+          "acs": [
+            "DRG audit rules"
+          ],
+          "output": "Final DRG validated",
+          "engine_check": "los_days consistent with ar_drg_expected_los AND cc_mcc_captured"
+        }
+      ],
+      "day_care_steps": [
+        {
+          "step": 13,
+          "action": "Run DRG and analyze output — flag unexpected grouping",
+          "acs": [
+            "AR-DRG logic"
+          ],
+          "output": "Initial DRG assigned"
+        },
+        {
+          "step": 14,
+          "action": "Validate DRG vs clinical picture — LOS, ICU, procedures alignment",
+          "acs": [
+            "DRG audit rules"
+          ],
+          "output": "DRG validated"
+        },
+        {
+          "step": 15,
+          "action": "Check CC/MCC capture accuracy — identify missed complications",
+          "acs": [
+            "ACS 0002"
+          ],
+          "output": "Optimized coding — revenue leakage check",
+          "leakage_check": "If CC/MCC not captured but documented → flag for physician review"
+        },
+        {
+          "step": 16,
+          "action": "Perform internal audit — code consistency and guideline adherence",
+          "acs": [
+            "Coding standards"
+          ],
+          "output": "Audit-ready case"
+        }
+      ],
+      "error_drg_rules": {
+        "960Z": "Ungroupable — invalid code combination → review and re-code",
+        "961Z": "Unacceptable Principal Diagnosis → change PDX",
+        "engine_action": "If ar_drg in [960Z, 961Z] → BLOCK submission, return to Phase B"
+      },
+      "los_vs_drg_validation": {
+        "rule": "Procedures must align with total admission days",
+        "short_stay_flag": "LOS < expected DRG lower trim → verify all procedures coded",
+        "long_stay_flag": "LOS > expected DRG upper trim → check for complications or comorbidities missed"
+      }
+    },
+    "F_submission": {
+      "label": "Submission",
+      "order": 6,
+      "agent": "critique_agent",
+      "objective": "Final physician approval and claim submission",
+      "steps": [
+        {
+          "step": 17,
+          "action": "Query clinician for unclear/incomplete documentation — enhances clinical optimization before submission, decreases denials",
+          "acs": [
+            "ACS 0010",
+            "National Coding Advice"
+          ],
+          "output": "Clarification obtained",
+          "engine_check": "ambiguous_documentation_flagged AND physician_queried"
+        },
+        {
+          "step": 18,
+          "action": "Finalize and submit coded case — include RAG system and logical terms behind every code",
+          "acs": [
+            "Facility policy",
+            "State health dept standards"
+          ],
+          "output": "Final coded record submitted",
+          "engine_check": "physician_approved == True AND all_flags_resolved"
+        }
+      ]
+    }
+  },
+  "validation_rules": {
+    "rule_01_pdx_definition": {
+      "rule": "PDX must be the diagnosis established AFTER study, chiefly responsible for the episode",
+      "acs": "ACS 0001",
+      "agent": "critique_agent",
+      "check": "pdx is not a symptom code (R-codes) unless no confirmed diagnosis documented",
+      "fail_action": "FLAG_PDX_REVIEW",
+      "symptom_codes_prefix": [
+        "R0",
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5",
+        "R6",
+        "R7",
+        "R8",
+        "R9"
+      ]
+    },
+    "rule_02_adx_criteria": {
+      "rule": "ADX must meet ACS 0002: therapeutic treatment + diagnostic investigation + increased care",
+      "acs": "ACS 0002",
+      "agent": "intent_agent",
+      "check": "each adx has acs_score with documented evidence for at least one criterion",
+      "fail_action": "REMOVE_ADX or FLAG_FOR_REVIEW"
+    },
+    "rule_03_cof_assignment": {
+      "rule": "COF 1 = hospital-acquired. COF 2 = present on admission",
+      "acs": "ACS 0048",
+      "agent": "critique_agent",
+      "check": "each adx has cof assigned",
+      "fail_action": "FLAG_MISSING_COF"
+    },
+    "rule_04_anaesthesia_code": {
+      "rule": "Anaesthesia codes = Block 925 (1909-1911), governed by ACS 0031",
+      "acs": "ACS 0031",
+      "agent": "intent_agent",
+      "check": "if procedure under GA or regional: anaesthesia_achi_code present",
+      "fail_action": "FLAG_MISSING_ANAESTHESIA_CODE"
+    },
+    "rule_05_external_cause_trio": {
+      "rule": "Injury admissions require: External cause + Y92 (place) + Y93/U50-U73 (activity)",
+      "acs": "ACS 2001-2005",
+      "agent": "critique_agent",
+      "check": "if injury_admission: external_cause_code AND Y92_code AND Y93_code all present",
+      "fail_action": "FLAG_INCOMPLETE_EXTERNAL_CAUSE",
+      "insurance_risk": "Incomplete external cause = policy exclusion risk"
+    },
+    "rule_06_haemodialysis_zcode": {
+      "rule": "Haemodialysis: Z49.1 (catheter maintenance) or Z99.2 (ongoing dialysis management)",
+      "acs": "ICD-10-AM Z-codes",
+      "agent": "intent_agent",
+      "check": "if haemodialysis_admission: pdx in [Z49.1, Z99.2]",
+      "fail_action": "FLAG_WRONG_ZCODE"
+    },
+    "rule_07_chemotherapy_zcode": {
+      "rule": "Chemotherapy admission PDX = Z51.1",
+      "acs": "ICD-10-AM Z-codes",
+      "agent": "intent_agent",
+      "check": "if chemotherapy_admission: pdx == Z51.1",
+      "fail_action": "FLAG_WRONG_ZCODE"
+    },
+    "rule_08_error_drg": {
+      "rule": "Error DRG 960Z (Ungroupable) or 961Z (Unacceptable PDX) → must be corrected before submission",
+      "acs": "AR-DRG grouper logic",
+      "agent": "ar_drg_engine",
+      "check": "ar_drg not in [960Z, 961Z]",
+      "fail_action": "BLOCK_SUBMISSION — return to Phase B for re-coding"
+    },
+    "rule_09_post_op_complications": {
+      "rule": "Post-procedural complications coded per ACS 0017 + COF 1 assigned",
+      "acs": "ACS 0017 + ACS 0048",
+      "agent": "critique_agent",
+      "check": "if complication_documented: acs_0017_applied AND cof_1_assigned",
+      "fail_action": "FLAG_COMPLICATION_CODING"
+    },
+    "rule_10_ambiguous_documentation": {
+      "rule": "Ambiguous documentation → formal clinician query. Coder must NOT assume",
+      "acs": "ACS 0010",
+      "agent": "critique_agent",
+      "check": "if unclear_documentation: physician_query_generated",
+      "fail_action": "FLAG_DOCUMENTATION_QUERY",
+      "note": "Coding must reflect documented clinical reality, not clinical inference"
+    },
+    "rule_11_same_day_acs": {
+      "rule": "Same-day cases: apply ACS 0010 + ACS 0001 + ACS 0016 + ACS 0031",
+      "acs": "ACS 0010, ACS 0001, ACS 0016, ACS 0031",
+      "agent": "intent_agent",
+      "check": "if same_day: day_case_rules_applied AND anaesthesia_coded",
+      "fail_action": "FLAG_DAY_CASE_RULES"
+    },
+    "rule_12_icd_lookup_sequence": {
+      "rule": "ICD-10-AM lookup: Volume 2 (Alphabetic Index) → Volume 1 (Tabular List) — both steps mandatory",
+      "acs": "ICD-10-AM conventions",
+      "agent": "intent_agent",
+      "check": "icd_codes validated against tabular list",
+      "fail_action": "FLAG_CODE_VALIDATION"
+    }
+  },
+  "agent_responsibilities": {
+    "intent_agent": {
+      "phases": [
+        "A_pre_coding",
+        "B_diagnosis_coding",
+        "C_procedure_coding"
+      ],
+      "validation_rules": [
+        "rule_02_adx_criteria",
+        "rule_04_anaesthesia_code",
+        "rule_06_haemodialysis_zcode",
+        "rule_07_chemotherapy_zcode",
+        "rule_11_same_day_acs",
+        "rule_12_icd_lookup_sequence"
+      ],
+      "primary_task": "Extract PDX, ADX, ACHI from EHR documents using KB v4 protocol",
+      "inputs": [
+        "EHR documents in sequence",
+        "KB v4 procedure library",
+        "ACS 0001/0002 scoring rules"
+      ],
+      "outputs": [
+        "pdx with justification",
+        "adx with acs_scores",
+        "achi_codes with assembly",
+        "acs_evidence per diagnosis",
+        "documentation_gaps",
+        "z_code_flags"
+      ]
+    },
+    "medical_logic_agent": {
+      "phases": [
+        "B_diagnosis_coding",
+        "D_sequencing_external_cause"
+      ],
+      "validation_rules": [
+        "rule_01_pdx_definition",
+        "rule_03_cof_assignment",
+        "rule_05_external_cause_trio"
+      ],
+      "primary_task": "Apply clinical logic — PDX validation, COF assignment, external cause completeness",
+      "inputs": [
+        "extracted episode",
+        "KB v3 intelligence triggers",
+        "workflow phase rules"
+      ],
+      "outputs": [
+        "pdx_validated",
+        "cof_per_adx",
+        "external_cause_complete",
+        "sequencing_correct"
+      ]
+    },
+    "ar_drg_engine": {
+      "phases": [
+        "C_procedure_coding",
+        "E_grouping_qa"
+      ],
+      "validation_rules": [
+        "rule_08_error_drg"
+      ],
+      "primary_task": "Calculate ECCS, apply DCL, run AR-DRG grouper, validate result",
+      "inputs": [
+        "validated episode",
+        "ACHI codes",
+        "PDX",
+        "ADX",
+        "LOS"
+      ],
+      "outputs": [
+        "ar_drg_code",
+        "ar_drg_description",
+        "eccs_score",
+        "dcl_level",
+        "grouper_step_trace",
+        "error_drg_flag"
+      ]
+    },
+    "critique_agent": {
+      "phases": [
+        "D_sequencing_external_cause",
+        "E_grouping_qa",
+        "F_submission"
+      ],
+      "validation_rules": [
+        "rule_01_pdx_definition",
+        "rule_03_cof_assignment",
+        "rule_05_external_cause_trio",
+        "rule_09_post_op_complications",
+        "rule_10_ambiguous_documentation"
+      ],
+      "primary_task": "Final integrity check — upcoding protection, revenue leakage detection, submission gate",
+      "inputs": [
+        "complete coded episode",
+        "all 12 validation rules",
+        "KB intelligence triggers"
+      ],
+      "outputs": [
+        "integrity_score",
+        "upcoding_flags",
+        "leakage_flags",
+        "submission_ready",
+        "physician_queries",
+        "final_audit_trail"
+      ]
+    }
+  },
+  "episode_type_rules": {
+    "inpatient": {
+      "criteria": [
+        "same_day == False",
+        "los_days >= 1",
+        "care_type == 01"
+      ],
+      "workflow": "18 inpatient steps",
+      "pdx_note": "Condition established AFTER study — may differ from presenting complaint",
+      "key_acs": [
+        "ACS 0001",
+        "ACS 0002",
+        "ACS 0010",
+        "ACS 0048"
+      ]
+    },
+    "day_care": {
+      "criteria": [
+        "same_day == True",
+        "los_days == 0",
+        "care_type in [02, 03]"
+      ],
+      "workflow": "18 day-care steps",
+      "pdx_note": "Almost always the clinical indication for the procedure",
+      "key_acs": [
+        "ACS 0001",
+        "ACS 0010",
+        "ACS 0016",
+        "ACS 0031"
+      ],
+      "special_checks": [
+        "anaesthesia_code_mandatory",
+        "no_overnight_stay_confirmed"
+      ]
+    }
+  },
+  "common_case_rules": {
+    "sepsis": {
+      "pdx": "A41.9 or specific sepsis code",
+      "adx": "Underlying source must be coded (e.g. UTI, pneumonia)",
+      "acs": "ACS 0002 + source coding"
+    },
+    "diabetes": {
+      "code": "E11.9",
+      "adx_rule": "Only code if treatment was altered (insulin sliding scale = code). Stable DM on same meds = do not code",
+      "acs": "ACS 0002 C1 criterion"
+    },
+    "post_op_complication": {
+      "acs": "ACS 0017",
+      "cof": "COF 1 — hospital acquired",
+      "note": "Distinguish routine post-op observation from reportable complication"
+    },
+    "anaemia": {
+      "adx_rule": "Only code if transfusion given or iron/EPO therapy commenced",
+      "acs": "ACS 0002"
+    },
+    "hypertension": {
+      "adx_rule": "Code if antihypertensives adjusted or added. Do not code if pre-existing on same medications",
+      "acs": "ACS 0002"
+    }
+  },
+  "intent_agent_prompt_blocks": {
+    "phase_A_pre_coding": "Before extracting any codes: verify document completeness. Required: Admission Report + OT Notes + Discharge Summary. Flag any missing documents with severity.",
+    "phase_B_pdx_selection": "PDX = condition established AFTER study, chiefly responsible for admission. NOT a symptom if underlying condition confirmed. Source of truth: Discharge Summary. Override Initial Medical Report if Discharge Summary differs.",
+    "phase_B_adx_scoring": "Score EACH additional diagnosis individually using ACS 0002: C1=3pts (treatment altered), C2=2pts (investigation performed), C3=2pts (increased care). Only diagnoses with score>=5 are coded. Score 3-4 = physician review. Score<3 = do not code.",
+    "phase_C_achi_assembly": "ACHI code = Base Code + Modifier. Base from OT Notes procedure name. Modifier from approach (lap=00, open=01, robotic=02) + site (bilateral vs unilateral). Anaesthesia = Block 925 mandatory if GA/regional.",
+    "phase_D_external_cause": "Injury cases require THREE codes: (1) External cause, (2) Y92 place of occurrence, (3) Y93/U50-U73 activity. Incomplete external cause = insurance exclusion risk.",
+    "phase_E_drg_validation": "After grouper: check (1) no error DRG 960Z/961Z, (2) LOS consistent with DRG, (3) CC/MCC captured. If LOS > upper trim: look for missed complications.",
+    "phase_F_submission_gate": "Final check before approve: all 12 validation rules passed, physician queries resolved, no upcoding flags, no revenue leakage flags."
+  }
+}
