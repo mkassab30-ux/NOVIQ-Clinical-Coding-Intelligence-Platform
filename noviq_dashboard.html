@@ -2198,8 +2198,7 @@
   let _currentEpisodeId = null;
   let _queryResponses = {};
 
-  // end of clinician queries block
-
+  function renderClinicianQueries(data) {
     const queries = data.clinician_queries || [];
     _currentEpisodeId = data.episode_id;
     _queryResponses = {};
@@ -2311,7 +2310,7 @@
     }
   }
 
-  // end of clinician queries block
+  } // end renderClinicianQueries
 
   function renderWorkflowReport(data) {
     const wr = data.workflow_report || {};
