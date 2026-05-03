@@ -178,6 +178,17 @@ if _wf_path.exists():
           f"{len(WF_KB.get('agent_responsibilities',{}))} agents")
 else:
     print(f"[WARN] Workflow KB not found at {_wf_path}")
+
+# ── Query Templates KB ────────────────────────────────────────────────────
+QT_KB: dict = {}
+_qt_path = KB_DIR / "query_templates.json"
+if _qt_path.exists():
+    QT_KB = json.loads(_qt_path.read_text(encoding="utf-8"))
+    print(f"[OK] Query Templates KB loaded — "
+          f"{len(QT_KB.get('templates',{}))} templates | "
+          f"{sum(len(v) for v in QT_KB.get('ambiguity_triggers',{}).values())} triggers")
+else:
+    print(f"[WARN] Query Templates KB not found at {_qt_path}")
 # ── Engine singleton ──────────────────────────────────────────────────────
 _engine = None
 
@@ -377,6 +388,204 @@ def _run_workflow_validation(ep: dict, ar_drg: str = "") -> dict:
         "applied_acs":       ep_rules.get("key_acs", []),
         "pdx_note":          ep_rules.get("pdx_note", ""),
     }
+
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# CLINICIAN QUERY GENERATOR — ACS 0010 Compliant
+# ══════════════════════════════════════════════════════════════════════════
+
+def _generate_clinician_queries(ep: dict, all_texts: dict) -> list:
+    """
+    Scan episode + raw document texts for ambiguity triggers.
+    Returns a list of structured clinician queries (ACS 0010 compliant).
+
+    all_texts: { "Initial Medical Report": "...", "Operation Notes": "..." }
+    """
+    if not QT_KB:
+        return []
+
+    templates    = QT_KB.get("templates", {})
+    triggers_map = QT_KB.get("ambiguity_triggers", {})
+    max_q        = QT_KB.get("query_selection_logic", {}).get("max_queries_per_episode", 5)
+
+    queries  = []
+    seen_ids = set()
+
+    def add_query(template_id: str, context: dict, severity: str = "MEDIUM"):
+        if template_id in seen_ids:
+            return
+        if len(queries) >= max_q:
+            return
+        tmpl = templates.get(template_id, {})
+        if not tmpl:
+            return
+        # Fill placeholders in body
+        body = tmpl.get("body", "")
+        for k, v in context.items():
+            body = body.replace("{" + k + "}", str(v))
+        queries.append({
+            "query_id":        f"Q{len(queries)+1:02d}",
+            "template_id":     template_id,
+            "category":        tmpl.get("category", ""),
+            "acs":             tmpl.get("acs", ""),
+            "severity":        tmpl.get("severity", severity),
+            "title":           tmpl.get("title", ""),
+            "body":            body,
+            "options":         tmpl.get("physician_options", []),
+            "coding_impact":   tmpl.get("coding_impact", ""),
+            "status":          "pending",
+            "physician_response": None,
+            "triggered_by":    context.get("triggered_by", "auto-detection"),
+        })
+        seen_ids.add(template_id)
+
+    # Build combined text for scanning
+    combined = " ".join(all_texts.values()).lower()
+    pdx      = ep.get("pdx", "")
+    adx_list = ep.get("adx", [])
+
+    # ── PDX Triggers ────────────────────────────────────────────────
+    for trig in triggers_map.get("pdx_triggers", []):
+        pat = trig["pattern"].lower()
+        if pat in combined:
+            add_query(trig["template"], {
+                "uncertain_term": trig["pattern"],
+                "diagnosis":      pdx or "the principal diagnosis",
+                "triggered_by":   f"Pattern '{trig['pattern']}' detected in documents",
+            })
+
+    # ── Symptom-only PDX (R-codes) ───────────────────────────────────
+    if pdx and pdx.upper().startswith("R"):
+        add_query("pdx_symptom_only", {
+            "symptom":      pdx,
+            "triggered_by": f"PDX {pdx} is a symptom code (R-code)",
+        })
+
+    # ── Competing diagnoses (A vs B pattern) ────────────────────────
+    vs_match = __import__('re').search(
+        r'([A-Za-z ]{3,30})\s+vs\.?\s+([A-Za-z ]{3,30})', combined)
+    if vs_match:
+        add_query("pdx_competing", {
+            "diagnosis_a":  vs_match.group(1).strip().title(),
+            "diagnosis_b":  vs_match.group(2).strip().title(),
+            "triggered_by": "Competing diagnoses 'A vs B' detected",
+        })
+
+    # ── ADX Triggers ────────────────────────────────────────────────
+    for trig in triggers_map.get("adx_triggers", []):
+        pat = trig["pattern"].lower()
+        if pat in combined:
+            # Find which ADX it refers to
+            adx_ref = next(
+                (a for a in adx_list
+                 if any(k in combined[max(0,combined.find(pat)-100):combined.find(pat)+100]
+                        for k in [a.lower(), a[:3].lower()])),
+                adx_list[0] if adx_list else "the condition"
+            )
+            add_query(trig["template"], {
+                "condition":    adx_ref,
+                "finding":      adx_ref,
+                "triggered_by": f"Pattern '{trig['pattern']}' detected near ADX",
+            })
+
+    # ── Procedure Triggers ───────────────────────────────────────────
+    op_text = all_texts.get("Operation Notes", "").lower()
+    for trig in triggers_map.get("procedure_triggers", []):
+        if trig["pattern"].lower() in op_text:
+            achi = ep.get("achi_codes", ["the procedure"])
+            add_query(trig["template"], {
+                "procedure":    achi[0] if achi else "the procedure",
+                "side":         trig["pattern"],
+                "triggered_by": f"Pattern '{trig['pattern']}' in Operation Notes",
+            })
+
+    # ── Complication Triggers ────────────────────────────────────────
+    progress_text = all_texts.get("Progress Notes", "").lower()
+    for trig in triggers_map.get("complication_triggers", []):
+        if trig["pattern"].lower() in progress_text:
+            # Extract temperature if fever
+            temp_match = __import__('re').search(r'(\d{2}\.\d)', progress_text)
+            day_match  = __import__('re').search(r'day\s*(\d)', progress_text)
+            add_query(trig["template"], {
+                "temperature":  temp_match.group(1) if temp_match else "?",
+                "day":          day_match.group(1) if day_match else "?",
+                "triggered_by": f"Pattern '{trig['pattern']}' in Progress Notes",
+            })
+
+    # ── COF Hospital-Acquired ────────────────────────────────────────
+    adm_text = all_texts.get("Admission Report", "").lower()
+    for adx in adx_list:
+        # If condition is in progress notes but NOT in admission report → query COF
+        adx_lower = adx.lower()
+        if adx_lower not in adm_text and adx_lower in progress_text:
+            add_query("cof_hospital_acquired", {
+                "condition":    adx,
+                "triggered_by": f"Condition {adx} not documented at admission",
+            })
+            break  # One COF query per episode max
+
+    # ── Specificity: Unspecified Diabetes ────────────────────────────
+    if "diabetes" in combined and not any(t in combined for t in ["type 1", "type 2", "type1", "type2"]):
+        add_query("specificity_diabetes", {
+            "triggered_by": "Diabetes documented without type specification",
+        })
+
+    # ── Specificity: Sepsis without source ───────────────────────────
+    if "sepsis" in combined and not any(
+        s in combined for s in ["uti", "pneumonia", "wound", "biliary", "urinary", "respiratory"]):
+        add_query("specificity_sepsis", {
+            "triggered_by": "Sepsis documented without identifiable source",
+        })
+
+    # Sort by severity
+    severity_order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
+    queries.sort(key=lambda q: severity_order.get(q.get("severity","LOW"), 2))
+
+    return queries
+
+
+def _apply_query_responses(ep: dict, queries: list) -> dict:
+    """
+    After physician responds to queries — update episode with answers.
+    Returns updated episode.
+    """
+    for q in queries:
+        resp = q.get("physician_response")
+        if not resp:
+            continue
+
+        cat  = q.get("category", "")
+        tmpl = q.get("template_id", "")
+
+        # PDX confirmed
+        if cat == "pdx_ambiguity" and "confirmed" in resp.lower():
+            ep["_pdx_confirmed"] = True
+
+        # Ruled out → mark for symptom coding
+        if tmpl == "pdx_rule_out" and "ruled out" in resp.lower():
+            ep["_pdx_ruled_out"] = True
+
+        # ADX not relevant → remove from list
+        if cat == "adx_significance" and "no — " in resp.lower():
+            code = q.get("triggered_by", "").split()[-1]
+            if code in ep.get("adx", []):
+                ep["adx"].remove(code)
+                # Remove its ACS score too
+                ep["acs_adx_scores"] = [
+                    s for s in ep.get("acs_adx_scores", [])
+                    if s.get("code") != code
+                ]
+
+        # Complication confirmed → add COF 1 flag
+        if cat == "complication_vs_observation" and "complication" in resp.lower():
+            ep.setdefault("_confirmed_complications", []).append({
+                "query_id":    q["query_id"],
+                "complication": resp,
+                "cof":         "1",
+            })
+
+    return ep
 
 
 def _build_intent_prompt(text: str, doc_type: str, ep: dict) -> str:
@@ -837,6 +1046,7 @@ async def upload(files: list[UploadFile] = File(...)):
     }
     
     # Collect all files with metadata
+    raw_texts: dict = {}  # doc_type → extracted text (for query generator)
     file_data = []
     for f in files:
         raw = await f.read()
@@ -876,6 +1086,10 @@ async def upload(files: list[UploadFile] = File(...)):
             else:  # .txt .text .csv
                 text = fd["raw"].decode("utf-8", errors="ignore")
             
+            # Store raw text for query generator
+            if text:
+                raw_texts[fd["doc_type"]] = text
+
             # Extract using Intent Agent if available, fallback to regex
             if text and INTENT_AGENT_AVAILABLE:
                 ep = _extract_with_intent_agent(text, fd["doc_type"], ep)
@@ -891,6 +1105,9 @@ async def upload(files: list[UploadFile] = File(...)):
 
     # Auto-score ACS if evidence was collected
     _auto_score_acs(ep)
+
+    # Clinician Query Generation
+    queries = _generate_clinician_queries(ep, raw_texts)
     
     # Finalize
     ep["ehr_documents"] = [d["doc_type"] for d in docs]
@@ -900,18 +1117,21 @@ async def upload(files: list[UploadFile] = File(...)):
     STORE[episode_id] = {
         "episode_dict": ep, "status": "uploaded",
         "docs_read": docs, "created_at": _now(),
-        "extraction_mode": "NLP" if INTENT_AGENT_AVAILABLE else "Regex+KB"
+        "extraction_mode": "NLP" if INTENT_AGENT_AVAILABLE else "Regex+KB",
+        "clinician_queries": queries,
     }
     _save(STORE)
 
     return {
-        "episode_id":       episode_id,
-        "episode_dict":     ep,
-        "documents_read":   docs,
-        "warnings":         warns,
-        "ready_to_process": bool(ep.get("pdx")),
-        "engine_mode":      "live" if ENGINE_AVAILABLE else "demo",
-        "extraction_mode":  "NLP (Claude API)" if INTENT_AGENT_AVAILABLE else "Regex + KB",
+        "episode_id":        episode_id,
+        "episode_dict":      ep,
+        "documents_read":    docs,
+        "warnings":          warns,
+        "clinician_queries": queries,
+        "queries_count":     len(queries),
+        "ready_to_process":  bool(ep.get("pdx")),
+        "engine_mode":       "live" if ENGINE_AVAILABLE else "demo",
+        "extraction_mode":   "NLP (Claude API)" if INTENT_AGENT_AVAILABLE else "Regex + KB",
     }
 
 # ── Continue with existing endpoints (process, approve, queue, etc.) ──────
@@ -1043,6 +1263,54 @@ async def approve(episode_id: str, request: Request):
             "message": "Suggestion rejected. Returned for recoding.",
         }
     raise HTTPException(400, "action must be 'approve' or 'reject'")
+
+@app.post("/api/query/{episode_id}/respond")
+async def respond_to_queries(episode_id: str, request: Request):
+    """
+    Physician submits responses to clinician queries.
+    Engine updates episode and re-scores affected areas.
+    Body: { "responses": [{ "query_id": "Q01", "response": "Yes — confirmed as PDX" }] }
+    """
+    if episode_id not in STORE:
+        raise HTTPException(404, f"Episode {episode_id} not found")
+
+    body = await request.json()
+    responses = body.get("responses", [])
+
+    queries = STORE[episode_id].get("clinician_queries", [])
+
+    # Apply responses to query objects
+    for resp in responses:
+        qid = resp.get("query_id")
+        ans = resp.get("response", "")
+        for q in queries:
+            if q["query_id"] == qid:
+                q["physician_response"] = ans
+                q["status"] = "answered"
+                q["answered_at"] = _now()
+
+    # Update episode based on responses
+    ep = STORE[episode_id]["episode_dict"]
+    ep = _apply_query_responses(ep, queries)
+
+    # Re-score ACS after updates
+    _auto_score_acs(ep)
+
+    STORE[episode_id]["clinician_queries"] = queries
+    STORE[episode_id]["episode_dict"] = ep
+    STORE[episode_id]["status"] = "queries_answered"
+    _save(STORE)
+
+    pending = sum(1 for q in queries if q["status"] == "pending")
+    return {
+        "episode_id":    episode_id,
+        "total_queries": len(queries),
+        "answered":      len(responses),
+        "pending":       pending,
+        "ready_to_process": pending == 0 and bool(ep.get("pdx")),
+        "updated_episode": ep,
+    }
+
 
 @app.get("/api/queue")
 async def get_queue():

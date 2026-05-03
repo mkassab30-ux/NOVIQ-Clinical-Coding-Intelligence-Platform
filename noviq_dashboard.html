@@ -1308,6 +1308,31 @@
     .acs-badge.review{background:rgba(237,137,54,.15);color:#9c4221}
     .acs-badge.skip{background:rgba(160,174,192,.15);color:var(--muted)}
     .acs-evidence{font-size:10px;color:var(--muted);margin-top:2px}
+
+    .queries-section{margin:16px 0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+    .queries-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface2);font-size:12px;font-weight:700;color:var(--text)}
+    .query-card{border-bottom:1px solid var(--border);padding:14px 16px}
+    .query-card:last-child{border-bottom:none}
+    .query-card-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .query-id{font-size:10px;font-weight:700;background:var(--accent);color:#fff;padding:2px 7px;border-radius:10px;font-family:"DM Mono",monospace}
+    .query-sev{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+    .query-sev.HIGH{background:rgba(237,137,54,.15);color:#9c4221}
+    .query-sev.MEDIUM{background:rgba(66,153,225,.15);color:#2b6cb0}
+    .query-sev.LOW{background:rgba(160,174,192,.15);color:var(--muted)}
+    .query-acs{font-size:10px;color:var(--muted);margin-left:auto}
+    .query-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px}
+    .query-body{font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:10px;white-space:pre-wrap}
+    .query-options{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+    .query-option{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:11px;transition:.15s}
+    .query-option:hover{border-color:var(--accent);background:rgba(66,153,225,.05)}
+    .query-option.selected{border-color:var(--accent);background:rgba(66,153,225,.08);font-weight:600}
+    .query-option input[type=radio]{accent-color:var(--accent)}
+    .query-impact{font-size:10px;color:var(--muted);padding:5px 8px;background:var(--surface2);border-radius:4px;margin-top:6px}
+    .query-answered{display:flex;align-items:center;gap:6px;padding:7px 10px;background:rgba(72,187,120,.08);border-radius:6px;font-size:11px;color:#276749;font-weight:600}
+    .queries-submit-btn{margin:10px 14px 14px;width:calc(100% - 28px);padding:9px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s}
+    .queries-submit-btn:hover{opacity:.9}
+    .queries-submit-btn:disabled{opacity:.5;cursor:not-allowed}
+    .no-queries{padding:14px 16px;font-size:12px;color:var(--muted);text-align:center}
 </style>
 </head>
 <body>
@@ -1716,6 +1741,18 @@
             <span class="workflow-badge" id="acsBadge">&#8212;</span>
           </div>
           <div id="acsScoresTable"></div>
+        </div>
+
+        <!-- CLINICIAN QUERIES SECTION -->
+        <div class="queries-section" id="queriesSection" style="display:none">
+          <div class="queries-header">
+            <span>&#128172; Clinician Queries &mdash; ACS 0010</span>
+            <span class="workflow-badge warn" id="queriesBadge">&#8212;</span>
+          </div>
+          <div id="queriesList"></div>
+          <button class="queries-submit-btn" id="queriesSubmitBtn" onclick="submitQueryResponses()" disabled>
+            Submit Responses &rarr; Re-process Episode
+          </button>
         </div>
 
         <div class="code-summary-section">
@@ -2156,6 +2193,126 @@
   }
 
   // ── Render API result into result page ────────────────────────────────
+
+  // ── Clinician Query Renderer ───────────────────────────────────────────
+  let _currentEpisodeId = null;
+  let _queryResponses = {};
+
+  // end of clinician queries block
+
+    const queries = data.clinician_queries || [];
+    _currentEpisodeId = data.episode_id;
+    _queryResponses = {};
+
+    const section = document.getElementById('queriesSection');
+    const list    = document.getElementById('queriesList');
+    const badge   = document.getElementById('queriesBadge');
+    const btn     = document.getElementById('queriesSubmitBtn');
+    if (!section) return;
+
+    if (!queries.length) {
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = '';
+    const pending = queries.filter(q => q.status === 'pending').length;
+    if (badge) {
+      badge.textContent = pending + ' pending';
+      badge.className = pending > 0 ? 'workflow-badge warn' : 'workflow-badge';
+    }
+
+    const sevIcon = {HIGH:'⚠️', MEDIUM:'ℹ️', LOW:'💬'};
+    list.innerHTML = queries.map(q => {
+      if (q.status === 'answered') {
+        return '<div class="query-card">' +
+          '<div class="query-card-header">' +
+          '<span class="query-id">' + q.query_id + '</span>' +
+          '<span class="query-title">' + q.title + '</span>' +
+          '</div>' +
+          '<div class="query-answered">✅ Answered: ' + (q.physician_response||'') + '</div>' +
+          '</div>';
+      }
+      const opts = (q.options||[]).map((opt,i) =>
+        '<label class="query-option" id="opt_' + q.query_id + '_' + i + '">' +
+        '<input type="radio" name="q_' + q.query_id + '" value="' + opt + '" ' +
+        'onchange="selectOption('' + q.query_id + '',this.value,'' + q.query_id + '_' + i + '')">' +
+        opt + '</label>'
+      ).join('');
+      return '<div class="query-card">' +
+        '<div class="query-card-header">' +
+        '<span class="query-id">' + q.query_id + '</span>' +
+        '<span class="query-sev ' + (q.severity||'MEDIUM') + '">' + (sevIcon[q.severity]||'') + ' ' + (q.severity||'') + '</span>' +
+        '<span class="query-acs">' + (q.acs||'') + '</span>' +
+        '</div>' +
+        '<div class="query-title">' + q.title + '</div>' +
+        '<div class="query-body">' + (q.body||'') + '</div>' +
+        '<div class="query-options">' + opts + '</div>' +
+        '<div class="query-impact">💡 Coding Impact: ' + (q.coding_impact||'') + '</div>' +
+        '</div>';
+    }).join('');
+
+    if (btn) btn.disabled = true;
+  }
+
+  function selectOption(queryId, value, optId) {
+    _queryResponses[queryId] = value;
+    // Highlight selected option
+    document.querySelectorAll('[id^="opt_' + queryId + '_"]').forEach(el => {
+      el.classList.remove('selected');
+    });
+    const allOpts = document.querySelectorAll('input[name="q_' + queryId + '"]');
+    allOpts.forEach(inp => {
+      if (inp.value === value) inp.parentElement.classList.add('selected');
+    });
+    // Enable submit if all pending queries answered
+    const btn = document.getElementById('queriesSubmitBtn');
+    const list = document.getElementById('queriesList');
+    if (!list || !btn) return;
+    const pending = list.querySelectorAll('input[type=radio]');
+    const names   = new Set([...pending].map(i => i.name));
+    const answered = Object.keys(_queryResponses).length;
+    btn.disabled = (answered < names.size);
+  }
+
+  async function submitQueryResponses() {
+    if (!_currentEpisodeId) return;
+    const btn = document.getElementById('queriesSubmitBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
+
+    const responses = Object.entries(_queryResponses).map(([qid, resp]) => ({
+      query_id: qid, response: resp
+    }));
+
+    try {
+      const r = await fetch(API + '/api/query/' + _currentEpisodeId + '/respond', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({responses})
+      });
+      const data = await r.json();
+      showToast('Responses submitted — re-processing episode...', 'success');
+
+      // Auto re-process
+      setTimeout(async () => {
+        const r2 = await fetch(API + '/api/process/' + _currentEpisodeId, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({episode_dict: data.updated_episode})
+        });
+        const result = await r2.json();
+        renderResult(result);
+        showToast('Episode re-processed with physician responses', 'success');
+      }, 800);
+
+    } catch(e) {
+      showToast('Submit failed: ' + e.message, 'error');
+      if (btn) { btn.disabled = false; btn.textContent = 'Submit Responses → Re-process Episode'; }
+    }
+  }
+
+  // end of clinician queries block
+
   function renderWorkflowReport(data) {
     const wr = data.workflow_report || {};
     const section = document.getElementById('workflowReportSection');
@@ -2421,6 +2578,7 @@
     if (btnA) { btnA.textContent = '✓ Approve & Submit'; btnA.classList.remove('approved'); btnA.style.display=''; }
     if (btnR) { btnR.textContent = '✕ Reject & Recode'; btnR.style.display=''; }
 
+    renderClinicianQueries(data);
     renderWorkflowReport(data);
 
     if (data.demo_mode) {
