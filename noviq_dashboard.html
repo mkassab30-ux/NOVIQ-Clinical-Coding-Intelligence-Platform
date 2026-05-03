@@ -1268,71 +1268,61 @@
   .toast.success { border-color: var(--success); }
   .toast.error { border-color: var(--danger); }
 
-    .workflow-report-section{margin:16px 0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
-    .workflow-report-title{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface2);font-size:12px;font-weight:700;color:var(--text);letter-spacing:.03em}
-    .workflow-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--success);color:#fff}
-    .workflow-badge.warn{background:var(--warn)}
-    .workflow-badge.risk{background:#e53e3e}
-    .workflow-phases{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid var(--border)}
-    .workflow-phase-cell{padding:8px 6px;text-align:center;border-right:1px solid var(--border);font-size:10px}
-    .workflow-phase-cell:last-child{border-right:none}
-    .workflow-phase-icon{font-size:15px;margin-bottom:2px}
-    .workflow-phase-label{font-weight:700;color:var(--text);font-size:9px}
-    .workflow-phase-sub{color:var(--muted);font-size:9px;margin-top:1px}
-    .workflow-phase-cell.ok{background:rgba(72,187,120,.08)}
-    .workflow-phase-cell.warn{background:rgba(237,137,54,.08)}
-    .workflow-phase-cell.fail{background:rgba(229,62,62,.08)}
-    .workflow-flags{padding:10px 14px}
-    .wf-flag{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;margin-bottom:5px;border-radius:6px;font-size:11px;line-height:1.4}
+    .wf-section{margin:14px 0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+    .wf-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface2);font-size:12px;font-weight:700;color:var(--text)}
+    .wf-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--success);color:#fff}
+    .wf-badge.warn{background:var(--warn,#ed8936)}
+    .wf-badge.risk{background:#e53e3e}
+    .wf-phases{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid var(--border)}
+    .wf-phase{padding:8px 4px;text-align:center;border-right:1px solid var(--border);font-size:9px}
+    .wf-phase:last-child{border-right:none}
+    .wf-phase.ok{background:rgba(72,187,120,.08)}
+    .wf-phase.warn{background:rgba(237,137,54,.08)}
+    .wf-phase.fail{background:rgba(229,62,62,.08)}
+    .wf-phase-icon{font-size:14px;margin-bottom:2px}
+    .wf-phase-lbl{font-weight:700;color:var(--text)}
+    .wf-phase-sub{color:var(--muted);margin-top:1px}
+    .wf-phase-st{font-size:11px;margin-top:3px;font-weight:700}
+    .wf-flags{padding:10px 14px}
+    .wf-flag{display:flex;gap:8px;padding:7px 10px;margin-bottom:5px;border-radius:6px;font-size:11px;line-height:1.4}
     .wf-flag.critical{background:rgba(229,62,62,.08);border-left:3px solid #e53e3e}
     .wf-flag.high{background:rgba(237,137,54,.1);border-left:3px solid #ed8936}
     .wf-flag.medium{background:rgba(66,153,225,.08);border-left:3px solid #4299e1}
     .wf-flag.info{background:rgba(72,187,120,.08);border-left:3px solid #48bb78}
-    .wf-flag-icon{font-size:13px;flex-shrink:0;margin-top:1px}
-    .wf-flag-rule{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.05em;margin-bottom:2px}
-    .wf-flag-msg{color:var(--text)}
-    .acs-section{margin:12px 0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
-    .acs-table{width:100%;border-collapse:collapse;font-size:11px}
-    .acs-table th{background:var(--surface2);padding:7px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.04em;border-bottom:1px solid var(--border)}
-    .acs-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
-    .acs-table tr:last-child td{border-bottom:none}
-    .acs-table tr:hover td{background:var(--surface2)}
-    .acs-action-code{font-weight:700;font-size:12px;color:var(--accent);font-family:"DM Mono",monospace}
-    .acs-action-name{font-size:10px;color:var(--muted)}
-    .acs-score-bar{display:flex;align-items:center;gap:6px}
-    .acs-score-num{font-weight:700;font-size:13px;width:20px;text-align:right}
-    .acs-score-track{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
-    .acs-score-fill{height:100%;border-radius:3px;transition:width .4s}
-    .acs-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;white-space:nowrap}
-    .acs-badge.code{background:rgba(72,187,120,.15);color:#276749}
-    .acs-badge.review{background:rgba(237,137,54,.15);color:#9c4221}
-    .acs-badge.skip{background:rgba(160,174,192,.15);color:var(--muted)}
-    .acs-evidence{font-size:10px;color:var(--muted);margin-top:2px}
-
-    .queries-section{margin:16px 0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
-    .queries-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface2);font-size:12px;font-weight:700;color:var(--text)}
-    .query-card{border-bottom:1px solid var(--border);padding:14px 16px}
-    .query-card:last-child{border-bottom:none}
-    .query-card-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-    .query-id{font-size:10px;font-weight:700;background:var(--accent);color:#fff;padding:2px 7px;border-radius:10px;font-family:"DM Mono",monospace}
-    .query-sev{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
-    .query-sev.HIGH{background:rgba(237,137,54,.15);color:#9c4221}
-    .query-sev.MEDIUM{background:rgba(66,153,225,.15);color:#2b6cb0}
-    .query-sev.LOW{background:rgba(160,174,192,.15);color:var(--muted)}
-    .query-acs{font-size:10px;color:var(--muted);margin-left:auto}
-    .query-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px}
-    .query-body{font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:10px;white-space:pre-wrap}
-    .query-options{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
-    .query-option{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:11px;transition:.15s}
-    .query-option:hover{border-color:var(--accent);background:rgba(66,153,225,.05)}
-    .query-option.selected{border-color:var(--accent);background:rgba(66,153,225,.08);font-weight:600}
-    .query-option input[type=radio]{accent-color:var(--accent)}
-    .query-impact{font-size:10px;color:var(--muted);padding:5px 8px;background:var(--surface2);border-radius:4px;margin-top:6px}
-    .query-answered{display:flex;align-items:center;gap:6px;padding:7px 10px;background:rgba(72,187,120,.08);border-radius:6px;font-size:11px;color:#276749;font-weight:600}
-    .queries-submit-btn{margin:10px 14px 14px;width:calc(100% - 28px);padding:9px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s}
-    .queries-submit-btn:hover{opacity:.9}
-    .queries-submit-btn:disabled{opacity:.5;cursor:not-allowed}
-    .no-queries{padding:14px 16px;font-size:12px;color:var(--muted);text-align:center}
+    .wf-flag-rule{font-size:9px;font-weight:700;color:var(--muted);margin-bottom:2px}
+    .acs-tbl{width:100%;border-collapse:collapse;font-size:11px}
+    .acs-tbl th{background:var(--surface2);padding:7px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--border)}
+    .acs-tbl td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+    .acs-tbl tr:last-child td{border-bottom:none}
+    .acs-code{font-weight:700;font-size:12px;color:var(--accent);font-family:"DM Mono",monospace}
+    .acs-name{font-size:10px;color:var(--muted)}
+    .acs-bar{display:flex;align-items:center;gap:6px}
+    .acs-num{font-weight:700;font-size:13px;width:18px;text-align:right}
+    .acs-track{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+    .acs-fill{height:100%;border-radius:3px}
+    .acs-bdg{font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px}
+    .acs-bdg.code{background:rgba(72,187,120,.15);color:#276749}
+    .acs-bdg.review{background:rgba(237,137,54,.15);color:#9c4221}
+    .acs-bdg.skip{background:rgba(160,174,192,.15);color:var(--muted)}
+    .acs-ev{font-size:10px;color:var(--muted);margin-top:2px}
+    .q-card{border-bottom:1px solid var(--border);padding:14px 16px}
+    .q-card:last-child{border-bottom:none}
+    .q-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .q-id{font-size:10px;font-weight:700;background:var(--accent);color:#fff;padding:2px 7px;border-radius:10px;font-family:"DM Mono",monospace}
+    .q-sev{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+    .q-sev.HIGH{background:rgba(237,137,54,.15);color:#9c4221}
+    .q-sev.MEDIUM{background:rgba(66,153,225,.15);color:#2b6cb0}
+    .q-acs{font-size:10px;color:var(--muted);margin-left:auto}
+    .q-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px}
+    .q-body{font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:10px}
+    .q-opt{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:11px;margin-bottom:5px}
+    .q-opt:hover{border-color:var(--accent);background:rgba(66,153,225,.05)}
+    .q-opt.selected{border-color:var(--accent);background:rgba(66,153,225,.08);font-weight:600}
+    .q-opt input{accent-color:var(--accent)}
+    .q-impact{font-size:10px;color:var(--muted);padding:5px 8px;background:var(--surface2);border-radius:4px;margin-top:6px}
+    .q-answered{display:flex;align-items:center;gap:6px;padding:7px 10px;background:rgba(72,187,120,.08);border-radius:6px;font-size:11px;color:#276749;font-weight:600}
+    .q-submit{margin:10px 14px 14px;width:calc(100% - 28px);padding:9px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer}
+    .q-submit:disabled{opacity:.5;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -1725,36 +1715,20 @@
           <div class="flags-title">&#9873; Intelligence Flags</div>
         </div>
 
-        <!-- WORKFLOW VALIDATION REPORT -->
-        <div class="workflow-report-section" id="workflowReportSection" style="display:none">
-          <div class="workflow-report-title">
-            <span>&#9881; Workflow Validation &mdash; 5 Phases &middot; 12 ACS Rules</span>
-            <span class="workflow-badge" id="workflowBadge">&#8212;</span>
-          </div>
-          <div class="workflow-phases" id="workflowPhases"></div>
-          <div class="workflow-flags" id="workflowFlags"></div>
+        <div class="wf-section" id="wfSection" style="display:none">
+          <div class="wf-header"><span>&#9881; Workflow Validation &mdash; 5 Phases</span><span class="wf-badge" id="wfBadge"></span></div>
+          <div class="wf-phases" id="wfPhases"></div>
+          <div class="wf-flags" id="wfFlags"></div>
         </div>
-        <!-- ACS 0002 SCORES -->
-        <div class="acs-section" id="acsScoringSection" style="display:none">
-          <div class="workflow-report-title">
-            <span>&#128203; ACS 0002 &mdash; Additional Diagnosis Scoring</span>
-            <span class="workflow-badge" id="acsBadge">&#8212;</span>
-          </div>
-          <div id="acsScoresTable"></div>
+        <div class="wf-section" id="acsSection" style="display:none">
+          <div class="wf-header"><span>&#128203; ACS 0002 Scoring</span><span class="wf-badge" id="acsBadge"></span></div>
+          <div id="acsTbl"></div>
         </div>
-
-        <!-- CLINICIAN QUERIES SECTION -->
-        <div class="queries-section" id="queriesSection" style="display:none">
-          <div class="queries-header">
-            <span>&#128172; Clinician Queries &mdash; ACS 0010</span>
-            <span class="workflow-badge warn" id="queriesBadge">&#8212;</span>
-          </div>
-          <div id="queriesList"></div>
-          <button class="queries-submit-btn" id="queriesSubmitBtn" onclick="submitQueryResponses()" disabled>
-            Submit Responses &rarr; Re-process Episode
-          </button>
+        <div class="wf-section" id="qSection" style="display:none">
+          <div class="wf-header"><span>&#128172; Clinician Queries &mdash; ACS 0010</span><span class="wf-badge warn" id="qBadge"></span></div>
+          <div id="qList"></div>
+          <button class="q-submit" id="qBtn" onclick="submitQueries()" disabled>Submit Responses &#8594; Re-process</button>
         </div>
-
         <div class="code-summary-section">
           <div class="code-summary-title">&#128221; Final Code Summary</div>
           <div class="code-summary-grid" id="codeSummaryGrid">
@@ -2193,239 +2167,193 @@
   }
 
   // ── Render API result into result page ────────────────────────────────
-
-  // ── Clinician Query Renderer ───────────────────────────────────────────
-  let _currentEpisodeId = null;
-  let _queryResponses   = {};
-
-  function renderClinicianQueries(data) {
-    const queries = data.clinician_queries || [];
-    _currentEpisodeId = data.episode_id;
-    _queryResponses   = {};
-
-    const section = document.getElementById('queriesSection');
-    const list    = document.getElementById('queriesList');
-    const badge   = document.getElementById('queriesBadge');
-    const btn     = document.getElementById('queriesSubmitBtn');
-    if (!section) return;
-
-    if (!queries.length) { section.style.display = 'none'; return; }
-
-    section.style.display = '';
-    const pending = queries.filter(function(q){ return q.status === 'pending'; }).length;
+  // ── Workflow Report ──────────────────────────────────────────
+  function renderWorkflow(data) {
+    var wr = data.workflow_report || {};
+    var sec = document.getElementById('wfSection');
+    if (!sec || !data.workflow_report) return;
+    sec.style.display = '';
+    var badge = document.getElementById('wfBadge');
+    var crit  = wr.critical_count || 0;
+    var total = wr.total_flags    || 0;
     if (badge) {
-      badge.textContent = pending + ' pending';
-      badge.className   = pending > 0 ? 'workflow-badge warn' : 'workflow-badge';
+      if (crit  > 0) { badge.textContent = crit  + ' CRITICAL'; badge.className = 'wf-badge risk'; }
+      else if (total > 0) { badge.textContent = total + ' flags';    badge.className = 'wf-badge warn'; }
+      else { badge.textContent = 'All checks passed'; badge.className = 'wf-badge'; }
     }
-
-    const sevIcon = { HIGH: '⚠️', MEDIUM: 'ℹ️', LOW: '💬' };
-
-    function buildCard(q) {
-      if (q.status === 'answered') {
-        return '<div class="query-card">'
-          + '<div class="query-card-header">'
-          + '<span class="query-id">' + q.query_id + '</span>'
-          + '<span class="query-title">' + (q.title||'') + '</span>'
-          + '</div>'
-          + '<div class="query-answered">✅ Answered: ' + (q.physician_response||'') + '</div>'
-          + '</div>';
-      }
-
-      // Build options using template literals safely via array join
-      var optHtml = (q.options || []).map(function(opt, i) {
-        var inputId  = 'opt_' + q.query_id + '_' + i;
-        var qName    = 'q_' + q.query_id;
-        var safeOpt  = opt.replace(/"/g, '&quot;');
-        var safeQid  = q.query_id;
-        var safeIdx  = String(i);
-        return '<label class="query-option" id="' + inputId + '">'
-          + '<input type="radio" name="' + qName + '" value="' + safeOpt + '" '
-          + 'onchange="selectOption(\'' + safeQid + '\',this.value,\'' + safeQid + '_' + safeIdx + '\')">'
-          + opt
-          + '</label>';
-      }).join('');
-
-      var sev = q.severity || 'MEDIUM';
-      return '<div class="query-card">'
-        + '<div class="query-card-header">'
-        + '<span class="query-id">'  + q.query_id + '</span>'
-        + '<span class="query-sev ' + sev + '">' + (sevIcon[sev]||'') + ' ' + sev + '</span>'
-        + '<span class="query-acs">' + (q.acs||'') + '</span>'
-        + '</div>'
-        + '<div class="query-title">' + (q.title||'') + '</div>'
-        + '<div class="query-body">'  + (q.body||'').replace(/\n/g,'<br>') + '</div>'
-        + '<div class="query-options">' + optHtml + '</div>'
-        + '<div class="query-impact">💡 Coding Impact: ' + (q.coding_impact||'') + '</div>'
-        + '</div>';
-    }
-
-    if (list) list.innerHTML = queries.map(buildCard).join('');
-    if (btn)  btn.disabled   = true;
-  }
-
-  function selectOption(queryId, value, optId) {
-    _queryResponses[queryId] = value;
-    document.querySelectorAll('[id^="opt_' + queryId + '_"]').forEach(function(el){
-      el.classList.remove('selected');
-    });
-    document.querySelectorAll('input[name="q_' + queryId + '"]').forEach(function(inp){
-      if (inp.value === value) inp.parentElement.classList.add('selected');
-    });
-    var btn    = document.getElementById('queriesSubmitBtn');
-    var list   = document.getElementById('queriesList');
-    if (!btn || !list) return;
-    var names  = new Set(Array.from(list.querySelectorAll('input[type=radio]')).map(function(i){ return i.name; }));
-    btn.disabled = (Object.keys(_queryResponses).length < names.size);
-  }
-
-  async function submitQueryResponses() {
-    if (!_currentEpisodeId) return;
-    var btn = document.getElementById('queriesSubmitBtn');
-    if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
-    var responses = Object.entries(_queryResponses).map(function(entry){
-      return { query_id: entry[0], response: entry[1] };
-    });
-    try {
-      var r = await fetch(API + '/api/query/' + _currentEpisodeId + '/respond', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ responses: responses })
-      });
-      var data = await r.json();
-      showToast('Responses submitted — re-processing...', 'success');
-      setTimeout(async function() {
-        var r2 = await fetch(API + '/api/process/' + _currentEpisodeId, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ episode_dict: data.updated_episode })
-        });
-        var result = await r2.json();
-        renderResult(result);
-        showToast('Episode re-processed with physician responses', 'success');
-      }, 800);
-    } catch(e) {
-      showToast('Submit failed: ' + e.message, 'error');
-      if (btn) { btn.disabled = false; btn.textContent = 'Submit Responses \u2192 Re-process Episode'; }
-    }
-  }
-
-  } // end renderClinicianQueries
-
-  function renderWorkflowReport(data) {
-    const wr = data.workflow_report || {};
-    const section = document.getElementById('workflowReportSection');
-    const acsSection = document.getElementById('acsScoringSection');
-    if (!section) return;
-    section.style.display = '';
-
-    // Badge
-    const badge = document.getElementById('workflowBadge');
-    if (badge) {
-      const crit = wr.critical_count || 0;
-      const total = wr.total_flags || 0;
-      if (crit > 0) { badge.textContent = crit+' CRITICAL'; badge.className = 'workflow-badge risk'; }
-      else if (total > 0) { badge.textContent = total+' flags'; badge.className = 'workflow-badge warn'; }
-      else { badge.textContent = 'All checks passed'; badge.className = 'workflow-badge'; }
-    }
-
-    // Phase grid
-    const phaseFlags = {};
-    (wr.flags||[]).forEach(f => {
-      const ph = f.phase||'unknown';
-      if (!phaseFlags[ph]) phaseFlags[ph] = [];
-      phaseFlags[ph].push(f);
-    });
-    const phases = [
-      {id:'A_pre_coding',icon:'📋',label:'A · Pre-Coding',sub:'Documents'},
-      {id:'B_diagnosis_coding',icon:'🔬',label:'B · Diagnosis',sub:'PDX+ADX'},
-      {id:'C_procedure_coding',icon:'🔧',label:'C · Procedure',sub:'ACHI'},
-      {id:'D_sequencing',icon:'🔀',label:'D · Sequencing',sub:'COF+Ext'},
-      {id:'E_grouping_qa',icon:'📊',label:'E · QA',sub:'AR-DRG'},
-      {id:'F_submission',icon:'✅',label:'F · Submit',sub:'Approve'},
+    var pf = {};
+    (wr.flags || []).forEach(function(f){ var p=f.phase||'x'; if(!pf[p])pf[p]=[]; pf[p].push(f); });
+    var phases=[
+      {id:'A_pre_coding',icon:'📋',lbl:'A · Pre-Coding',sub:'Documents'},
+      {id:'B_diagnosis_coding',icon:'🔬',lbl:'B · Diagnosis',sub:'PDX+ADX'},
+      {id:'C_procedure_coding',icon:'🔧',lbl:'C · Procedure',sub:'ACHI'},
+      {id:'D_sequencing',icon:'🔀',lbl:'D · Sequencing',sub:'COF'},
+      {id:'E_grouping_qa',icon:'📊',lbl:'E · QA',sub:'AR-DRG'},
+      {id:'F_submission',icon:'✅',lbl:'F · Submit',sub:'Approve'}
     ];
-    const phasesDiv = document.getElementById('workflowPhases');
-    if (phasesDiv) {
-      phasesDiv.innerHTML = phases.map(ph => {
-        const fl = phaseFlags[ph.id]||[];
-        const hasCrit = fl.some(f=>f.severity==='CRITICAL');
-        const hasHigh = fl.some(f=>f.severity==='HIGH');
-        const cls = hasCrit?'fail':hasHigh?'warn':'ok';
-        const icon = hasCrit?'❌':hasHigh?'⚠️':'✓';
-        return '<div class="workflow-phase-cell '+cls+'">'+
-          '<div class="workflow-phase-icon">'+ph.icon+'</div>'+
-          '<div class="workflow-phase-label">'+ph.label+'</div>'+
-          '<div class="workflow-phase-sub">'+ph.sub+'</div>'+
-          '<div style="font-size:11px;margin-top:3px;font-weight:700">'+icon+(fl.length?' '+fl.length:'')+'</div>'+
-          '</div>';
+    var pdiv = document.getElementById('wfPhases');
+    if (pdiv) pdiv.innerHTML = phases.map(function(ph){
+      var fl=pf[ph.id]||[];
+      var hasCrit=fl.some(function(f){return f.severity==='CRITICAL';});
+      var hasHigh=fl.some(function(f){return f.severity==='HIGH';});
+      var cls=hasCrit?'fail':hasHigh?'warn':'ok';
+      var icon=hasCrit?'❌':hasHigh?'⚠️':'✓';
+      return '<div class="wf-phase '+cls+'">'
+        +'<div class="wf-phase-icon">'+ph.icon+'</div>'
+        +'<div class="wf-phase-lbl">'+ph.lbl+'</div>'
+        +'<div class="wf-phase-sub">'+ph.sub+'</div>'
+        +'<div class="wf-phase-st">'+icon+(fl.length?' '+fl.length:'')+'</div>'
+        +'</div>';
+    }).join('');
+    var fdiv = document.getElementById('wfFlags');
+    if (fdiv) {
+      var flags=wr.flags||[];
+      var imap={CRITICAL:'🚨',HIGH:'⚠️',MEDIUM:'ℹ️',INFO:'✓'};
+      if (!flags.length) {
+        fdiv.innerHTML='<div class="wf-flag info"><span>✅</span><span>All validation rules passed</span></div>';
+      } else {
+        fdiv.innerHTML=flags.map(function(f){
+          var s=(f.severity||'INFO').toUpperCase();
+          var cls=s==='CRITICAL'?'critical':s==='HIGH'?'high':s==='MEDIUM'?'medium':'info';
+          return '<div class="wf-flag '+cls+'">'
+            +'<div><div class="wf-flag-rule">'+(f.rule||s)+'</div>'
+            +'<div>'+(f.message||'')+'</div></div></div>';
+        }).join('');
+        if (wr.episode_type) {
+          var ep_t=wr.episode_type==='day_care'?'🌤 Day-Care':'🏥 Inpatient';
+          fdiv.innerHTML+='<div style="margin-top:8px;padding:6px 10px;background:var(--surface2);border-radius:6px;font-size:10px;color:var(--muted)">'+ep_t+' | ACS: '+((wr.applied_acs||[]).join(' · '))+'</div>';
+        }
+      }
+    }
+  }
+
+  // ── ACS 0002 Table ────────────────────────────────────────────
+  function renderACS(data) {
+    var ep  = data.episode_dict || {};
+    var sug = data.suggestion   || {};
+    var scores = ep.acs_adx_scores || (sug.acs_scores && sug.acs_scores.adx_scores) || [];
+    var sec = document.getElementById('acsSection');
+    if (!sec || !scores.length) return;
+    sec.style.display = '';
+    var b = document.getElementById('acsBadge');
+    var coded = scores.filter(function(s){return s.action==='code';}).length;
+    var rev   = scores.filter(function(s){return s.action==='review';}).length;
+    if (b) { b.textContent=coded+' coded · '+rev+' review'; b.className=rev>0?'wf-badge warn':'wf-badge'; }
+    var rows = scores.map(function(s){
+      var score=s.score||0;
+      var pct=Math.round(score/8*100);
+      var col=score>=5?'#48bb78':score>=3?'#ed8936':'#a0aec0';
+      var acls=s.action==='code'?'code':s.action==='review'?'review':'skip';
+      var albl=s.action==='code'?'✓ Code':s.action==='review'?'⚑ Review':'✕ Skip';
+      var bk=s.score_breakdown||{};
+      var c1=s.c1_evidence||(bk.therapeutic_treatment>0?'Treatment altered':'—');
+      var c2=s.c2_evidence||(bk.diagnostic_procedure>0?'Investigation done':'—');
+      var c3=s.c3_evidence||(bk.increased_clinical_care>0?'Increased care':'—');
+      return '<tr>'
+        +'<td><div class="acs-code">'+(s.code||'—')+'</div><div class="acs-name">'+(s.diagnosis_name||'')+'</div></td>'
+        +'<td><div class="acs-bar"><div class="acs-num" style="color:'+col+'">'+score+'</div>'
+        +'<div class="acs-track"><div class="acs-fill" style="width:'+pct+'%;background:'+col+'"></div></div>'
+        +'<div style="font-size:10px;color:var(--muted)">/8</div></div></td>'
+        +'<td><span class="acs-bdg '+acls+'">'+albl+'</span></td>'
+        +'<td><div class="acs-ev">C1: '+c1+'</div><div class="acs-ev">C2: '+c2+'</div><div class="acs-ev">C3: '+c3+'</div></td>'
+        +'</tr>';
+    }).join('');
+    var tbl=document.getElementById('acsTbl');
+    if (tbl) tbl.innerHTML='<table class="acs-tbl"><thead><tr>'
+      +'<th style="width:22%">Diagnosis</th><th style="width:25%">Score</th>'
+      +'<th style="width:15%">Action</th><th>Evidence (ACS 0002)</th>'
+      +'</tr></thead><tbody>'+rows+'</tbody></table>';
+  }
+
+  // ── Clinician Queries ─────────────────────────────────────────
+  var _epId = null;
+  var _qResp = {};
+
+  function renderQueries(data) {
+    var queries = data.clinician_queries || [];
+    _epId  = data.episode_id;
+    _qResp = {};
+    var sec = document.getElementById('qSection');
+    var lst = document.getElementById('qList');
+    var b   = document.getElementById('qBadge');
+    var btn = document.getElementById('qBtn');
+    if (!sec) return;
+    if (!queries.length) { sec.style.display='none'; return; }
+    sec.style.display = '';
+    var pending = queries.filter(function(q){return q.status==='pending';}).length;
+    if (b) { b.textContent=pending+' pending'; b.className=pending>0?'wf-badge warn':'wf-badge'; }
+    if (lst) {
+      var simap={HIGH:'⚠️',MEDIUM:'ℹ️',LOW:'💬'};
+      lst.innerHTML = queries.map(function(q){
+        if (q.status==='answered') {
+          return '<div class="q-card">'
+            +'<div class="q-hdr"><span class="q-id">'+q.query_id+'</span>'
+            +'<span class="q-title">'+q.title+'</span></div>'
+            +'<div class="q-answered">✅ '+q.physician_response+'</div>'
+            +'</div>';
+        }
+        var sev=q.severity||'MEDIUM';
+        var opts=(q.options||[]).map(function(opt,i){
+          var eid='opt_'+q.query_id+'_'+i;
+          var qn ='q_'+q.query_id;
+          var sv =opt.replace(/"/g,'&quot;');
+          var qid=q.query_id;
+          var cb ='pickOpt(&quot;'+qid+'&quot;,this.value,&quot;'+qid+'_'+i+'&quot;)';
+          return '<label class="q-opt" id="'+eid+'"><input type="radio" name="'+qn+'" value="'+sv+'" onchange="'+cb+'">'+opt+'</label>';
+        }).join('');
+        return '<div class="q-card">'
+          +'<div class="q-hdr">'
+          +'<span class="q-id">'+q.query_id+'</span>'
+          +'<span class="q-sev '+sev+'">'+(simap[sev]||'')+' '+sev+'</span>'
+          +'<span class="q-acs">'+q.acs+'</span>'
+          +'</div>'
+          +'<div class="q-title">'+q.title+'</div>'
+          +'<div class="q-body">'+q.body.replace(/\n/g,'<br>')+'</div>'
+          +opts
+          +'<div class="q-impact">💡 '+q.coding_impact+'</div>'
+          +'</div>';
       }).join('');
     }
+    if (btn) btn.disabled=true;
+  }
 
-    // Flags list
-    const flagsDiv = document.getElementById('workflowFlags');
-    if (flagsDiv) {
-      const flags = wr.flags||[];
-      const iconMap = {CRITICAL:'🚨',HIGH:'⚠️',MEDIUM:'ℹ️',INFO:'✓'};
-      let h = '';
-      if (!flags.length) {
-        h = '<div class="wf-flag info"><div class="wf-flag-icon">✅</div>'+
-            '<div class="wf-flag-body"><div class="wf-flag-msg">All 12 ACS validation rules passed</div></div></div>';
-      } else {
-        flags.forEach(f => {
-          const sev = (f.severity||'INFO').toUpperCase();
-          const cls = sev==='CRITICAL'?'critical':sev==='HIGH'?'high':sev==='MEDIUM'?'medium':'info';
-          h += '<div class="wf-flag '+cls+'">'+
-               '<div class="wf-flag-icon">'+(iconMap[sev]||'•')+'</div>'+
-               '<div class="wf-flag-body">'+
-               '<div class="wf-flag-rule">'+(f.rule||sev)+' · Phase '+(f.phase||'').replace(/_/g,' ').toUpperCase()+'</div>'+
-               '<div class="wf-flag-msg">'+(f.message||'')+'</div>'+
-               '</div></div>';
+  function pickOpt(qid, val, optId) {
+    _qResp[qid]=val;
+    document.querySelectorAll('[id^="opt_'+qid+'_"]').forEach(function(el){el.classList.remove('selected');});
+    document.querySelectorAll('input[name="q_'+qid+'"]').forEach(function(inp){
+      if(inp.value===val) inp.parentElement.classList.add('selected');
+    });
+    var btn=document.getElementById('qBtn');
+    var lst=document.getElementById('qList');
+    if(!btn||!lst) return;
+    var names=new Set(Array.from(lst.querySelectorAll('input[type=radio]')).map(function(i){return i.name;}));
+    btn.disabled=(Object.keys(_qResp).length<names.size);
+  }
+
+  async function submitQueries() {
+    if(!_epId) return;
+    var btn=document.getElementById('qBtn');
+    if(btn){btn.disabled=true;btn.textContent='Submitting...';}
+    var responses=Object.entries(_qResp).map(function(e){return{query_id:e[0],response:e[1]};});
+    try {
+      var r=await fetch(API+'/api/query/'+_epId+'/respond',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({responses:responses})
+      });
+      var d=await r.json();
+      showToast('Responses submitted — re-processing...','success');
+      setTimeout(async function(){
+        var r2=await fetch(API+'/api/process/'+_epId,{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({episode_dict:d.updated_episode})
         });
-      }
-      if (wr.episode_type) {
-        const ep_lbl = wr.episode_type==='day_care'?'🌤 Day-Care':'🏥 Inpatient';
-        h += '<div style="margin-top:8px;padding:6px 10px;background:var(--surface2);border-radius:6px;font-size:10px;color:var(--muted);">'+
-             ep_lbl+' &nbsp;|&nbsp; '+(wr.pdx_note||'')+' &nbsp;|&nbsp; ACS: '+((wr.applied_acs||[]).join(' · '))+'</div>';
-      }
-      flagsDiv.innerHTML = h;
-    }
-
-    // ACS 0002 table
-    const ep = data.episode_dict||{};
-    const acsScores = ep.acs_adx_scores||(data.suggestion||{}).acs_scores?.adx_scores||[];
-    if (acsScores.length > 0 && acsSection) {
-      acsSection.style.display = '';
-      const acsBadge = document.getElementById('acsBadge');
-      const coded = acsScores.filter(s=>s.action==='code').length;
-      const rev   = acsScores.filter(s=>s.action==='review').length;
-      if (acsBadge) { acsBadge.textContent = coded+' coded · '+rev+' review'; acsBadge.className = rev>0?'workflow-badge warn':'workflow-badge'; }
-      const tableDiv = document.getElementById('acsScoresTable');
-      if (tableDiv) {
-        const rows = acsScores.map(s => {
-          const score = s.score||0;
-          const pct = Math.round((score/8)*100);
-          const color = score>=5?'#48bb78':score>=3?'#ed8936':'#a0aec0';
-          const acls = s.action==='code'?'code':s.action==='review'?'review':'skip';
-          const albl = s.action==='code'?'✓ Code':s.action==='review'?'⚑ Review':'✕ Skip';
-          const c1 = s.c1_evidence||(s.score_breakdown?.therapeutic_treatment>0?'Therapeutic treatment altered':'—');
-          const c2 = s.c2_evidence||(s.score_breakdown?.diagnostic_procedure>0?'Diagnostic investigation':'—');
-          const c3 = s.c3_evidence||(s.score_breakdown?.increased_clinical_care>0?'Increased clinical care':'—');
-          return '<tr>'+
-            '<td><div class="acs-action-code">'+(s.code||'—')+'</div>'+
-            '<div class="acs-action-name">'+(s.diagnosis_name||'')+'</div></td>'+
-            '<td><div class="acs-score-bar">'+
-            '<div class="acs-score-num" style="color:'+color+'">'+score+'</div>'+
-            '<div class="acs-score-track"><div class="acs-score-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'+
-            '<div style="font-size:10px;color:var(--muted)">/8</div></div></td>'+
-            '<td><span class="acs-badge '+acls+'">'+albl+'</span></td>'+
-            '<td><div class="acs-evidence">C1: '+c1+'</div>'+
-            '<div class="acs-evidence">C2: '+c2+'</div>'+
-            '<div class="acs-evidence">C3: '+c3+'</div></td></tr>';
-        }).join('');
-        tableDiv.innerHTML = '<table class="acs-table"><thead><tr>'+
-          '<th style="width:22%">Diagnosis</th><th style="width:25%">Score</th>'+
-          '<th style="width:15%">Action</th><th>ACS 0002 Evidence</th>'+
-          '</tr></thead><tbody>'+rows+'</tbody></table>';
-      }
+        var res=await r2.json();
+        renderResult(res);
+        showToast('Episode re-processed','success');
+      },800);
+    } catch(e){
+      showToast('Error: '+e.message,'error');
+      if(btn){btn.disabled=false;btn.textContent='Submit Responses → Re-process';}
     }
   }
 
@@ -2576,8 +2504,9 @@
     if (btnA) { btnA.textContent = '✓ Approve & Submit'; btnA.classList.remove('approved'); btnA.style.display=''; }
     if (btnR) { btnR.textContent = '✕ Reject & Recode'; btnR.style.display=''; }
 
-    renderClinicianQueries(data);
-    renderWorkflowReport(data);
+    renderWorkflow(data);
+    renderACS(data);
+    renderQueries(data);
 
     if (data.demo_mode) {
       showToast('Demo mode: Engine modules not loaded', 'success');
