@@ -1,0 +1,451 @@
+{
+  "_meta": {
+    "version": "v1.0",
+    "title": "NOVIQ Clinician Query Templates",
+    "authority": "ACS 0010 — Coding from Incomplete or Unclear Documentation",
+    "total_templates": 22,
+    "query_categories": [
+      "pdx_ambiguity",
+      "adx_significance",
+      "procedure_detail",
+      "external_cause",
+      "complication_vs_observation",
+      "condition_onset",
+      "specificity"
+    ]
+  },
+  "ambiguity_triggers": {
+    "pdx_triggers": [
+      {
+        "pattern": "query",
+        "description": "Word 'query' before diagnosis",
+        "template": "pdx_query_diagnosis"
+      },
+      {
+        "pattern": "probable",
+        "description": "Probable/likely diagnosis",
+        "template": "pdx_probable"
+      },
+      {
+        "pattern": "likely",
+        "description": "Likely diagnosis",
+        "template": "pdx_probable"
+      },
+      {
+        "pattern": "possible",
+        "description": "Possible diagnosis",
+        "template": "pdx_probable"
+      },
+      {
+        "pattern": "?",
+        "description": "Question mark after diagnosis",
+        "template": "pdx_query_diagnosis"
+      },
+      {
+        "pattern": "rule out",
+        "description": "Rule out diagnosis",
+        "template": "pdx_rule_out"
+      },
+      {
+        "pattern": "r/o",
+        "description": "R/O abbreviation",
+        "template": "pdx_rule_out"
+      },
+      {
+        "pattern": "vs",
+        "description": "Competing diagnoses (A vs B)",
+        "template": "pdx_competing"
+      },
+      {
+        "pattern": "versus",
+        "description": "Competing diagnoses",
+        "template": "pdx_competing"
+      },
+      {
+        "pattern": "symptom_only",
+        "description": "Only symptom documented, no confirmed dx",
+        "template": "pdx_symptom_only"
+      }
+    ],
+    "adx_triggers": [
+      {
+        "pattern": "history of",
+        "description": "History of — past vs active",
+        "template": "adx_history_of"
+      },
+      {
+        "pattern": "known",
+        "description": "Known condition — active or background?",
+        "template": "adx_known_condition"
+      },
+      {
+        "pattern": "borderline",
+        "description": "Borderline condition",
+        "template": "adx_borderline"
+      },
+      {
+        "pattern": "elevated",
+        "description": "Elevated value without diagnosis",
+        "template": "adx_elevated_value"
+      },
+      {
+        "pattern": "incidental",
+        "description": "Incidental finding",
+        "template": "adx_incidental_finding"
+      }
+    ],
+    "procedure_triggers": [
+      {
+        "pattern": "attempted",
+        "description": "Attempted but incomplete procedure",
+        "template": "proc_attempted"
+      },
+      {
+        "pattern": "converted",
+        "description": "Conversion lap to open",
+        "template": "proc_conversion"
+      },
+      {
+        "pattern": "bilateral",
+        "description": "Bilateral not specified",
+        "template": "proc_bilateral"
+      },
+      {
+        "pattern": "right",
+        "description": "Laterality ambiguous in code",
+        "template": "proc_laterality"
+      },
+      {
+        "pattern": "left",
+        "description": "Laterality ambiguous in code",
+        "template": "proc_laterality"
+      }
+    ],
+    "complication_triggers": [
+      {
+        "pattern": "post-op fever",
+        "description": "Post-op fever — infection or routine?",
+        "template": "compl_postop_fever"
+      },
+      {
+        "pattern": "wound",
+        "description": "Wound issue — complication or routine?",
+        "template": "compl_wound"
+      },
+      {
+        "pattern": "ileus",
+        "description": "Ileus — paralytic or mechanical?",
+        "template": "compl_ileus"
+      }
+    ]
+  },
+  "templates": {
+    "pdx_query_diagnosis": {
+      "category": "pdx_ambiguity",
+      "acs": "ACS 0001 + ACS 0010",
+      "severity": "HIGH",
+      "trigger": "Word 'query' or '?' before diagnosis",
+      "title": "Principal Diagnosis Confirmation Required",
+      "body": "The discharge documentation uses the term '{uncertain_term}' before the diagnosis of '{diagnosis}'. Under ACS 0001, the Principal Diagnosis must be the condition established AFTER study to be chiefly responsible for the episode of care.\n\nCould you please clarify: Was '{diagnosis}' confirmed as the principal diagnosis at the conclusion of this episode? If so, please document as a confirmed diagnosis in the Discharge Summary.",
+      "physician_options": [
+        "Yes — confirmed as PDX",
+        "No — different PDX (please specify)",
+        "Remains uncertain — code presenting symptom"
+      ],
+      "coding_impact": "Determines MDC and AR-DRG assignment"
+    },
+    "pdx_probable": {
+      "category": "pdx_ambiguity",
+      "acs": "ACS 0001 + ACS 0010",
+      "severity": "HIGH",
+      "trigger": "probable/likely/possible before diagnosis",
+      "title": "Diagnosis Certainty — Probable vs Confirmed",
+      "body": "The documentation describes '{diagnosis}' as '{uncertain_term}' (e.g., probable/likely/possible). Under ICD-10-AM guidelines, probable/likely/possible diagnoses in the inpatient setting MAY be coded as confirmed.\n\nCould you please confirm: At discharge, was '{diagnosis}' your working confirmed diagnosis, or does significant uncertainty remain?",
+      "physician_options": [
+        "Yes — treat as confirmed diagnosis",
+        "Remains probable only — code as stated",
+        "Alternative diagnosis confirmed (please specify)"
+      ],
+      "coding_impact": "Affects PDX selection and DRG grouping"
+    },
+    "pdx_rule_out": {
+      "category": "pdx_ambiguity",
+      "acs": "ACS 0001 + ACS 0010",
+      "severity": "HIGH",
+      "trigger": "rule out / r/o before diagnosis",
+      "title": "Rule Out Diagnosis — Clarification Required",
+      "body": "The documentation states 'rule out {diagnosis}'. Under ICD-10-AM, a 'rule out' diagnosis that was NOT confirmed should be coded as the presenting symptom or sign.\n\nCould you please confirm: Was '{diagnosis}' ruled in or ruled out during this episode?",
+      "physician_options": [
+        "Ruled IN — confirmed diagnosis",
+        "Ruled OUT — code presenting symptom instead",
+        "Inconclusive — further workup required"
+      ],
+      "coding_impact": "Critical — determines if condition is coded or symptom used instead"
+    },
+    "pdx_competing": {
+      "category": "pdx_ambiguity",
+      "acs": "ACS 0001 + ACS 0010",
+      "severity": "HIGH",
+      "trigger": "A vs B competing diagnoses",
+      "title": "Competing Diagnoses — Principal Diagnosis Selection",
+      "body": "The documentation presents two competing diagnoses: '{diagnosis_a}' vs '{diagnosis_b}'.\n\nUnder ACS 0001, when two or more conditions equally meet the criteria for PDX, the condition that consumed the most resources should be selected.\n\nCould you please indicate which condition was the PRIMARY reason for this admission and consumed the most resources?",
+      "physician_options": [
+        "{diagnosis_a} — primary reason",
+        "{diagnosis_b} — primary reason",
+        "Both equally — coder to select per ACS 0001"
+      ],
+      "coding_impact": "Determines MDC, AR-DRG, and DRG weight"
+    },
+    "pdx_symptom_only": {
+      "category": "pdx_ambiguity",
+      "acs": "ACS 0001 + ACS 0011",
+      "severity": "MEDIUM",
+      "trigger": "Only symptom documented, no confirmed diagnosis",
+      "title": "Underlying Diagnosis — Symptom Documentation",
+      "body": "The documentation records '{symptom}' as the principal condition. Under ACS 0011, if an underlying condition is identified during the episode, it should be coded as PDX rather than the symptom.\n\nWas an underlying diagnosis identified to explain '{symptom}'? If so, please document in the Discharge Summary.",
+      "physician_options": [
+        "Yes — underlying diagnosis is: ___",
+        "No — symptom remains the principal condition",
+        "Diagnosis deferred — outpatient follow-up"
+      ],
+      "coding_impact": "Symptom as PDX may result in lower DRG weight"
+    },
+    "adx_history_of": {
+      "category": "adx_significance",
+      "acs": "ACS 0002",
+      "severity": "MEDIUM",
+      "trigger": "history of + condition",
+      "title": "Active vs Historical Condition",
+      "body": "The documentation mentions 'history of {condition}'. Under ACS 0002, a condition should only be coded as an Additional Diagnosis if it affected patient care during this episode.\n\nDid '{condition}' impact this admission through: (1) altered therapeutic treatment, (2) diagnostic investigation, or (3) increased clinical monitoring?",
+      "physician_options": [
+        "Yes — actively managed during this admission",
+        "No — background history only, did not impact care",
+        "Partially — monitoring only (no treatment change)"
+      ],
+      "coding_impact": "ACS 0002 scoring — affects ADX inclusion and DRG complexity"
+    },
+    "adx_known_condition": {
+      "category": "adx_significance",
+      "acs": "ACS 0002",
+      "severity": "MEDIUM",
+      "trigger": "known + condition",
+      "title": "Known Condition — Impact on This Admission",
+      "body": "The documentation notes '{condition}' as a known comorbidity. To meet ACS 0002 criteria for coding, this condition must have impacted care.\n\nDuring this admission, was '{condition}' managed differently from the patient's baseline (e.g., medication adjusted, additional monitoring, or investigation performed)?",
+      "physician_options": [
+        "Yes — treatment or monitoring altered",
+        "No — stable, no change from baseline",
+        "Medication continued unchanged — monitoring only"
+      ],
+      "coding_impact": "Determines whether condition is coded as ADX"
+    },
+    "adx_elevated_value": {
+      "category": "adx_significance",
+      "acs": "ACS 0002",
+      "severity": "MEDIUM",
+      "trigger": "elevated lab value without named diagnosis",
+      "title": "Elevated {value_name} — Clinical Significance",
+      "body": "The results show an elevated {value_name} ({value}) without a documented clinical diagnosis.\n\nCould you please clarify: Does this finding represent a diagnosable condition (e.g., hyperkalaemia, hyperglycaemia, elevated creatinine = AKI)? If so, please document the clinical diagnosis.",
+      "physician_options": [
+        "Yes — diagnosis is: ___",
+        "No — incidental finding, no diagnosis",
+        "Being monitored — not yet a diagnosis"
+      ],
+      "coding_impact": "Specific diagnosis codes carry higher ACS 0002 scores than abnormal finding codes"
+    },
+    "adx_borderline": {
+      "category": "adx_significance",
+      "acs": "ACS 0002",
+      "severity": "LOW",
+      "trigger": "borderline condition",
+      "title": "Borderline Condition — Clinical Diagnosis",
+      "body": "The documentation describes '{condition}' as 'borderline'. Under ICD-10-AM, borderline conditions are coded using the specific borderline code or as the stated condition if clinical judgement supports it.\n\nPlease confirm: Should '{condition}' be treated as a confirmed diagnosis or coded as 'borderline' using the specific ICD-10-AM code?",
+      "physician_options": [
+        "Confirmed diagnosis — code as stated",
+        "Borderline only — use borderline code",
+        "No diagnosis — do not code"
+      ],
+      "coding_impact": "Affects code selection and DRG complexity level"
+    },
+    "adx_incidental_finding": {
+      "category": "adx_significance",
+      "acs": "ACS 0002",
+      "severity": "LOW",
+      "trigger": "incidental finding documented",
+      "title": "Incidental Finding — Clinical Relevance",
+      "body": "An incidental finding of '{finding}' was noted. Under ACS 0002, incidental findings should only be coded if they impacted patient care.\n\nWas any action taken regarding '{finding}' during this admission (investigation, treatment, referral, or increased monitoring)?",
+      "physician_options": [
+        "Yes — action taken: ___",
+        "No — truly incidental, no action",
+        "Referral made for outpatient follow-up only"
+      ],
+      "coding_impact": "If no action taken — do not code per ACS 0002"
+    },
+    "proc_attempted": {
+      "category": "procedure_detail",
+      "acs": "ACS 0019",
+      "severity": "HIGH",
+      "trigger": "attempted procedure",
+      "title": "Attempted Procedure — ACS 0019 Clarification",
+      "body": "The Operation Notes describe an '{procedure}' that was attempted but not completed. Under ACS 0019, an abandoned or incomplete procedure requires specific coding.\n\nCould you please confirm: (1) At what point was the procedure abandoned? (2) Was anaesthesia administered? (3) Was an alternative procedure performed instead?",
+      "physician_options": [
+        "Abandoned before anaesthesia — do not code procedure",
+        "Abandoned after anaesthesia but before incision",
+        "Abandoned during procedure — code with modifier",
+        "Completed successfully (documentation unclear)"
+      ],
+      "coding_impact": "ACS 0019 — abandoned procedure coding rules apply"
+    },
+    "proc_conversion": {
+      "category": "procedure_detail",
+      "acs": "ACS 0016",
+      "severity": "HIGH",
+      "trigger": "converted lap to open",
+      "title": "Procedure Conversion — Approach Clarification",
+      "body": "The Operation Notes indicate conversion from laparoscopic to open '{procedure}'. Both approaches require separate ACHI codes.\n\nCould you confirm: (1) Was the laparoscopic attempt coded separately? (2) What was the reason for conversion (adhesions, bleeding, technical difficulty)?",
+      "physician_options": [
+        "Converted — reason: adhesions",
+        "Converted — reason: bleeding/haemostasis",
+        "Converted — reason: technical difficulty",
+        "Converted — other reason: ___"
+      ],
+      "coding_impact": "Conversion = two ACHI codes + higher complexity ECCS"
+    },
+    "proc_laterality": {
+      "category": "procedure_detail",
+      "acs": "ACS 0016",
+      "severity": "MEDIUM",
+      "trigger": "laterality not specified in ACHI",
+      "title": "Procedure Laterality — Left vs Right",
+      "body": "The ACHI code for '{procedure}' requires specification of laterality (left/right/bilateral). The Operation Notes mention '{side}' but the ACHI modifier needs confirmation.\n\nPlease confirm the exact laterality performed.",
+      "physician_options": [
+        "Right side only",
+        "Left side only",
+        "Bilateral — both sides performed",
+        "Not applicable — single-organ procedure"
+      ],
+      "coding_impact": "Bilateral vs unilateral = different ACHI modifier = different ECCS weight"
+    },
+    "proc_bilateral": {
+      "category": "procedure_detail",
+      "acs": "ACS 0016",
+      "severity": "MEDIUM",
+      "trigger": "bilateral not explicitly documented",
+      "title": "Bilateral Procedure Confirmation",
+      "body": "The ACHI code for '{procedure}' may apply to one or both sides. The documentation does not explicitly confirm bilateral performance.\n\nWas '{procedure}' performed bilaterally in this episode?",
+      "physician_options": [
+        "Yes — bilateral",
+        "No — unilateral only",
+        "Staged — first side only this admission"
+      ],
+      "coding_impact": "Bilateral modifier increases ECCS contribution"
+    },
+    "compl_postop_fever": {
+      "category": "complication_vs_observation",
+      "acs": "ACS 0017 + ACS 0002",
+      "severity": "HIGH",
+      "trigger": "post-operative fever",
+      "title": "Post-operative Fever — Complication vs Expected",
+      "body": "Post-operative fever (T {temperature}°C) on Day {day} is documented. Under ACS 0017, post-procedural complications must be distinguished from expected post-operative findings.\n\nDoes this fever represent: (1) an expected post-operative response, or (2) a clinical complication requiring treatment (e.g., wound infection, pneumonia, anastomotic leak)?",
+      "physician_options": [
+        "Expected post-op response — no complication",
+        "Wound infection — code T81.4",
+        "Respiratory complication — code J95",
+        "Urinary tract infection — code N39.0",
+        "Other complication: ___"
+      ],
+      "coding_impact": "Confirmed complication = COF 1 + ACS 0017 + higher DRG complexity"
+    },
+    "compl_wound": {
+      "category": "complication_vs_observation",
+      "acs": "ACS 0017",
+      "severity": "HIGH",
+      "trigger": "wound issue documented",
+      "title": "Wound Issue — Complication Classification",
+      "body": "The nursing/progress notes document a wound-related finding. Under ACS 0017, wound complications are coded only when they represent a true complication requiring additional management.\n\nHow would you classify this wound finding?",
+      "physician_options": [
+        "Routine post-op appearance — no complication",
+        "Wound infection requiring antibiotics — T81.4",
+        "Wound dehiscence requiring re-suture — T81.3",
+        "Seroma/haematoma — T81.0/T81.1"
+      ],
+      "coding_impact": "True complication = COF 1 + significant DRG weight increase"
+    },
+    "compl_ileus": {
+      "category": "complication_vs_observation",
+      "acs": "ACS 0017 + ACS 0002",
+      "severity": "MEDIUM",
+      "trigger": "ileus documented post-operatively",
+      "title": "Post-operative Ileus — Paralytic vs Mechanical",
+      "body": "Post-operative ileus is documented. Under ICD-10-AM, paralytic ileus (K56.0) and mechanical obstruction require different coding, and post-op ileus beyond expected recovery may represent a complication.\n\nHow would you classify this ileus?",
+      "physician_options": [
+        "Expected post-op ileus — resolved within 48h, no complication",
+        "Prolonged paralytic ileus — required nasogastric tube/extended management",
+        "Mechanical obstruction — requires further investigation",
+        "Ileus due to electrolyte imbalance — treat underlying cause"
+      ],
+      "coding_impact": "Prolonged ileus = ACS 0017 complication code + COF 1"
+    },
+    "cof_hospital_acquired": {
+      "category": "condition_onset",
+      "acs": "ACS 0048",
+      "severity": "MEDIUM",
+      "trigger": "condition noted only in progress notes, not admission report",
+      "title": "Condition Onset Flag — Hospital Acquired vs POA",
+      "body": "The condition '{condition}' appears in the Progress Notes but was NOT documented at the time of admission. Under ACS 0048, we must determine if this condition was present on admission (COF 2) or arose during the admission (COF 1 — hospital acquired).\n\nWas '{condition}' present before admission or did it develop during this episode?",
+      "physician_options": [
+        "Present on admission (POA) — COF 2",
+        "Developed during admission — COF 1 (hospital acquired)",
+        "Uncertain — patient history unclear"
+      ],
+      "coding_impact": "Hospital-acquired conditions trigger quality indicators and affect case complexity"
+    },
+    "specificity_diabetes": {
+      "category": "specificity",
+      "acs": "ACS 0002",
+      "severity": "MEDIUM",
+      "trigger": "diabetes without type specified",
+      "title": "Diabetes — Type Specification Required",
+      "body": "The documentation refers to 'diabetes' or 'DM' without specifying the type. ICD-10-AM has specific codes for Type 1 (E10) and Type 2 (E11) diabetes.\n\nCould you please confirm the type of diabetes for accurate coding?",
+      "physician_options": [
+        "Type 1 Diabetes Mellitus — E10.x",
+        "Type 2 Diabetes Mellitus — E11.x",
+        "Gestational Diabetes — O24.x",
+        "Other specified — please specify"
+      ],
+      "coding_impact": "Type 1 vs Type 2 = different ICD codes, different DRG complexity"
+    },
+    "specificity_sepsis": {
+      "category": "specificity",
+      "acs": "ACS 0002",
+      "severity": "HIGH",
+      "trigger": "sepsis without source",
+      "title": "Sepsis — Causative Organism and Source",
+      "body": "Sepsis is documented. Under ICD-10-AM, accurate coding requires: (1) the specific sepsis code, and (2) the underlying source/focus.\n\nCould you please document: (1) the causative organism if identified, and (2) the primary source of infection (e.g., UTI, pneumonia, wound, biliary)?",
+      "physician_options": [
+        "Source: UTI — E. coli",
+        "Source: Pneumonia — organism: ___",
+        "Source: Wound/surgical site",
+        "Source: Biliary",
+        "Source: Unknown — culture pending",
+        "Other source: ___"
+      ],
+      "coding_impact": "Specific sepsis + source = significantly higher DRG weight vs unspecified"
+    }
+  },
+  "query_selection_logic": {
+    "priority_order": [
+      "CRITICAL: PDX ambiguity (query/probable/rule-out) → always fire",
+      "HIGH: Post-op complication vs observation → fire if fever/wound in progress notes",
+      "HIGH: Procedure abandoned or converted → fire if OT notes indicate",
+      "MEDIUM: ADX history-of or known → fire if no ACS 0002 evidence",
+      "MEDIUM: COF assignment unclear → fire if condition not in admission report",
+      "LOW: Specificity (diabetes type, sepsis source) → fire if unspecified"
+    ],
+    "max_queries_per_episode": 5,
+    "auto_suppress": [
+      "Do not generate query if physician has already documented clear answer",
+      "Do not generate duplicate queries for same condition",
+      "Suppress LOW severity queries if episode has 3+ higher priority queries"
+    ]
+  }
+}
