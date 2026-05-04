@@ -326,8 +326,16 @@ def _step3_mdc(episode: dict,
         else:
             return "13", None   # Diseases and Disorders of Female Reproductive System
 
-    # Standard MDC lookup
+    # Standard MDC lookup — exact match first
     mdc = mdc_pdx_lookup.get(pdx.upper())
+
+    # Prefix fallback: try progressively shorter prefixes
+    if mdc is None:
+        for length in [5, 4, 3, 2]:
+            mdc = mdc_pdx_lookup.get(pdx[:length].upper())
+            if mdc is not None:
+                break
+
     if mdc is None:
         return None, ERROR_DRG_UNGROUPABLE
     return mdc, None
