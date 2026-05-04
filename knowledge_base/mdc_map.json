@@ -1,0 +1,1687 @@
+{
+  "_meta": {
+    "version": "v1.0",
+    "source": "Dr. Mohamed Kassab — AR-DRG V11.0 aligned MDC Map",
+    "total_mdcs": 26,
+    "note": "ICD-10-AM ranges are chapter alignments; grouper uses specific PDX mappings + edits"
+  },
+  "mdcs": {
+    "PRE": {
+      "label": "Pre-MDC",
+      "description": "High-cost cases — overrides principal diagnosis MDC",
+      "icd_ranges": [],
+      "key_adrgs": [
+        "A13A",
+        "A13B",
+        "A14Z",
+        "A15A",
+        "A15B",
+        "A15C",
+        "A39W",
+        "A40Z"
+      ],
+      "pdx_override": true,
+      "trigger_procedures": [
+        "transplant",
+        "ECMO",
+        "tracheostomy",
+        "ventilation >95h"
+      ],
+      "note": "Pre-MDC cases are triggered by procedure, not PDX"
+    },
+    "01": {
+      "label": "Nervous System",
+      "description": "Brain, spinal cord, peripheral nerves",
+      "icd_ranges": [
+        {
+          "from": "G00",
+          "to": "G99",
+          "description": "Diseases of nervous system"
+        },
+        {
+          "from": "I60",
+          "to": "I69",
+          "description": "Cerebrovascular diseases"
+        },
+        {
+          "from": "S00",
+          "to": "S09",
+          "description": "Head injuries"
+        }
+      ],
+      "icd_prefixes": [
+        "G",
+        "I6"
+      ],
+      "key_adrgs": [
+        "B01Z",
+        "B02A",
+        "B02B",
+        "B03A",
+        "B03B",
+        "B04Z",
+        "B05Z",
+        "B06Z",
+        "B07A",
+        "B07B",
+        "B08B",
+        "B08W",
+        "B40Z",
+        "B63Z",
+        "B70A",
+        "B70B",
+        "B76A",
+        "B76B",
+        "B81A",
+        "B81B",
+        "B83A",
+        "B83C"
+      ],
+      "our_adrgs": [
+        "B08"
+      ],
+      "high_volume_pdx": [
+        "G35",
+        "G43.9",
+        "I63.3",
+        "I63.9",
+        "I61.0",
+        "I64",
+        "G20",
+        "G40.9"
+      ]
+    },
+    "02": {
+      "label": "Eye",
+      "description": "Diseases and disorders of the eye",
+      "icd_ranges": [
+        {
+          "from": "H00",
+          "to": "H59",
+          "description": "Diseases of eye and adnexa"
+        }
+      ],
+      "icd_prefixes": [
+        "H0",
+        "H1",
+        "H2",
+        "H3",
+        "H4",
+        "H5"
+      ],
+      "key_adrgs": [
+        "C01Z",
+        "C02Z",
+        "C03Z",
+        "C04Z",
+        "C05Z",
+        "C06Z",
+        "C07Z",
+        "C08Z",
+        "C09Z",
+        "C16Z",
+        "C60A",
+        "C60B",
+        "C61Z",
+        "C62Z",
+        "C63A",
+        "C63B"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "H26.9",
+        "H33.0",
+        "H40.1",
+        "H43.1",
+        "H35.3"
+      ]
+    },
+    "03": {
+      "label": "Ear, Nose, Throat",
+      "description": "ENT diseases and disorders",
+      "icd_ranges": [
+        {
+          "from": "H60",
+          "to": "H95",
+          "description": "Diseases of ear and mastoid"
+        },
+        {
+          "from": "J00",
+          "to": "J06",
+          "description": "Acute upper respiratory infections"
+        },
+        {
+          "from": "J30",
+          "to": "J39",
+          "description": "Other upper respiratory diseases"
+        }
+      ],
+      "icd_prefixes": [
+        "H6",
+        "H7",
+        "H8",
+        "H9",
+        "J0",
+        "J3"
+      ],
+      "key_adrgs": [
+        "D01Z",
+        "D02Z",
+        "D03Z",
+        "D04Z",
+        "D05Z",
+        "D06Z",
+        "D07Z",
+        "D08Z",
+        "D09Z",
+        "D10Z",
+        "D11Z",
+        "D12Z",
+        "D13Z",
+        "D14Z",
+        "D15Z",
+        "D40Z",
+        "D60A",
+        "D60B",
+        "D61Z",
+        "D62A",
+        "D63Z",
+        "D64A",
+        "D65Z",
+        "D66Z",
+        "D67A",
+        "D67B"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "J35.0",
+        "J35.1",
+        "J32.0",
+        "H81.1",
+        "H90.3",
+        "J06.9"
+      ]
+    },
+    "04": {
+      "label": "Respiratory",
+      "description": "Diseases of respiratory system",
+      "icd_ranges": [
+        {
+          "from": "J09",
+          "to": "J99",
+          "description": "Lower respiratory and other lung diseases"
+        }
+      ],
+      "icd_prefixes": [
+        "J1",
+        "J2",
+        "J4",
+        "J5",
+        "J6",
+        "J7",
+        "J8",
+        "J9"
+      ],
+      "key_adrgs": [
+        "E01A",
+        "E01B",
+        "E02A",
+        "E02B",
+        "E03A",
+        "E03Z",
+        "E40A",
+        "E40B",
+        "E41A",
+        "E41B",
+        "E42A",
+        "E42B",
+        "E42C",
+        "E60A",
+        "E60B",
+        "E61Z",
+        "E62A",
+        "E62B",
+        "E63A",
+        "E63B",
+        "E64A",
+        "E64B",
+        "E65A",
+        "E65B",
+        "E69A",
+        "E69B",
+        "E70A",
+        "E70B",
+        "E71A",
+        "E71B"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "J18.9",
+        "J44.1",
+        "J45.9",
+        "J15.9",
+        "J96.0",
+        "J13",
+        "J22"
+      ]
+    },
+    "05": {
+      "label": "Circulatory",
+      "description": "Diseases of circulatory system",
+      "icd_ranges": [
+        {
+          "from": "I00",
+          "to": "I52",
+          "description": "Heart diseases"
+        },
+        {
+          "from": "I70",
+          "to": "I99",
+          "description": "Vascular diseases"
+        }
+      ],
+      "icd_prefixes": [
+        "I0",
+        "I1",
+        "I2",
+        "I3",
+        "I4",
+        "I5",
+        "I7",
+        "I8",
+        "I9"
+      ],
+      "key_adrgs": [
+        "F01A",
+        "F01B",
+        "F02A",
+        "F02B",
+        "F03A",
+        "F03B",
+        "F04A",
+        "F04B",
+        "F05A",
+        "F05B",
+        "F06A",
+        "F06B",
+        "F07A",
+        "F07B",
+        "F08A",
+        "F08B",
+        "F09A",
+        "F09B",
+        "F10A",
+        "F10B",
+        "F11A",
+        "F11B",
+        "F12A",
+        "F12B",
+        "F25A",
+        "F25B",
+        "F40Z",
+        "F41A",
+        "F41B",
+        "F42A",
+        "F42B",
+        "F60A",
+        "F60B",
+        "F61Z",
+        "F62A",
+        "F62B",
+        "F63A",
+        "F63B",
+        "F70A",
+        "F70B",
+        "F71A",
+        "F71B",
+        "F72A",
+        "F72B",
+        "F74Z",
+        "F75A",
+        "F76B"
+      ],
+      "our_adrgs": [
+        "F25"
+      ],
+      "high_volume_pdx": [
+        "I21.9",
+        "I50.0",
+        "I35.0",
+        "I48.9",
+        "I10",
+        "I20.0",
+        "I70.2"
+      ]
+    },
+    "06": {
+      "label": "Digestive",
+      "description": "Diseases of digestive system",
+      "icd_ranges": [
+        {
+          "from": "K00",
+          "to": "K93",
+          "description": "Diseases of digestive system"
+        },
+        {
+          "from": "C15",
+          "to": "C26",
+          "description": "Malignant neoplasms of digestive organs"
+        }
+      ],
+      "icd_prefixes": [
+        "K",
+        "C1",
+        "C2"
+      ],
+      "key_adrgs": [
+        "G01A",
+        "G01B",
+        "G02A",
+        "G02B",
+        "G03A",
+        "G03B",
+        "G04A",
+        "G04B",
+        "G05Z",
+        "G06A",
+        "G06B",
+        "G07A",
+        "G07B",
+        "G08A",
+        "G08B",
+        "G09Z",
+        "G10A",
+        "G10B",
+        "G11A",
+        "G11B",
+        "G12A",
+        "G12B",
+        "G13Z",
+        "G40Z",
+        "G44A",
+        "G44B",
+        "G60A",
+        "G60B",
+        "G61A",
+        "G61B",
+        "G62A",
+        "G62B",
+        "G63A",
+        "G63B",
+        "G64A",
+        "G64B",
+        "G65A",
+        "G65B",
+        "G66A",
+        "G66B",
+        "G67A",
+        "G67B",
+        "G70A",
+        "G70B"
+      ],
+      "our_adrgs": [
+        "G01",
+        "G04",
+        "G06",
+        "G07",
+        "G08",
+        "G13"
+      ],
+      "high_volume_pdx": [
+        "K80.0",
+        "K35.8",
+        "K40.9",
+        "K92.1",
+        "K57.3",
+        "K25.0",
+        "K85.9",
+        "K63.1"
+      ]
+    },
+    "07": {
+      "label": "Hepatobiliary & Pancreas",
+      "description": "Liver, biliary tract, pancreas",
+      "icd_ranges": [
+        {
+          "from": "K70",
+          "to": "K87",
+          "description": "Liver, gallbladder, pancreas"
+        },
+        {
+          "from": "C22",
+          "to": "C25",
+          "description": "Malignant neoplasms of liver and pancreas"
+        }
+      ],
+      "icd_prefixes": [
+        "K7",
+        "K8",
+        "C22",
+        "C23",
+        "C24",
+        "C25"
+      ],
+      "key_adrgs": [
+        "H01A",
+        "H01B",
+        "H02A",
+        "H02B",
+        "H03A",
+        "H03B",
+        "H04A",
+        "H04B",
+        "H05A",
+        "H05B",
+        "H06A",
+        "H06B",
+        "H07A",
+        "H07B",
+        "H08A",
+        "H08B",
+        "H40Z",
+        "H41Z",
+        "H60A",
+        "H60B",
+        "H61A",
+        "H61B",
+        "H62A",
+        "H62B",
+        "H63A",
+        "H63B",
+        "H64A",
+        "H64B",
+        "H65A",
+        "H65C"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "K80.0",
+        "K81.0",
+        "K70.3",
+        "K86.1",
+        "C22.0",
+        "C25.9"
+      ]
+    },
+    "08": {
+      "label": "Musculoskeletal",
+      "description": "Diseases of musculoskeletal system and connective tissue",
+      "icd_ranges": [
+        {
+          "from": "M00",
+          "to": "M99",
+          "description": "Musculoskeletal diseases"
+        },
+        {
+          "from": "S40",
+          "to": "S99",
+          "description": "Injuries to limbs"
+        },
+        {
+          "from": "T08",
+          "to": "T14",
+          "description": "Injuries to unspecified body regions"
+        }
+      ],
+      "icd_prefixes": [
+        "M",
+        "S4",
+        "S5",
+        "S6",
+        "S7",
+        "S8",
+        "S9",
+        "T0",
+        "T1"
+      ],
+      "key_adrgs": [
+        "I01A",
+        "I01B",
+        "I02A",
+        "I02B",
+        "I03A",
+        "I03B",
+        "I04A",
+        "I04B",
+        "I05A",
+        "I05B",
+        "I06Z",
+        "I07Z",
+        "I08A",
+        "I08B",
+        "I09Z",
+        "I10Z",
+        "I11Z",
+        "I12Z",
+        "I13Z",
+        "I14Z",
+        "I15Z",
+        "I16Z",
+        "I17Z",
+        "I18Z",
+        "I19A",
+        "I19B",
+        "I20Z",
+        "I21Z",
+        "I22Z",
+        "I23Z",
+        "I40Z",
+        "I41Z",
+        "I42Z",
+        "I43Z",
+        "I44Z",
+        "I45Z",
+        "I60A",
+        "I60B",
+        "I61A",
+        "I61B",
+        "I62A",
+        "I62B",
+        "I63A",
+        "I63B",
+        "I64A",
+        "I64B",
+        "I65A",
+        "I65B",
+        "I66A",
+        "I66B",
+        "I67A",
+        "I67B",
+        "I68A",
+        "I68B",
+        "I74A",
+        "I74B",
+        "I75A",
+        "I75B",
+        "I76A",
+        "I76B",
+        "I77A",
+        "I77B",
+        "I78A",
+        "I78B",
+        "I79A",
+        "I79B",
+        "I80Z"
+      ],
+      "our_adrgs": [
+        "I03",
+        "I04",
+        "I05",
+        "I08"
+      ],
+      "high_volume_pdx": [
+        "M16.1",
+        "M17.1",
+        "S72.0",
+        "S82.0",
+        "M86.9",
+        "M48.0",
+        "T12"
+      ]
+    },
+    "09": {
+      "label": "Skin & Breast",
+      "description": "Skin, subcutaneous tissue, breast",
+      "icd_ranges": [
+        {
+          "from": "C43",
+          "to": "C44",
+          "description": "Melanoma and skin cancers"
+        },
+        {
+          "from": "D22",
+          "to": "D23",
+          "description": "Melanocytic naevi and benign skin"
+        },
+        {
+          "from": "L00",
+          "to": "L99",
+          "description": "Diseases of skin"
+        }
+      ],
+      "icd_prefixes": [
+        "C43",
+        "C44",
+        "D22",
+        "D23",
+        "L"
+      ],
+      "key_adrgs": [
+        "J01A",
+        "J01B",
+        "J02Z",
+        "J03Z",
+        "J04Z",
+        "J05Z",
+        "J06Z",
+        "J07A",
+        "J07B",
+        "J08Z",
+        "J09Z",
+        "J10Z",
+        "J11Z",
+        "J12Z",
+        "J40Z",
+        "J41Z",
+        "J60A",
+        "J60B",
+        "J61A",
+        "J61B",
+        "J62Z",
+        "J63Z",
+        "J64A",
+        "J64B",
+        "J65A",
+        "J65B",
+        "J66A",
+        "J66B",
+        "J67A",
+        "J67B",
+        "J68A",
+        "J68B",
+        "J69A",
+        "J69B"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "L02.9",
+        "L03.1",
+        "C44.9",
+        "C50.9",
+        "L89.9",
+        "L97"
+      ]
+    },
+    "10": {
+      "label": "Endocrine & Metabolic",
+      "description": "Endocrine, nutritional, metabolic diseases",
+      "icd_ranges": [
+        {
+          "from": "C73",
+          "to": "C75",
+          "description": "Malignant neoplasms of endocrine glands"
+        },
+        {
+          "from": "D35",
+          "to": "D35",
+          "description": "Benign neoplasm of other endocrine"
+        },
+        {
+          "from": "E00",
+          "to": "E90",
+          "description": "Endocrine, nutritional, metabolic"
+        }
+      ],
+      "icd_prefixes": [
+        "C73",
+        "C74",
+        "C75",
+        "D35",
+        "E"
+      ],
+      "key_adrgs": [
+        "K01A",
+        "K01B",
+        "K02Z",
+        "K03Z",
+        "K04Z",
+        "K05Z",
+        "K06Z",
+        "K07Z",
+        "K08Z",
+        "K09Z",
+        "K40Z",
+        "K60A",
+        "K60B",
+        "K61A",
+        "K61B",
+        "K62A",
+        "K62B",
+        "K63A",
+        "K63B",
+        "K64A",
+        "K64B"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "E11.9",
+        "E10.9",
+        "E05.0",
+        "E03.9",
+        "E87.1",
+        "E86",
+        "C73"
+      ]
+    },
+    "11": {
+      "label": "Kidney & Urinary",
+      "description": "Kidney and urinary tract diseases",
+      "icd_ranges": [
+        {
+          "from": "C64",
+          "to": "C68",
+          "description": "Malignant neoplasms of urinary tract"
+        },
+        {
+          "from": "N00",
+          "to": "N99",
+          "description": "Diseases of genitourinary system"
+        }
+      ],
+      "icd_prefixes": [
+        "C64",
+        "C65",
+        "C66",
+        "C67",
+        "C68",
+        "N"
+      ],
+      "key_adrgs": [
+        "L02A",
+        "L02B",
+        "L03Z",
+        "L04Z",
+        "L05Z",
+        "L06Z",
+        "L07Z",
+        "L08Z",
+        "L09Z",
+        "L10Z",
+        "L11Z",
+        "L12Z",
+        "L40Z",
+        "L41Z",
+        "L60A",
+        "L60B",
+        "L61A",
+        "L61B",
+        "L62A",
+        "L62B",
+        "L63A",
+        "L63B",
+        "L64A",
+        "L64B",
+        "L65A",
+        "L65B",
+        "L66A",
+        "L66B",
+        "L67A",
+        "L67B",
+        "L68Z"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "N20.0",
+        "N39.0",
+        "N18.9",
+        "N40",
+        "N13.5",
+        "C67.9",
+        "N17.9"
+      ]
+    },
+    "12": {
+      "label": "Male Reproductive",
+      "description": "Male reproductive system diseases",
+      "icd_ranges": [
+        {
+          "from": "C60",
+          "to": "C63",
+          "description": "Malignant neoplasms male genital"
+        },
+        {
+          "from": "N40",
+          "to": "N51",
+          "description": "Male genital diseases"
+        }
+      ],
+      "icd_prefixes": [
+        "C60",
+        "C61",
+        "C62",
+        "C63",
+        "N4",
+        "N5"
+      ],
+      "key_adrgs": [
+        "M01A",
+        "M01B",
+        "M02Z",
+        "M03Z",
+        "M04Z",
+        "M05Z",
+        "M06Z",
+        "M07Z",
+        "M40Z",
+        "M60A",
+        "M60B",
+        "M61A",
+        "M61B",
+        "M62A",
+        "M62B",
+        "M63A",
+        "M63B",
+        "M64A",
+        "M64B"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "C61",
+        "N40",
+        "N45.9",
+        "N43.3",
+        "C62.9"
+      ]
+    },
+    "13": {
+      "label": "Female Reproductive",
+      "description": "Female reproductive system (non-obstetric)",
+      "icd_ranges": [
+        {
+          "from": "C51",
+          "to": "C58",
+          "description": "Malignant neoplasms female genital"
+        },
+        {
+          "from": "N70",
+          "to": "N99",
+          "description": "Female pelvic inflammatory and other"
+        }
+      ],
+      "icd_prefixes": [
+        "C51",
+        "C52",
+        "C53",
+        "C54",
+        "C55",
+        "C56",
+        "C57",
+        "C58",
+        "N7",
+        "N8",
+        "N9"
+      ],
+      "key_adrgs": [
+        "N01Z",
+        "N02Z",
+        "N03Z",
+        "N04Z",
+        "N05Z",
+        "N06Z",
+        "N07Z",
+        "N08Z",
+        "N09Z",
+        "N10Z",
+        "N11Z",
+        "N40Z",
+        "N60A",
+        "N60B",
+        "N61A",
+        "N61B",
+        "N62A",
+        "N62B"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "N80.0",
+        "N83.2",
+        "C54.1",
+        "N92.0",
+        "N97.9",
+        "C56"
+      ]
+    },
+    "14": {
+      "label": "Pregnancy & Childbirth",
+      "description": "Obstetric conditions",
+      "icd_ranges": [
+        {
+          "from": "O00",
+          "to": "O99",
+          "description": "Pregnancy, childbirth, puerperium"
+        }
+      ],
+      "icd_prefixes": [
+        "O"
+      ],
+      "key_adrgs": [
+        "O01A",
+        "O01B",
+        "O02A",
+        "O02B",
+        "O03A",
+        "O03B",
+        "O04A",
+        "O04B",
+        "O05A",
+        "O05B",
+        "O06A",
+        "O06B",
+        "O40Z",
+        "O60A",
+        "O60B",
+        "O61A",
+        "O61B",
+        "O62A",
+        "O62B",
+        "O63A",
+        "O63B",
+        "O64A",
+        "O64B",
+        "O65A",
+        "O65B",
+        "O66A",
+        "O66B",
+        "O66C",
+        "O66W"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "O34.2",
+        "O42.0",
+        "O60.1",
+        "O80",
+        "O82",
+        "O26.8"
+      ]
+    },
+    "15": {
+      "label": "Newborns & Neonates",
+      "description": "Neonates and other conditions originating in perinatal period",
+      "icd_ranges": [
+        {
+          "from": "P00",
+          "to": "P99",
+          "description": "Perinatal conditions"
+        },
+        {
+          "from": "Z38",
+          "to": "Z38",
+          "description": "Liveborn infants"
+        }
+      ],
+      "icd_prefixes": [
+        "P",
+        "Z38"
+      ],
+      "key_adrgs": [
+        "P01Z",
+        "P02Z",
+        "P03Z",
+        "P04Z",
+        "P05Z",
+        "P06Z",
+        "P60A",
+        "P60B",
+        "P60C",
+        "P60D",
+        "P61A",
+        "P61B",
+        "P62A",
+        "P62B",
+        "P63A",
+        "P63B",
+        "P64A",
+        "P64B",
+        "P65A",
+        "P65B",
+        "P66A",
+        "P66B",
+        "P67A",
+        "P67B",
+        "P68A",
+        "P68D"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "Z38.0",
+        "P07.1",
+        "P22.0",
+        "P36.9",
+        "P59.9"
+      ]
+    },
+    "16": {
+      "label": "Blood & Immune",
+      "description": "Blood, blood-forming organs, immune disorders",
+      "icd_ranges": [
+        {
+          "from": "C81",
+          "to": "C96",
+          "description": "Malignant lymphomas and leukaemia"
+        },
+        {
+          "from": "D50",
+          "to": "D89",
+          "description": "Blood and immune disorders"
+        }
+      ],
+      "icd_prefixes": [
+        "C81",
+        "C82",
+        "C83",
+        "C84",
+        "C85",
+        "C86",
+        "C87",
+        "C88",
+        "C89",
+        "C90",
+        "C91",
+        "C92",
+        "C93",
+        "C94",
+        "C95",
+        "C96",
+        "D5",
+        "D6",
+        "D7",
+        "D8"
+      ],
+      "key_adrgs": [
+        "Q01Z",
+        "Q02Z",
+        "Q03Z",
+        "Q04Z",
+        "Q40Z",
+        "Q60A",
+        "Q60B",
+        "Q61A",
+        "Q61B",
+        "Q62A",
+        "Q62B"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "D50.9",
+        "D64.9",
+        "D69.6",
+        "C91.0",
+        "C83.9",
+        "D68.9"
+      ]
+    },
+    "17": {
+      "label": "Myeloproliferative / Neoplastic",
+      "description": "Haematological and solid neoplasms",
+      "icd_ranges": [
+        {
+          "from": "C90",
+          "to": "C97",
+          "description": "Plasma cell and other malignant neoplasms"
+        },
+        {
+          "from": "D46",
+          "to": "D46",
+          "description": "Myelodysplastic syndromes"
+        }
+      ],
+      "icd_prefixes": [
+        "C90",
+        "C97",
+        "D46"
+      ],
+      "key_adrgs": [
+        "R01A",
+        "R01B",
+        "R02Z",
+        "R03Z",
+        "R04Z",
+        "R40Z",
+        "R60A",
+        "R60B",
+        "R61A",
+        "R61B",
+        "R62A",
+        "R62B",
+        "R63A",
+        "R63B",
+        "R63Z",
+        "R64W"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "C90.0",
+        "C91.1",
+        "D46.9",
+        "C96.9"
+      ]
+    },
+    "18": {
+      "label": "Infectious & Parasitic",
+      "description": "Systemic infectious and parasitic diseases",
+      "icd_ranges": [
+        {
+          "from": "A00",
+          "to": "B99",
+          "description": "Infectious and parasitic diseases"
+        }
+      ],
+      "icd_prefixes": [
+        "A",
+        "B"
+      ],
+      "key_adrgs": [
+        "T01A",
+        "T01B",
+        "T02A",
+        "T02B",
+        "T03A",
+        "T03B",
+        "T04A",
+        "T04B",
+        "T60A",
+        "T60B",
+        "T61A",
+        "T61B",
+        "T62A",
+        "T62B",
+        "T63A",
+        "T63B",
+        "T64A",
+        "T64B",
+        "T64C"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "A41.9",
+        "B37.0",
+        "A04.7",
+        "A09",
+        "B34.9",
+        "A40.3"
+      ]
+    },
+    "19": {
+      "label": "Mental Health",
+      "description": "Mental and behavioural disorders",
+      "icd_ranges": [
+        {
+          "from": "F00",
+          "to": "F99",
+          "description": "Mental and behavioural disorders"
+        }
+      ],
+      "icd_prefixes": [
+        "F"
+      ],
+      "key_adrgs": [
+        "U40Z",
+        "U41Z",
+        "U42Z",
+        "U43Z",
+        "U44Z",
+        "U60A",
+        "U60B",
+        "U61A",
+        "U61B",
+        "U62A",
+        "U62B",
+        "U63A",
+        "U63B",
+        "U64A",
+        "U64B",
+        "U65A",
+        "U65B",
+        "U66A",
+        "U66B",
+        "U67A",
+        "U67B",
+        "U68A",
+        "U68B"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "F20.9",
+        "F32.9",
+        "F41.1",
+        "F10.2",
+        "F05.0",
+        "F33.2"
+      ]
+    },
+    "20": {
+      "label": "Alcohol & Drug",
+      "description": "Substance use and induced disorders",
+      "icd_ranges": [
+        {
+          "from": "F10",
+          "to": "F19",
+          "description": "Mental disorders due to substance use"
+        },
+        {
+          "from": "T36",
+          "to": "T65",
+          "description": "Poisoning by drugs and substances"
+        }
+      ],
+      "icd_prefixes": [
+        "F1",
+        "T3",
+        "T4",
+        "T5",
+        "T6"
+      ],
+      "key_adrgs": [
+        "V60A",
+        "V60B",
+        "V61A",
+        "V61B",
+        "V62A",
+        "V62B",
+        "V63A",
+        "V63B",
+        "V64A",
+        "V64B"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "F10.2",
+        "F11.2",
+        "T39.1",
+        "T65.9",
+        "F19.2"
+      ]
+    },
+    "21": {
+      "label": "Injuries & Poisoning",
+      "description": "Injuries, trauma, multiple injuries",
+      "icd_ranges": [
+        {
+          "from": "S00",
+          "to": "T98",
+          "description": "Injuries and consequences"
+        },
+        {
+          "from": "V01",
+          "to": "Y98",
+          "description": "External causes"
+        }
+      ],
+      "icd_prefixes": [
+        "S",
+        "T",
+        "V",
+        "W",
+        "X",
+        "Y"
+      ],
+      "key_adrgs": [
+        "W01A",
+        "W01B",
+        "W02A",
+        "W02B",
+        "W03A",
+        "W03B",
+        "W04A",
+        "W04B",
+        "W05Z",
+        "W06Z",
+        "W07Z",
+        "W08Z",
+        "W40Z",
+        "W60A",
+        "W60B",
+        "W61A",
+        "W61B",
+        "X02A",
+        "X02B",
+        "X03A",
+        "X03B",
+        "X04A",
+        "X04B",
+        "X05A",
+        "X05B",
+        "X06A",
+        "X06B",
+        "X60A",
+        "X60B",
+        "X61A",
+        "X61B",
+        "X62A",
+        "X62B",
+        "X63A",
+        "X63B",
+        "X64A",
+        "X64C"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "S72.0",
+        "S52.5",
+        "S06.0",
+        "T39.0",
+        "S22.0",
+        "W19"
+      ]
+    },
+    "22": {
+      "label": "Burns",
+      "description": "Burns and corrosions",
+      "icd_ranges": [
+        {
+          "from": "T20",
+          "to": "T32",
+          "description": "Burns and corrosions"
+        }
+      ],
+      "icd_prefixes": [
+        "T2",
+        "T3"
+      ],
+      "key_adrgs": [
+        "Y01Z",
+        "Y02Z",
+        "Y03Z",
+        "Y04Z",
+        "Y05Z",
+        "Y06Z",
+        "Y07Z",
+        "Y08Z",
+        "Y60A",
+        "Y60B",
+        "Y61A",
+        "Y61B",
+        "Y62A",
+        "Y62B"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "T31.0",
+        "T20.3",
+        "T22.3",
+        "T25.3"
+      ]
+    },
+    "23": {
+      "label": "Factors Influencing Health",
+      "description": "Factors influencing health status and contact with services",
+      "icd_ranges": [
+        {
+          "from": "Z00",
+          "to": "Z99",
+          "description": "Factors influencing health status"
+        }
+      ],
+      "icd_prefixes": [
+        "Z"
+      ],
+      "key_adrgs": [
+        "Z01A",
+        "Z01B",
+        "Z02A",
+        "Z02B",
+        "Z03Z",
+        "Z04Z",
+        "Z40Z",
+        "Z60A",
+        "Z60B",
+        "Z61A",
+        "Z61B",
+        "Z62A",
+        "Z62B",
+        "Z63A",
+        "Z63B",
+        "Z64A",
+        "Z64B",
+        "Z65A",
+        "Z65B",
+        "Z66A",
+        "Z66B"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "Z51.1",
+        "Z49.1",
+        "Z99.2",
+        "Z38.0",
+        "Z03.8",
+        "Z96.6"
+      ]
+    },
+    "24": {
+      "label": "HIV",
+      "description": "HIV infection — groups to relevant MDC or 18/16",
+      "icd_ranges": [
+        {
+          "from": "B20",
+          "to": "B24",
+          "description": "HIV disease"
+        },
+        {
+          "from": "Z21",
+          "to": "Z21",
+          "description": "Asymptomatic HIV"
+        }
+      ],
+      "icd_prefixes": [
+        "B20",
+        "B21",
+        "B22",
+        "B23",
+        "B24",
+        "Z21"
+      ],
+      "key_adrgs": [
+        "mapped_to_mdc_based_on_manifestation"
+      ],
+      "our_adrgs": [],
+      "high_volume_pdx": [
+        "B20",
+        "B24",
+        "Z21"
+      ],
+      "note": "HIV cases typically grouped by principal manifestation MDC"
+    }
+  },
+  "prefix_to_mdc": {
+    "A": "18",
+    "B": "18",
+    "C15": "06",
+    "C16": "06",
+    "C17": "06",
+    "C18": "06",
+    "C19": "06",
+    "C20": "06",
+    "C21": "06",
+    "C22": "07",
+    "C23": "07",
+    "C24": "07",
+    "C25": "07",
+    "C26": "06",
+    "C43": "09",
+    "C44": "09",
+    "C50": "09",
+    "C51": "13",
+    "C52": "13",
+    "C53": "13",
+    "C54": "13",
+    "C55": "13",
+    "C56": "13",
+    "C57": "13",
+    "C58": "13",
+    "C60": "12",
+    "C61": "12",
+    "C62": "12",
+    "C63": "12",
+    "C64": "11",
+    "C65": "11",
+    "C66": "11",
+    "C67": "11",
+    "C68": "11",
+    "C73": "10",
+    "C74": "10",
+    "C75": "10",
+    "C81": "16",
+    "C82": "16",
+    "C83": "16",
+    "C84": "16",
+    "C85": "16",
+    "C86": "16",
+    "C87": "16",
+    "C88": "16",
+    "C89": "16",
+    "C90": "17",
+    "C91": "16",
+    "C92": "16",
+    "C93": "16",
+    "C94": "16",
+    "C95": "16",
+    "C96": "16",
+    "C97": "17",
+    "D22": "09",
+    "D23": "09",
+    "D35": "10",
+    "D46": "17",
+    "D50": "16",
+    "D51": "16",
+    "D52": "16",
+    "D53": "16",
+    "D55": "16",
+    "D56": "16",
+    "D57": "16",
+    "D58": "16",
+    "D59": "16",
+    "D60": "16",
+    "D61": "16",
+    "D62": "16",
+    "D63": "16",
+    "D64": "16",
+    "D65": "16",
+    "D66": "16",
+    "D67": "16",
+    "D68": "16",
+    "D69": "16",
+    "D70": "16",
+    "D71": "16",
+    "D72": "16",
+    "D73": "16",
+    "D74": "16",
+    "D75": "16",
+    "D76": "16",
+    "D77": "16",
+    "D80": "16",
+    "D81": "16",
+    "D82": "16",
+    "D83": "16",
+    "D84": "16",
+    "D86": "16",
+    "D89": "16",
+    "E": "10",
+    "F0": "19",
+    "F2": "19",
+    "F3": "19",
+    "F4": "19",
+    "F5": "19",
+    "F6": "19",
+    "F7": "19",
+    "F8": "19",
+    "F9": "19",
+    "F1": "20",
+    "G": "01",
+    "H0": "02",
+    "H1": "02",
+    "H2": "02",
+    "H3": "02",
+    "H4": "02",
+    "H5": "02",
+    "H6": "03",
+    "H7": "03",
+    "H8": "03",
+    "H9": "03",
+    "I0": "05",
+    "I1": "05",
+    "I2": "05",
+    "I3": "05",
+    "I4": "05",
+    "I5": "05",
+    "I6": "01",
+    "I7": "05",
+    "I8": "05",
+    "I9": "05",
+    "J0": "03",
+    "J3": "03",
+    "J1": "04",
+    "J2": "04",
+    "J4": "04",
+    "J5": "04",
+    "J6": "04",
+    "J7": "04",
+    "J8": "04",
+    "J9": "04",
+    "K0": "06",
+    "K1": "06",
+    "K2": "06",
+    "K3": "06",
+    "K4": "06",
+    "K5": "06",
+    "K6": "06",
+    "K7": "07",
+    "K8": "07",
+    "K9": "06",
+    "L": "09",
+    "M": "08",
+    "N0": "11",
+    "N1": "11",
+    "N2": "11",
+    "N3": "11",
+    "N4": "12",
+    "N5": "12",
+    "N6": "13",
+    "N7": "13",
+    "N8": "13",
+    "N9": "13",
+    "O": "14",
+    "P": "15",
+    "Q": "16",
+    "R": "23",
+    "S0": "01",
+    "S1": "01",
+    "S2": "08",
+    "S3": "08",
+    "S4": "08",
+    "S5": "08",
+    "S6": "08",
+    "S7": "08",
+    "S8": "08",
+    "S9": "08",
+    "T0": "21",
+    "T1": "21",
+    "T2": "22",
+    "T3": "20",
+    "T4": "20",
+    "T5": "20",
+    "T6": "20",
+    "T7": "21",
+    "T8": "21",
+    "T9": "21",
+    "V": "21",
+    "W": "21",
+    "X": "21",
+    "Y": "21",
+    "Z": "23",
+    "Z38": "15",
+    "B20": "24",
+    "B21": "24",
+    "B22": "24",
+    "B23": "24",
+    "B24": "24",
+    "Z21": "24"
+  },
+  "error_drgs": {
+    "960Z": "Ungroupable — invalid code combination",
+    "961Z": "Unacceptable Principal Diagnosis",
+    "963Z": "Neonatal ungroupable"
+  },
+  "priority_for_general_surgery": [
+    "06",
+    "07",
+    "08",
+    "05",
+    "01",
+    "09",
+    "10",
+    "11"
+  ],
+  "mdc_pdx_lookup_count": 44361
+}
