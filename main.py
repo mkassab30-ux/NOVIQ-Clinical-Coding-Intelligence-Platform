@@ -73,6 +73,15 @@ else:
 # ── Engine import ─────────────────────────────────────────────────────────
 ENGINE_AVAILABLE = False
 ENGINE_ERROR = None
+
+# ICD Validator
+_icd_validator = None
+try:
+    from icd_validator import ICDValidator as _ICD
+    _icd_validator = _ICD(KB_DIR, _anthropic_client if INTENT_AGENT_AVAILABLE else None)
+    print("[OK] ICD-10-AM Validator loaded (4-layer)")
+except Exception as e:
+    print(f"[WARN] ICD Validator not loaded: {e}")
 NOVIQEngine = None
 KBIncompleteError = Exception
 
@@ -1211,6 +1220,27 @@ async def process(episode_id: str, request: Request):
             "processed_at":    _now(),
             "engine_mode":     "live",
         }
+
+    # ── ICD Validation ────────────────────────────────────────────
+    if _icd_validator:
+        try:
+            icd_result = _icd_validator.validate_episode(ep)
+            icd_dict   = _icd_validator.to_dict(icd_result)
+            STORE[episode_id]["icd_validation"] = icd_dict
+            _save(STORE)
+            return {
+                "episode_id":      episode_id,
+                "suggestion":      res,
+                "episode_dict":    ep,
+                "kb_flags":        kb_flags,
+                "workflow_report": workflow_report,
+                "icd_validation":  icd_dict,
+                "blocked":         blocked,
+                "processed_at":    _now(),
+                "engine_mode":     "live",
+            }
+        except Exception as e:
+            print(f"[WARN] ICD validation error: {e}")
 
     # demo path
     STORE[episode_id].update({
