@@ -1,0 +1,109 @@
+{
+  "_meta": {
+    "version": "v1.0",
+    "authority": "ACS 0050 + Appendix C ICD-10-AM 12th Ed + AR-DRG V11.0",
+    "validated_by": "Dr. Mohamed Kassab"
+  },
+  "format_rules": {
+    "pattern": "^[A-Z]\\d{2}(\\.[0-9A-Z]{1,2})?$",
+    "valid_examples": [
+      "K80.0",
+      "I21.9",
+      "G35",
+      "Z51.1",
+      "U07.1"
+    ],
+    "invalid_examples": [
+      "K800",
+      "K80.0.0",
+      "ABC",
+      "123",
+      ""
+    ]
+  },
+  "pdx_acceptability": {
+    "never_acceptable": {
+      "prefixes": [
+        "V",
+        "W",
+        "X",
+        "Y"
+      ],
+      "reason": "Supplementary codes only \u2014 ACS 2001/2005",
+      "engine_action": "REJECT \u2192 961Z"
+    },
+    "r_codes": {
+      "rule": "Acceptable if no definitive dx reached after study",
+      "always_flag": [
+        "R69",
+        "R99"
+      ],
+      "engine_action": "FLAG \u2192 clinician query"
+    },
+    "z_codes": {
+      "acceptable": [
+        "Z49.1",
+        "Z49.2",
+        "Z51.1",
+        "Z51.11",
+        "Z51.12",
+        "Z51.0",
+        "Z50.1",
+        "Z50.2",
+        "Z50.3",
+        "Z50.4",
+        "Z50.5",
+        "Z34",
+        "Z38",
+        "Z29.1"
+      ],
+      "never": [
+        "Z00",
+        "Z01",
+        "Z02",
+        "Z03",
+        "Z04",
+        "Z08",
+        "Z09",
+        "Z13",
+        "Z21"
+      ]
+    },
+    "dagger_asterisk": {
+      "rule": "Either etiology or manifestation acceptable as PDX (ICD-10-AM 8th Ed+)",
+      "manifestation_prefixes": [
+        "H28",
+        "N08",
+        "G53",
+        "G63",
+        "G73",
+        "M36",
+        "E35"
+      ],
+      "engine_action": "FLAG for sequencing confirmation"
+    },
+    "specificity": {
+      "rule": ".9 codes accepted but may lower DRG weight",
+      "high_impact": {
+        "K80.9": "Cholecystitis/obstruction present?",
+        "I50.9": "HF type: systolic/diastolic?",
+        "J18.9": "Organism identified?",
+        "A41.9": "Sepsis source/organism?",
+        "N18.9": "CKD stage?",
+        "J44.9": "Exacerbation or stable?",
+        "C80.9": "Primary site identified?",
+        "E11.9": "Diabetes complications?"
+      }
+    }
+  },
+  "result_codes": {
+    "VALID": "Valid ICD-10-AM code, acceptable as PDX",
+    "INVALID_FORMAT": "Fails format check \u2014 reject",
+    "INVALID_PDX": "Never acceptable as PDX \u2192 961Z",
+    "WARNING_SYMPTOM": "R-code \u2014 flag if definitive dx possible",
+    "WARNING_ZCODE": "Z-code \u2014 verify against acceptable list",
+    "WARNING_UNSPEC": "Unspecified (.9) \u2014 query for specificity",
+    "WARNING_MANIFEST": "Manifestation code \u2014 confirm sequencing",
+    "UNVERIFIED": "Not in 37K lookup \u2014 Claude API recommended"
+  }
+}
